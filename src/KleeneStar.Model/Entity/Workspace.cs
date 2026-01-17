@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebCore.WebIcon;
-using WebExpress.WebCore.WebUri;
 
-namespace KleeneStar.Model.Workspace
+namespace KleeneStar.Model.Entity
 {
     /// <summary>
     /// Represents a workspace, which serves as a container for related resources and metadata.
@@ -38,12 +37,6 @@ namespace KleeneStar.Model.Workspace
         /// Returns the description of the workspace.
         /// </summary>
         public string Description { get; set; }
-
-        /// <summary>
-        /// Returns the URI associated with the current workspace view.
-        /// </summary>
-        [RestTableColumnHidden()]
-        public IUri Uri => CoreHub.GetUri<WWW.Index>().Concat(Key);
 
         /// <summary>
         /// Returns the icon associated with this workspace.

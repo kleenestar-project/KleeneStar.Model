@@ -2,10 +2,9 @@
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebCore.WebDomain;
 using WebExpress.WebCore.WebIcon;
-using WebExpress.WebCore.WebUri;
 using WebExpress.WebIndex;
 
-namespace KleeneStar.Model.Workspace
+namespace KleeneStar.Model.Entity
 {
     /// <summary>
     /// Represents a workspace that provides a unique key, name, and description.
@@ -16,6 +15,7 @@ namespace KleeneStar.Model.Workspace
         /// <summary>
         /// Returns the key of the workspace.
         /// </summary>
+        [ValidateMinLength(2)]
         [RestTableColumnName("Key")]
         string Key { get; }
 
@@ -30,8 +30,8 @@ namespace KleeneStar.Model.Workspace
         /// Returns the collection of category names associated with the item.
         /// </summary>
         [RestTableColumnName("Category")]
-        [RestApiTableColumnTemplateTag(true)]
         [RestTableJoin(';')]
+        [RestApiTableColumnTemplateTag(true)]
         IEnumerable<string> Categories { get; }
 
         /// <summary>
@@ -45,14 +45,6 @@ namespace KleeneStar.Model.Workspace
         /// </summary>
         [RestTableColumnName("State")]
         TypeWorkspaceState State { get; }
-
-        /// <summary>
-        /// Returns the URI associated with the current workspace view.
-        /// </summary>
-        [RestTableColumnHidden]
-        [RestTableRowUri]
-        [RestDropdownUri]
-        IUri Uri { get; }
 
         /// <summary>
         /// Returns the icon associated with this workspace.
