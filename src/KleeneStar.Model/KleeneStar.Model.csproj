@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Version>0.0.1.0</Version>
+		<AssemblyVersion>0.0.1.0</AssemblyVersion>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/kleenestar-project/KleeneStar.Model</RepositoryUrl>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Assets/**/*.*">
+			<LogicalName>$(MSBuildProjectName).Assets.%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Internationalization\de" />
+		<EmbeddedResource Include="Internationalization\en" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="WebExpress.WebApp" Version="0.0.10-alpha" />
+	</ItemGroup>
+
+</Project>
