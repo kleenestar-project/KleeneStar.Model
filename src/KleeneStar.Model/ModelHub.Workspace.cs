@@ -42,7 +42,7 @@ namespace KleeneStar.Model
                         var root = doc.Root;
                         var iconPath = root?.Element("Icon")?.Value;
                         var iconUri = !string.IsNullOrWhiteSpace(iconPath)
-                            ? ApplicationContet.Route.ToUri().Concat(iconPath)
+                            ? ApplicationContet?.Route.ToUri().Concat(iconPath)
                             : null;
 
                         return new Workspace()
