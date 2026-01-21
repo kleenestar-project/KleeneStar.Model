@@ -1,4 +1,5 @@
-﻿using WebExpress.WebCore.WebApplication;
+﻿using WebExpress.WebCore;
+using WebExpress.WebCore.WebApplication;
 using WebExpress.WebCore.WebComponent;
 
 namespace KleeneStar.Model
@@ -17,5 +18,10 @@ namespace KleeneStar.Model
         /// Returns the current application context, which provides access to application-wide services and configurations.
         /// </summary>
         public static IApplicationContext ApplicationContet { get; set; }
+
+        /// <summary>
+        /// Returns the current HTTP server context for the application.
+        /// </summary>
+        public static IHttpServerContext HttpServerContext { get; set; }
     }
 }

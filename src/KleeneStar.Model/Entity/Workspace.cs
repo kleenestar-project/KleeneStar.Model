@@ -51,5 +51,17 @@ namespace KleeneStar.Model.Entity
         {
             Id = Guid.NewGuid();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the Workspace class with the 
+        /// specified unique identifier.
+        /// </summary>
+        /// <param name="id">
+        /// The unique identifier to assign to the workspace.
+        /// </param>
+        public Workspace(Guid id)
+        {
+            Id = id;
+        }
     }
 }

@@ -26,7 +26,7 @@ namespace KleeneStar.Model
         /// <exception cref="DirectoryNotFoundException">
         /// Thrown if the specified <paramref name="directoryPath"/> does not exist.
         /// </exception>
-        public static List<IWorkspace> LoadAllWorkspaces(string directoryPath)
+        public static IEnumerable<IWorkspace> LoadAllWorkspaces(string directoryPath)
         {
             if (!Directory.Exists(directoryPath))
             {
@@ -42,7 +42,7 @@ namespace KleeneStar.Model
                         var root = doc.Root;
                         var iconPath = root?.Element("Icon")?.Value;
                         var iconUri = !string.IsNullOrWhiteSpace(iconPath)
-                            ? ApplicationContet?.Route.ToUri().Concat(iconPath)
+                            ? HttpServerContext?.Route.Concat(iconPath).ToUri()
                             : null;
 
                         return new Workspace()
@@ -64,8 +64,7 @@ namespace KleeneStar.Model
                         return null as IWorkspace;
                     }
                 })
-                .Where(ws => ws is not null)
-                .ToList()!;
+                .Where(ws => ws is not null);
         }
 
         /// <summary>
