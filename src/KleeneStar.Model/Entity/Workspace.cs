@@ -10,6 +10,9 @@ namespace KleeneStar.Model.Entity
     /// </summary>
     public class Workspace : IWorkspace
     {
+        /// <summary>
+        /// Returns or sets the unique identifier for the workspace.
+        /// </summary>
         [RestTableColumnHidden()]
         public Guid Id { get; set; }
 

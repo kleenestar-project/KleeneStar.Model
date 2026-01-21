@@ -111,7 +111,7 @@ namespace Kleenestar.Model.Test.Hub
             var result = ModelHub.LoadAllWorkspaces(dir.Path);
 
             // validation
-            Assert.Equal(count, result.Count);
+            Assert.Equal(count, result.Count());
         }
 
         /// <summary>
