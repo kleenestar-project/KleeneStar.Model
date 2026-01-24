@@ -17,14 +17,14 @@ namespace KleeneStar.Model.Entity
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the key of the workspace.
-        /// </summary>
-        public string Key { get; set; }
-
-        /// <summary>
         /// Returns the name of the workspace.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Returns or sets the key of the workspace.
+        /// </summary>
+        public string Key { get; set; }
 
         /// <summary>
         /// Returns the collection of category names associated with the item.

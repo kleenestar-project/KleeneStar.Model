@@ -9,22 +9,21 @@ namespace KleeneStar.Model.Entity
     /// <summary>
     /// Represents a workspace that provides a unique key, name, and description.
     /// </summary>
-    /// <remarks>
     public interface IWorkspace : IIndexItem, IDomain
     {
-        /// <summary>
-        /// Returns the key of the workspace.
-        /// </summary>
-        [ValidateMinLength(2)]
-        [RestTableColumnName("Key")]
-        string Key { get; }
-
         /// <summary>
         /// Returns the name of the workspace.
         /// </summary>
         [RestTableColumnName("Name")]
         [RestDropdownText]
         string Name { get; }
+
+        /// <summary>
+        /// Returns the key of the workspace.
+        /// </summary>
+        [ValidateMinLength(2)]
+        [RestTableColumnName("Key")]
+        string Key { get; }
 
         /// <summary>
         /// Returns the collection of category names associated with the item.
