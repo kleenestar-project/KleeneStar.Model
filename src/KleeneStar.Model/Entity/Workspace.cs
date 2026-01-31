@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using WebExpress.WebApp.WebAttribute;
-using WebExpress.WebCore.WebIcon;
+using WebExpress.WebIndex.WebAttribute;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Entity
 {
     /// <summary>
     /// Represents a workspace, which serves as a container for related resources and metadata.
     /// </summary>
-    public class Workspace : IWorkspace
+    public class Workspace : IEntity
     {
+        /// <summary>
+        /// Returns or sets the database id.
+        /// </summary>
+        [RestTableColumnHidden]
+        [IndexIgnore]
+        [Key]
+        public int RawId { get; set; }
+
         /// <summary>
         /// Returns or sets the unique identifier for the workspace.
         /// </summary>
@@ -19,33 +29,57 @@ namespace KleeneStar.Model.Entity
         /// <summary>
         /// Returns the name of the workspace.
         /// </summary>
+        [RestTableColumnName("Name")]
+        [RestDropdownText]
         public string Name { get; set; }
 
         /// <summary>
         /// Returns or sets the key of the workspace.
         /// </summary>
+        [ValidateMinLength(2)]
+        [RestTableColumnName("Key")]
         public string Key { get; set; }
 
         /// <summary>
         /// Returns the collection of category names associated with the item.
         /// </summary>
-        public IEnumerable<string> Categories { get; set; }
+        [RestTableColumnName("Category")]
+        [RestTableJoin(';')]
+        [RestApiTableColumnTemplateTag(true)]
+        public List<Category> Categories { get; set; } = [];
 
         /// <summary>
         /// Returns the current state of the workspace.
         /// </summary>
+        [RestTableColumnName("State")]
         public TypeWorkspaceState State { get; set; }
 
         /// <summary>
         /// Returns the description of the workspace.
         /// </summary>
+        [RestTableColumnName("Description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Returns the icon associated with this workspace.
         /// </summary>
+        [RestTableColumnHidden]
+        [RestTableRowIcon]
+        public ImageIcon Icon { get; set; }
+
+        /// <summary>
+        /// Returns the date and time when the entity was created.
+        /// </summary>
         [RestTableColumnHidden()]
-        public IIcon Icon { get; set; }
+        public DateTime Created { get; set; }
+
+        /// <summary>
+        /// Returns the date and time when the entity was updated.
+        /// </summary>
+        [RestTableColumnHidden()]
+        [RestTableRowIcon]
+        [RestDropdownIcon]
+        public DateTime Updated { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.
@@ -56,7 +90,7 @@ namespace KleeneStar.Model.Entity
         }
 
         /// <summary>
-        /// Initializes a new instance of the Workspace class with the 
+        /// Initializes a new instance of the class with the 
         /// specified unique identifier.
         /// </summary>
         /// <param name="id">

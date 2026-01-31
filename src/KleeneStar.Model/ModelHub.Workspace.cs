@@ -1,10 +1,9 @@
 ﻿using KleeneStar.Model.Entity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using WebExpress.WebUI.WebIcon;
+using System.Linq.Expressions;
 
 namespace KleeneStar.Model
 {
@@ -14,92 +13,93 @@ namespace KleeneStar.Model
     public static partial class ModelHub
     {
         /// <summary>
-        /// Loads all workspace definitions from XML files in the specified directory.
+        /// Returns all workspaces.
         /// </summary>
-        /// <param name="directoryPath">
-        /// The path to the directory containing the XML files to load. The directory must exist.
-        /// </param>
-        /// <returns>
-        /// A list of <see cref="IWorkspace"/> instances representing the loaded workspaces. The list will be empty if
-        /// no valid workspaces are found.
-        /// </returns>
-        /// <exception cref="DirectoryNotFoundException">
-        /// Thrown if the specified <paramref name="directoryPath"/> does not exist.
-        /// </exception>
-        public static IEnumerable<IWorkspace> LoadAllWorkspaces(string directoryPath)
+        public static IEnumerable<Workspace> Workspaces
         {
-            if (!Directory.Exists(directoryPath))
+            get
             {
-                return [];
+                using var db = CreateDbContext();
+
+                return
+                [..
+                    db.Workspaces
+                        .AsNoTracking()
+                        .Include(w => w.Categories)
+                ];
             }
-
-            return Directory.GetFiles(directoryPath, "*.xml")
-                .Select(static file =>
-                {
-                    try
-                    {
-                        var doc = XDocument.Load(file);
-                        var root = doc.Root;
-                        var iconPath = root?.Element("Icon")?.Value;
-                        var iconUri = !string.IsNullOrWhiteSpace(iconPath)
-                            ? HttpServerContext?.Route.Concat(iconPath).ToUri()
-                            : null;
-
-                        return new Workspace()
-                        {
-                            Id = Guid.Parse(root?.Element("Id")?.Value ?? ""),
-                            Key = root?.Element("Key")?.Value ?? "",
-                            Name = root?.Element("Name")?.Value ?? "",
-                            Icon = iconUri is not null ? new ImageIcon(iconUri) : null,
-                            State = Enum.TryParse<TypeWorkspaceState>(root?.Element("State")?.Value, out var state)
-                                ? state
-                                : TypeWorkspaceState.Active,
-                            Description = root?.Element("Description")?.Value ?? "",
-                            Categories = root?.Elements("Category").Select(e => e.Value).ToList() ?? []
-                        };
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error reading {file}: {ex.Message}");
-                        return null as IWorkspace;
-                    }
-                })
-                .Where(ws => ws is not null);
         }
 
         /// <summary>
-        /// Saves a workspace definition as an XML file in the specified directory.
+        /// Retrieves a collection of workspaces that satisfy the specified filter criteria.
         /// </summary>
-        /// <param name="workspace">The workspace instance to save.</param>
-        /// <param name="directoryPath">
-        /// The path to the directory where the XML file will be saved. The directory must exist.
+        /// <param name="predicate">
+        /// An expression used to filter the workspaces. Only workspaces for which the predicate 
+        /// evaluates to true are included in the result. Cannot be null.
         /// </param>
-        /// <exception cref="DirectoryNotFoundException">
-        /// Thrown if the specified <paramref name="directoryPath"/> does not exist.
-        /// </exception>
-        public static void SaveWorkspace(IWorkspace workspace, string directoryPath)
+        /// <returns>
+        /// An enumerable collection of workspaces that match the specified predicate. The 
+        /// collection is empty if no workspaces meet the criteria.
+        /// </returns>
+        public static IEnumerable<Workspace> GetWorkspaces(Expression<Func<Workspace, bool>> predicate)
         {
-            ArgumentNullException.ThrowIfNull(workspace?.Key);
+            using var db = CreateDbContext();
 
-            if (!Directory.Exists(directoryPath))
+            return
+            [..
+                db.Workspaces
+                    .AsNoTracking()
+                    .Where(predicate)
+                    .Include(w => w.Categories)
+            ];
+        }
+
+        /// <summary>
+        /// Adds the specified workspace to the database if it does not already exist.
+        /// </summary>
+        /// <remarks>
+        /// If a workspace with the same key (case-insensitive) already exists in the 
+        /// database, this method does nothing.
+        /// </remarks>
+        /// <param name="workspace">
+        /// The workspace to add. The workspace's Key property is used to determine uniqueness. 
+        /// Cannot be null.
+        /// </param>
+        public static void Add(Workspace workspace)
+        {
+            using var db = CreateDbContext();
+            var exists = db.Workspaces.Any(x => x.Key.Equals(workspace.Key, StringComparison.InvariantCultureIgnoreCase));
+
+            if (exists)
             {
-                throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
+                return;
             }
 
-            var doc = new XDocument(
-                new XElement("Workspace",
-                    new XElement("Id", workspace.Id),
-                    new XElement("Key", workspace.Key),
-                    new XElement("Name", workspace.Name),
-                    new XElement("Icon", (workspace.Icon as ImageIcon)?.Uri?.ToString() ?? ""),
-                    new XElement("State", workspace.State.ToString()),
-                    new XElement("Description", workspace.Description ?? ""),
-                    workspace.Categories?.Select(c => new XElement("Category", c))
-                )
-            );
+            db.Workspaces.Add(workspace);
+            db.SaveChanges();
+        }
 
-            var filePath = Path.Combine(directoryPath, $"{workspace.Key}.xml");
-            doc.Save(filePath);
+        /// <summary>
+        /// Removes the specified workspace from the data store if it exists.
+        /// </summary>
+        /// <param name="workspace">
+        /// The workspace entity to remove. The workspace is identified by 
+        /// its <c>Id</c> property.
+        /// </param>
+        public static void Remove(Workspace workspace)
+        {
+            using var db = CreateDbContext();
+
+            var existing = db.Workspaces
+                .FirstOrDefault(x => x.Id == workspace.Id);
+
+            if (existing == null)
+            {
+                return;
+            }
+
+            db.Workspaces.Remove(existing);
+            db.SaveChanges();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Kleenestar.Model.Test.Entity
     /// <summary>
     /// Contains unit tests for the Workspace class.
     /// </summary>
+    [Collection("NonParallelTests")]
     public class UnitTestWorkspace
     {
         /// <summary>
@@ -33,7 +34,7 @@ namespace Kleenestar.Model.Test.Entity
         {
             // arrange
             var workspace = new Workspace();
-            var icon = new IconHome();
+            var icon = ImageIcon.FromString("/icon");
 
             // act
             workspace.Key = key;
@@ -62,12 +63,14 @@ namespace Kleenestar.Model.Test.Entity
         {
             // arrange
             var workspace = new Workspace();
+            var categoriesList = categories?.Select(name => new Category { Name = name })
+                .ToList() ?? [];
 
             // act
-            workspace.Categories = categories;
+            workspace.Categories = categoriesList;
 
             // validation
-            Assert.Equal(categories, workspace.Categories);
+            Assert.Equal(categoriesList, workspace.Categories);
         }
 
         /// <summary>
