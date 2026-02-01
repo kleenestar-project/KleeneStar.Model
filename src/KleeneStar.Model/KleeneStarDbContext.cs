@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model.Entity;
 using Microsoft.EntityFrameworkCore;
+using WebExpress.WebIndex.Queries;
 
 namespace KleeneStar.Model
 {
@@ -8,7 +9,7 @@ namespace KleeneStar.Model
     /// application, providing access to the application's data entities and 
     /// database operations.
     /// </summary>
-    public class KleeneStarDbContext : DbContext
+    public class KleeneStarDbContext : DbContext, IQueryContext
     {
         /// <summary>
         /// Returns or sets the collection of categories.

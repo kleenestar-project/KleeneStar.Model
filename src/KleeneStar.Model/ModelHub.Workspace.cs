@@ -37,6 +37,28 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns a queryable collection of workspaces from the database, optionally filtered 
+        /// by one or more predicate expressions.
+        /// </summary>
+        /// <param name="query">
+        /// The query criteria used to filter the returned workspaces. Must not be null.
+        /// </param>
+        /// <param name="context">
+        /// The context in which the query is executed. Provides additional information or constraints 
+        /// for the retrieval operation. Cannot be null.
+        /// </param>
+        /// <returns>An enumeration representing the filtered collection of workspaces. The query
+        /// includes related categories and is not tracked by the context.</returns>
+        public static IEnumerable<Workspace> GetWorkspaces(IQuery<Workspace> query, KleeneStarDbContext context)
+        {
+            var data = context.Workspaces
+                .AsNoTracking()
+                .Include(w => w.Categories);
+
+            return query.Apply(data); // none materialize query
+        }
+
+        /// <summary>
         /// Adds the specified workspace to the database if it does not already exist.
         /// </summary>
         /// <remarks>
