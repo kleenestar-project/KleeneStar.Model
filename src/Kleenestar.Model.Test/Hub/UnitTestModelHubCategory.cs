@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model;
 using KleeneStar.Model.Entity;
+using WebExpress.WebIndex.Queries;
 
 namespace Kleenestar.Model.Test.Hub
 {
@@ -30,7 +31,7 @@ namespace Kleenestar.Model.Test.Hub
             }
 
             // act
-            var result = ModelHub.Categories.ToList();
+            var result = ModelHub.GetCategories(new Query<Category>()).ToList();
 
             // validation
             Assert.Equal(2, result.Count);
@@ -58,7 +59,8 @@ namespace Kleenestar.Model.Test.Hub
             }
 
             // act
-            var result = ModelHub.GetCategories(x => x.Name.StartsWith("A")).ToList();
+            var result = ModelHub.GetCategories(new Query<Category>().Where(x => x.Name.StartsWith("A")))
+                .ToList();
 
             // validation
             Assert.Single(result);

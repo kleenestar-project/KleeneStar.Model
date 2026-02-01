@@ -1,8 +1,9 @@
 ﻿using KleeneStar.Model.Entity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using WebExpress.WebIndex.Queries;
 
 namespace KleeneStar.Model
 {
@@ -12,34 +13,23 @@ namespace KleeneStar.Model
     public static partial class ModelHub
     {
         /// <summary>
-        /// Returns all categories.
-        /// </summary>
-        public static IEnumerable<Category> Categories
-        {
-            get
-            {
-                using var db = CreateDbContext();
-
-                return [.. db.Categories];
-            }
-        }
-
-        /// <summary>
         /// Retrieves a collection of categories that satisfy the specified filter criteria.
         /// </summary>
-        /// <param name="predicate">
-        /// An expression that defines the conditions each category must meet to be included 
-        /// in the result. Cannot be null.
+        /// <param name="query">
+        /// The query used to filter and select categories. Cannot be null.
         /// </param>
         /// <returns>
         /// An enumerable collection of categories that match the specified predicate. The 
         /// collection is empty if no categories meet the criteria.
         /// </returns>
-        public static IEnumerable<Category> GetCategories(Expression<Func<Category, bool>> predicate)
+        public static IEnumerable<Category> GetCategories(IQuery<Category> query)
         {
             using var db = CreateDbContext();
 
-            return [.. db.Categories.Where(predicate)];
+            var data = db.Categories
+               .AsNoTracking();
+
+            return [.. query.Apply(data)]; // materialize query
         }
 
         /// <summary>

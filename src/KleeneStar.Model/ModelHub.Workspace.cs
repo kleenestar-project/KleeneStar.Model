@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using WebExpress.WebIndex.Queries;
 
 namespace KleeneStar.Model
 {
@@ -13,45 +13,27 @@ namespace KleeneStar.Model
     public static partial class ModelHub
     {
         /// <summary>
-        /// Returns all workspaces.
+        /// Returns a queryable collection of workspaces from the database, optionally filtered 
+        /// by one or more predicate expressions.
         /// </summary>
-        public static IEnumerable<Workspace> Workspaces
-        {
-            get
-            {
-                using var db = CreateDbContext();
-
-                return
-                [..
-                    db.Workspaces
-                        .AsNoTracking()
-                        .Include(w => w.Categories)
-                ];
-            }
-        }
-
-        /// <summary>
-        /// Retrieves a collection of workspaces that satisfy the specified filter criteria.
-        /// </summary>
-        /// <param name="predicate">
-        /// An expression used to filter the workspaces. Only workspaces for which the predicate 
-        /// evaluates to true are included in the result. Cannot be null.
+        /// <remarks>
+        /// The returned query is not executed until enumerated. Multiple predicates are combined
+        /// using logical AND. The query includes related category data for each workspace.
+        /// </remarks>
+        /// <param name="query">
+        /// The query criteria used to filter the returned workspaces. Must not be null.
         /// </param>
-        /// <returns>
-        /// An enumerable collection of workspaces that match the specified predicate. The 
-        /// collection is empty if no workspaces meet the criteria.
-        /// </returns>
-        public static IEnumerable<Workspace> GetWorkspaces(Expression<Func<Workspace, bool>> predicate)
+        /// <returns>An enumeration representing the filtered collection of workspaces. The query
+        /// includes related categories and is not tracked by the context.</returns>
+        public static IEnumerable<Workspace> GetWorkspaces(IQuery<Workspace> query)
         {
             using var db = CreateDbContext();
 
-            return
-            [..
-                db.Workspaces
-                    .AsNoTracking()
-                    .Where(predicate)
-                    .Include(w => w.Categories)
-            ];
+            var data = db.Workspaces
+                .AsNoTracking()
+                .Include(w => w.Categories);
+
+            return [.. query.Apply(data)]; // materialize query
         }
 
         /// <summary>

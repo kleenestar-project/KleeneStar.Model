@@ -65,6 +65,7 @@ namespace KleeneStar.Model.Entity
         /// </summary>
         [RestTableColumnHidden]
         [RestTableRowIcon]
+        [RestDropdownIcon]
         public ImageIcon Icon { get; set; }
 
         /// <summary>

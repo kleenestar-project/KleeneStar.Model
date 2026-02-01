@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model;
 using KleeneStar.Model.Entity;
+using WebExpress.WebIndex.Queries;
 using WebExpress.WebUI.WebIcon;
 
 namespace Kleenestar.Model.Test.Hub
@@ -31,10 +32,10 @@ namespace Kleenestar.Model.Test.Hub
             }
 
             // act
-            var result = ModelHub.Workspaces.ToList();
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>());
 
             // validation
-            Assert.Equal(2, result.Count);
+            Assert.Equal(2, result.Count());
         }
 
         /// <summary>
@@ -65,7 +66,8 @@ namespace Kleenestar.Model.Test.Hub
             }
 
             // act
-            var result = ModelHub.GetWorkspaces(x => x.Key.StartsWith("A")).ToList();
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Key.StartsWith("A")))
+                .ToList();
 
             // validation
             Assert.Single(result);
