@@ -9,7 +9,7 @@ namespace KleeneStar.Model
     /// <summary>
     /// Provides utility methods for working with the KleeneStar.
     /// </summary>
-    public static partial class ModelHub
+    internal static partial class ModelHub
     {
         /// <summary>
         /// Returns the shared instance of the component hub used for managing and coordinating application components.
@@ -49,6 +49,5 @@ namespace KleeneStar.Model
 
             return KleeneStarDbContextFactory.Create(DatabaseConfig);
         }
-
     }
 }

@@ -10,7 +10,7 @@ namespace KleeneStar.Model
     /// <summary>
     /// Provides utility methods for working with the KleeneStar.
     /// </summary>
-    public static partial class ModelHub
+    internal static partial class ModelHub
     {
         /// <summary>
         /// Returns a queryable collection of workspaces from the database, optionally filtered 
@@ -29,11 +29,7 @@ namespace KleeneStar.Model
         {
             using var db = CreateDbContext();
 
-            var data = db.Workspaces
-                .AsNoTracking()
-                .Include(w => w.Categories);
-
-            return [.. query.Apply(data)]; // materialize query
+            return [.. GetWorkspaces(query, db)]; // materialize query
         }
 
         /// <summary>

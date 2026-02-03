@@ -10,7 +10,7 @@ namespace KleeneStar.Model
     /// <summary>
     /// Provides utility methods for working with the KleeneStar.
     /// </summary>
-    public static partial class ModelHub
+    internal static partial class ModelHub
     {
         /// <summary>
         /// Retrieves a collection of categories that satisfy the specified filter criteria.
@@ -26,10 +26,29 @@ namespace KleeneStar.Model
         {
             using var db = CreateDbContext();
 
-            var data = db.Categories
+            return [.. GetCategories(query, db)]; // materialize query
+        }
+
+        /// <summary>
+        /// Retrieves a collection of categories that satisfy the specified filter criteria.
+        /// </summary>
+        /// <param name="query">
+        /// The query used to filter and select categories. Cannot be null.
+        /// </param>
+        /// <param name="context">
+        /// The context in which the query is executed. Provides additional information or constraints 
+        /// for the retrieval operation. Cannot be null.
+        /// </param>
+        /// <returns>
+        /// An enumerable collection of categories that match the specified predicate. The 
+        /// collection is empty if no categories meet the criteria.
+        /// </returns>
+        public static IEnumerable<Category> GetCategories(IQuery<Category> query, KleeneStarDbContext context)
+        {
+            var data = context.Categories
                .AsNoTracking();
 
-            return [.. query.Apply(data)]; // materialize query
+            return query.Apply(data); // none materialize query
         }
 
         /// <summary>
