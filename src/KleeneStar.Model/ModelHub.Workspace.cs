@@ -1,4 +1,4 @@
-﻿using KleeneStar.Model.Entity;
+﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -67,39 +67,63 @@ namespace KleeneStar.Model
         /// </param>
         public static void Add(Workspace workspace)
         {
-            using var db = CreateDbContext();
-            var exists = db.Workspaces.Any(x => x.Key.Equals(workspace.Key, StringComparison.InvariantCultureIgnoreCase));
+            ArgumentNullException.ThrowIfNull(workspace);
 
-            if (exists)
+            using var db = CreateDbContext();
+
+            var query = new Query<Workspace>()
+                .WhereEqualsIgnoreCase(x => x.Key, workspace.Key);
+
+            if (query.Apply(db.Workspaces).Any())
             {
                 return;
             }
 
-            db.Workspaces.Add(workspace);
+            db.AddEntity(workspace, ["Categories"]);
+
+            // persist changes
             db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Updates the specified workspace in the database.
+        /// </summary>
+        /// <param name="workspace">
+        /// The workspace to update. Cannot be null.
+        /// </param>
+        public static void Update(Workspace workspace)
+        {
+            ArgumentNullException.ThrowIfNull(workspace);
+
+            using var db = CreateDbContext();
+
+            // perform the generic update (scalars + relations handled)
+            db.UpdateEntity(workspace, ["Categories"], true);
+
+            // persist changes
+            db.SaveChanges();
+
+            RemoveOrphanCategories();
         }
 
         /// <summary>
         /// Removes the specified workspace from the data store if it exists.
         /// </summary>
         /// <param name="workspace">
-        /// The workspace entity to remove. The workspace is identified by 
-        /// its <c>Id</c> property.
+        /// The workspace entity to remove.
         /// </param>
         public static void Remove(Workspace workspace)
         {
+            ArgumentNullException.ThrowIfNull(workspace);
+
             using var db = CreateDbContext();
 
-            var existing = db.Workspaces
-                .FirstOrDefault(x => x.Id == workspace.Id);
+            db.RemoveEntity(workspace, ["Categories"]);
 
-            if (existing == null)
-            {
-                return;
-            }
-
-            db.Workspaces.Remove(existing);
+            // persist changes
             db.SaveChanges();
+
+            RemoveOrphanCategories();
         }
     }
 }

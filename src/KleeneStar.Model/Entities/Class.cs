@@ -1,7 +1,7 @@
 ﻿using System;
 using WebExpress.WebApp.WebAttribute;
 
-namespace KleeneStar.Model.Entity
+namespace KleeneStar.Model.Entities
 {
     /// <summary>
     /// Represents a class entity.

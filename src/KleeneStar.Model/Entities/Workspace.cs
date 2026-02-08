@@ -1,11 +1,13 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebExpress.WebApp.WebAttribute;
+using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
-namespace KleeneStar.Model.Entity
+namespace KleeneStar.Model.Entities
 {
     /// <summary>
     /// Represents a workspace, which serves as a container for related resources and metadata.
@@ -44,8 +46,8 @@ namespace KleeneStar.Model.Entity
         /// Returns the collection of category names associated with the item.
         /// </summary>
         [RestTableColumnName("Category")]
-        [RestTableJoin(';')]
         [RestApiTableColumnTemplateTag(true)]
+        [RestConverter<CategoryConverter>()]
         public List<Category> Categories { get; set; } = [];
 
         /// <summary>
@@ -66,6 +68,7 @@ namespace KleeneStar.Model.Entity
         [RestTableColumnHidden]
         [RestTableRowIcon]
         [RestDropdownIcon]
+        [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
 
         /// <summary>

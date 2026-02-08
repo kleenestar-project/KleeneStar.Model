@@ -1,5 +1,5 @@
 ﻿using KleeneStar.Model;
-using KleeneStar.Model.Entity;
+using KleeneStar.Model.Entities;
 using WebExpress.WebIndex.Queries;
 
 namespace Kleenestar.Model.Test.Hub

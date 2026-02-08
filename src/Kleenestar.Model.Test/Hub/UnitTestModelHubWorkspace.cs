@@ -1,5 +1,5 @@
 ﻿using KleeneStar.Model;
-using KleeneStar.Model.Entity;
+using KleeneStar.Model.Entities;
 using WebExpress.WebIndex.Queries;
 using WebExpress.WebUI.WebIcon;
 
@@ -139,14 +139,13 @@ namespace Kleenestar.Model.Test.Hub
 
             var id = Guid.NewGuid();
 
-            using (var db = ModelHub.CreateDbContext())
-            {
-                db.Workspaces.Add(new Workspace { Id = id, Name = "A", Key = "X" });
-                db.SaveChanges();
-            }
+            using var db = ModelHub.CreateDbContext();
+            var workspace = new Workspace { Id = id, Name = "A", Key = "X" };
+            db.Workspaces.Add(workspace);
+            db.SaveChanges();
 
             // act
-            ModelHub.Remove(new Workspace { Id = id });
+            ModelHub.Remove(workspace);
 
             // validation
             using var db2 = ModelHub.CreateDbContext();
@@ -170,7 +169,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             // act
-            ModelHub.Remove(new Workspace { Id = id });
+            ModelHub.Remove(new Workspace { RawId = 1, Id = id });
 
             // validation
             using var db = ModelHub.CreateDbContext();

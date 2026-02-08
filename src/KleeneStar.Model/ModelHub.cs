@@ -19,7 +19,7 @@ namespace KleeneStar.Model
         /// <summary>
         /// Returns the current application context, which provides access to application-wide services and configurations.
         /// </summary>
-        public static IApplicationContext ApplicationContet { get; set; }
+        public static IApplicationContext ApplicationContext { get; set; }
 
         /// <summary>
         /// Returns the current HTTP server context for the application.

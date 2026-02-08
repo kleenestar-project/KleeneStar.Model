@@ -4,7 +4,7 @@ using WebExpress.WebCore.WebDomain;
 using WebExpress.WebIndex;
 using WebExpress.WebIndex.WebAttribute;
 
-namespace KleeneStar.Model.Entity
+namespace KleeneStar.Model.Entities
 {
     /// <summary>
     /// Represents an entity that provides information and supports indexing.

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
 
-namespace KleeneStar.Model.Entity
+namespace KleeneStar.Model.Entities
 {
     /// <summary>
     /// Represents a category used to organize workspaces.

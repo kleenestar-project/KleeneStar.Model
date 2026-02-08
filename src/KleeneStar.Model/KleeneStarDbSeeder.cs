@@ -1,4 +1,4 @@
-﻿using KleeneStar.Model.Entity;
+﻿using KleeneStar.Model.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
