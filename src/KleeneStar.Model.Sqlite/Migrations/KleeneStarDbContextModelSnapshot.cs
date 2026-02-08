@@ -17,7 +17,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
 
-            modelBuilder.Entity("KleeneStar.Model.Entity.Category", b =>
+            modelBuilder.Entity("KleeneStar.Model.Entities.Category", b =>
                 {
                     b.Property<int>("RawId")
                         .ValueGeneratedOnAdd()
@@ -46,7 +46,54 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
-            modelBuilder.Entity("KleeneStar.Model.Entity.Workspace", b =>
+            modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Class", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
                 {
                     b.Property<int>("RawId")
                         .ValueGeneratedOnAdd()
@@ -89,6 +136,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasKey("RawId");
 
+                    b.HasIndex("Key")
+                        .IsUnique();
+
                     b.HasIndex("Name")
                         .IsUnique();
 
@@ -110,15 +160,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("WorkspaceCategory");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Workspace");
+                });
+
             modelBuilder.Entity("WorkspaceCategory", b =>
                 {
-                    b.HasOne("KleeneStar.Model.Entity.Category", null)
+                    b.HasOne("KleeneStar.Model.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KleeneStar.Model.Entity.Workspace", null)
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
                         .WithMany()
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)

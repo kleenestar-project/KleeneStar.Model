@@ -13,47 +13,44 @@ namespace KleeneStar.Model
     internal static partial class ModelHub
     {
         /// <summary>
-        /// Returns a queryable collection of workspaces from the database, optionally filtered 
+        /// Returns a queryable collection of classes from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
         /// <remarks>
         /// The returned query is not executed until enumerated. Multiple predicates are combined
-        /// using logical AND. The query includes related category data for each workspace.
+        /// using logical AND. The query includes related category data for each class.
         /// </remarks>
         /// <param name="query">
-        /// The query criteria used to filter the returned workspaces. Must not be null.
+        /// The query criteria used to filter the returned classes. Must not be null.
         /// </param>
         /// <returns>
-        /// An enumeration representing the filtered collection of workspaces. The query
-        /// includes related categories and is not tracked by the context.
+        /// An enumeration representing the filtered collection of classes.
         /// </returns>
-        public static IEnumerable<Workspace> GetWorkspaces(IQuery<Workspace> query)
+        public static IEnumerable<Class> GetClasses(IQuery<Class> query)
         {
             using var db = CreateDbContext();
 
-            return [.. GetWorkspaces(query, db)]; // materialize query
+            return [.. GetClasses(query, db)]; // materialize query
         }
 
         /// <summary>
-        /// Returns a queryable collection of workspaces from the database, optionally filtered 
+        /// Returns a queryable collection of classes from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
         /// <param name="query">
-        /// The query criteria used to filter the returned workspaces. Must not be null.
+        /// The query criteria used to filter the returned classes. Must not be null.
         /// </param>
         /// <param name="context">
         /// The context in which the query is executed. Provides additional information or constraints 
         /// for the retrieval operation. Cannot be null.
         /// </param>
         /// <returns>
-        /// An enumeration representing the filtered collection of workspaces. The query
-        /// includes related categories and is not tracked by the context.
+        /// An enumeration representing the filtered collection of classes.
         /// </returns>
-        public static IEnumerable<Workspace> GetWorkspaces(IQuery<Workspace> query, KleeneStarDbContext context)
+        public static IEnumerable<Class> GetClasses(IQuery<Class> query, KleeneStarDbContext context)
         {
-            var data = context.Workspaces
-                .AsNoTracking()
-                .Include(w => w.Categories);
+            var data = context.Classes
+                .AsNoTracking();
 
             return query.Apply(data); // none materialize query
         }
@@ -65,25 +62,25 @@ namespace KleeneStar.Model
         /// If a workspace with the same key (case-insensitive) already exists in the 
         /// database, this method does nothing.
         /// </remarks>
-        /// <param name="workspace">
+        /// <param name="classEntry">
         /// The workspace to add. The workspace's Key property is used to determine uniqueness. 
         /// Cannot be null.
         /// </param>
-        public static void Add(Workspace workspace)
+        public static void Add(Class classEntry)
         {
-            ArgumentNullException.ThrowIfNull(workspace);
+            ArgumentNullException.ThrowIfNull(classEntry);
 
             using var db = CreateDbContext();
 
-            var query = new Query<Workspace>()
-                .WhereEqualsIgnoreCase(x => x.Key, workspace.Key);
+            var query = new Query<Class>()
+                .WhereEquals(x => x.Id, classEntry.Id);
 
-            if (query.Apply(db.Workspaces).Any())
+            if (query.Apply(db.Classes).Any())
             {
                 return;
             }
 
-            db.AddEntity(workspace, ["Categories"]);
+            db.AddEntity(classEntry);
 
             // persist changes
             db.SaveChanges();
@@ -92,41 +89,37 @@ namespace KleeneStar.Model
         /// <summary>
         /// Updates the specified workspace in the database.
         /// </summary>
-        /// <param name="workspace">
+        /// <param name="classEntry">
         /// The workspace to update. Cannot be null.
         /// </param>
-        public static void Update(Workspace workspace)
+        public static void Update(Class classEntry)
         {
-            ArgumentNullException.ThrowIfNull(workspace);
+            ArgumentNullException.ThrowIfNull(classEntry);
 
             using var db = CreateDbContext();
 
-            db.UpdateEntity(workspace, ["Categories"]);
+            db.UpdateEntity(classEntry);
 
             // persist changes
             db.SaveChanges();
-
-            RemoveOrphanCategories();
         }
 
         /// <summary>
         /// Removes the specified workspace from the data store if it exists.
         /// </summary>
-        /// <param name="workspace">
+        /// <param name="classEntry">
         /// The workspace entity to remove.
         /// </param>
-        public static void Remove(Workspace workspace)
+        public static void Remove(Class classEntry)
         {
-            ArgumentNullException.ThrowIfNull(workspace);
+            ArgumentNullException.ThrowIfNull(classEntry);
 
             using var db = CreateDbContext();
 
-            db.RemoveEntity(workspace, ["Categories"]);
+            db.RemoveEntity(classEntry, ["Categories"]);
 
             // persist changes
             db.SaveChanges();
-
-            RemoveOrphanCategories();
         }
     }
 }

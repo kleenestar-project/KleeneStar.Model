@@ -17,6 +17,11 @@ namespace KleeneStar.Model
         public DbSet<Category> Categories { get; set; }
 
         /// <summary>
+        /// Returns or sets the collection of classes.
+        /// </summary>
+        public DbSet<Class> Classes { get; set; }
+
+        /// <summary>
         /// Returns or sets the collection of workspaces.
         /// </summary>
         public DbSet<Workspace> Workspaces { get; set; }

@@ -81,8 +81,6 @@ namespace KleeneStar.Model.Entities
         /// Returns the date and time when the entity was updated.
         /// </summary>
         [RestTableColumnHidden()]
-        [RestTableRowIcon]
-        [RestDropdownIcon]
         public DateTime Updated { get; set; }
 
         /// <summary>
