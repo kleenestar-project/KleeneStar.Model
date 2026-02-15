@@ -15,7 +15,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the database id.
         /// </summary>
-        [RestTableColumnHidden]
+        [RestHidden]
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
@@ -23,14 +23,14 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the unique identifier for the workspace.
         /// </summary>
-        [RestTableColumnHidden()]
+        [RestHidden()]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Returns the name of the workspace category.
         /// </summary>
         [RestTableColumnName("Name")]
-        [RestDropdownText]
+        [RestText]
         public string Name { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the collection of workspaces associated with the current category.
         /// </summary>
-        [RestTableColumnHidden()]
+        [RestHidden()]
         [JsonIgnore]
         public List<Workspace> Workspaces { get; set; } = [];
 

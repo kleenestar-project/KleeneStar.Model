@@ -15,7 +15,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the database id.
         /// </summary>
-        [RestTableColumnHidden]
+        [RestHidden]
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
@@ -23,7 +23,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the unique identifier for the class.
         /// </summary>
-        [RestTableColumnHidden()]
+        [RestHidden()]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -36,27 +36,27 @@ namespace KleeneStar.Model.Entities
         /// Returns the description of the workspace.
         /// </summary>
         [RestTableColumnName("Description")]
+        [RestDescription]
         public string Description { get; set; }
 
         /// <summary>
         /// Returns the icon associated with this workspace.
         /// </summary>
-        [RestTableColumnHidden]
-        [RestTableRowIcon]
-        [RestDropdownIcon]
+        [RestHidden]
+        [RestIcon]
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
 
         /// <summary>
         /// Returns the date and time when the entity was created.
         /// </summary>
-        [RestTableColumnHidden()]
+        [RestHidden()]
         public DateTime Created { get; set; }
 
         /// <summary>
         /// Returns the date and time when the entity was updated.
         /// </summary>
-        [RestTableColumnHidden()]
+        [RestHidden()]
         public DateTime Updated { get; set; }
 
         /// <summary>

@@ -83,11 +83,11 @@ namespace Kleenestar.Model.Test.Entity
             // act
             var idAttr = typeof(Workspace)
                 .GetProperty(nameof(Workspace.Id))
-                .GetCustomAttribute<RestTableColumnHiddenAttribute>();
+                .GetCustomAttribute<RestHiddenAttribute>();
 
             var iconAttr = typeof(Workspace)
                 .GetProperty(nameof(Workspace.Icon))
-                .GetCustomAttribute<RestTableColumnHiddenAttribute>();
+                .GetCustomAttribute<RestHiddenAttribute>();
 
             // validation
             Assert.NotNull(idAttr);

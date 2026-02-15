@@ -14,7 +14,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns the database id.
         /// </summary>
-        [RestTableColumnHidden]
+        [RestHidden]
         [IndexIgnore]
         [Key]
         int RawId { get; }

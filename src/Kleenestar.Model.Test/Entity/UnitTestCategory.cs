@@ -53,7 +53,7 @@ namespace Kleenestar.Model.Test.Entity
             // act
             var idAttr = typeof(Category)
                 .GetProperty(nameof(Category.Id))
-                .GetCustomAttribute<RestTableColumnHiddenAttribute>();
+                .GetCustomAttribute<RestHiddenAttribute>();
 
             // validation
             Assert.NotNull(idAttr);
