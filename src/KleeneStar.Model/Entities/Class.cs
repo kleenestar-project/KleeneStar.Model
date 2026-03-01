@@ -40,6 +40,12 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// Returns the current state of the workspace.
+        /// </summary>
+        [RestTableColumnName("State")]
+        public TypeWorkspaceState State { get; set; }
+
+        /// <summary>
         /// Returns the icon associated with this workspace.
         /// </summary>
         [RestHidden]

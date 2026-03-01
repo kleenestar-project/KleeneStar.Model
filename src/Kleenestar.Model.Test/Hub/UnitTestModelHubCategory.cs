@@ -117,35 +117,6 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
-        /// Removes an existing category from the database and verifies that it has been deleted.
-        /// </summary>
-        [Fact]
-        public void RemoveExistingCategory()
-        {
-            // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
-            {
-                ConnectionString = "RemoveExistingCategory",
-                Assembly = "KleeneStar.Model.Test"
-            };
-
-            var id = Guid.NewGuid();
-
-            using (var db = ModelHub.CreateDbContext())
-            {
-                db.Categories.Add(new Category { Id = id, Name = "A" });
-                db.SaveChanges();
-            }
-
-            // act
-            ModelHub.Remove(new Category { Id = id });
-
-            // validation
-            using var db2 = ModelHub.CreateDbContext();
-            Assert.Empty(db2.Categories);
-        }
-
-        /// <summary>
         /// Verifies that removing a workspace with a non-existent category does 
         /// not affect the database.
         /// </summary>

@@ -56,6 +56,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),

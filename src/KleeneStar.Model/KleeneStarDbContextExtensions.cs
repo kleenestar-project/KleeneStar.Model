@@ -435,9 +435,15 @@ namespace KleeneStar.Model
 
             // prepare query with includes
             var query = context.Set<TEntity>().AsQueryable();
+
             foreach (var relation in includeRelations)
             {
-                query = query.Include(relation);
+                var navigation = entityType.FindNavigation(relation);
+
+                if (navigation != null)
+                {
+                    query = query.Include(relation);
+                }
             }
 
             // load existing entity (we need the tracked instance and its relations)
@@ -454,6 +460,7 @@ namespace KleeneStar.Model
             foreach (var relationName in includeRelations)
             {
                 var navigation = entityType.FindNavigation(relationName);
+                // Validation here ensures we don't process invalid relations
                 if (navigation is null || !navigation.IsCollection)
                 {
                     continue;

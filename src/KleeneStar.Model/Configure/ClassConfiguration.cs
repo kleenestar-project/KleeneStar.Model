@@ -40,6 +40,9 @@ namespace KleeneStar.Model.Configure
                     uri => string.IsNullOrEmpty(uri) ? null : ImageIcon.FromString(uri)
                 );
 
+            builder.Property(x => x.State)
+                .HasColumnName("State");
+
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
                 .IsRequired();

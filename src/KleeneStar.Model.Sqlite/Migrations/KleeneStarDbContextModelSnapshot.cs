@@ -77,6 +77,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
@@ -128,7 +132,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Name");
 
                     b.Property<int>("State")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")

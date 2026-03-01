@@ -83,7 +83,7 @@ namespace KleeneStar.Model
         {
             using var db = CreateDbContext();
 
-            db.RemoveEntity(category, ["Categories"]);
+            db.RemoveEntity(category, ["Workspaces"]);
 
             // persist changes
             db.SaveChanges();
