@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260301144425_InitialCreate")]
+    [Migration("20260305092903_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -100,6 +100,71 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Class", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Summary");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.ToTable("Object", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
                 {
                     b.Property<int>("RawId")
@@ -126,7 +191,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Guid");
 
                     b.Property<string>("Key")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -176,6 +244,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
 
                     b.Navigation("Workspace");
                 });

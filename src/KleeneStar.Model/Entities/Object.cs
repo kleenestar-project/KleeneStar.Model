@@ -10,7 +10,7 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents a class entity.
     /// </summary>
-    public class Class : IEntity
+    public class Object : IEntity
     {
         /// <summary>
         /// Returns or sets the database id.
@@ -27,11 +27,19 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the class.
+        /// Returns or sets the key of the workspace.
         /// </summary>
-        [RestTableColumnName("Name")]
+        [ValidateMinLength(2)]
+        [RestTableColumnName("Key")]
+        [RestTitle]
+        public string Key { get; set; }
+
+        /// <summary>
+        /// Returns or sets the summary of the class.
+        /// </summary>
+        [RestTableColumnName("Summary")]
         [RestText]
-        public string Name { get; set; }
+        public string Summary { get; set; }
 
         /// <summary>
         /// Returns the description of the workspace.
@@ -77,9 +85,19 @@ namespace KleeneStar.Model.Entities
         public Workspace Workspace { get; set; }
 
         /// <summary>
+        /// Returns or sets the unique identifier of the class associated with this instance.
+        /// </summary>
+        public Guid ClassId { get; set; }
+
+        /// <summary>
+        /// Returns or sets the class associated with the current context.
+        /// </summary>
+        public Class Class { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        public Class()
+        public Object()
         {
             Id = Guid.NewGuid();
         }
@@ -91,7 +109,7 @@ namespace KleeneStar.Model.Entities
         /// <param name="id">
         /// The unique identifier to assign to the workspace.
         /// </param>
-        public Class(Guid id)
+        public Object(Guid id)
         {
             Id = id;
         }

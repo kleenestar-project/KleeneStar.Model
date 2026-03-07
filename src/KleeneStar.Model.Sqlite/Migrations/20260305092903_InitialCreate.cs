@@ -34,7 +34,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Key = table.Column<string>(type: "TEXT", nullable: true),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -65,6 +65,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Class", x => x.Id);
+                    table.UniqueConstraint("AK_Class_Guid", x => x.Guid);
                     table.ForeignKey(
                         name: "FK_Class_Workspace_Workspace",
                         column: x => x.Workspace,
@@ -97,6 +98,40 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Object",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Summary = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Object", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Object_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Object_Workspace_Workspace",
+                        column: x => x.Workspace,
+                        principalTable: "Workspace",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Category_Name",
                 table: "Category",
@@ -108,6 +143,22 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "Class",
                 columns: new[] { "Workspace", "Name" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Object_Class",
+                table: "Object",
+                column: "Class");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Object_Key",
+                table: "Object",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Object_Workspace",
+                table: "Object",
+                column: "Workspace");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workspace_Key",
@@ -131,10 +182,13 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Class");
+                name: "Object");
 
             migrationBuilder.DropTable(
                 name: "WorkspaceCategory");
+
+            migrationBuilder.DropTable(
+                name: "Class");
 
             migrationBuilder.DropTable(
                 name: "Category");

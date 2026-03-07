@@ -29,18 +29,19 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Returns or sets the key of the workspace.
+        /// </summary>
+        [ValidateMinLength(2)]
+        [RestTableColumnName("Key")]
+        [RestTitle]
+        public string Key { get; set; }
+
+        /// <summary>
         /// Returns the name of the workspace.
         /// </summary>
         [RestTableColumnName("Name")]
         [RestText]
         public string Name { get; set; }
-
-        /// <summary>
-        /// Returns or sets the key of the workspace.
-        /// </summary>
-        [ValidateMinLength(2)]
-        [RestTableColumnName("Key")]
-        public string Key { get; set; }
 
         /// <summary>
         /// Returns the collection of category names associated with the item.

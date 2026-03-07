@@ -27,6 +27,11 @@ namespace KleeneStar.Model
         public DbSet<Workspace> Workspaces { get; set; }
 
         /// <summary>
+        /// Returns or sets the collection of objects.
+        /// </summary>
+        public DbSet<Object> Objects { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

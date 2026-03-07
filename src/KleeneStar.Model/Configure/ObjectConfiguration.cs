@@ -1,23 +1,22 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Collections.Generic;
 using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Configure
 {
     /// <summary>
-    /// Provides the Entity Framework Core configuration for the workspace entity type.
+    /// Provides the Entity Framework Core configuration for the object entity type.
     /// </summary>
-    internal class WorkspaceConfiguration : IEntityTypeConfiguration<Workspace>
+    internal class ObjectConfiguration : IEntityTypeConfiguration<Object>
     {
         /// <summary>
-        /// Configuration of the workspace entity.
+        /// Configuration of the class entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<Workspace> builder)
+        public void Configure(EntityTypeBuilder<Object> builder)
         {
-            builder.ToTable("Workspace");
+            builder.ToTable("Object");
 
             builder.HasKey(x => x.RawId);
 
@@ -26,45 +25,25 @@ namespace KleeneStar.Model.Configure
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Key)
-                .HasColumnName("Key")
-                .IsRequired()
-                .HasMaxLength(64);
+               .HasColumnName("Key")
+               .IsRequired()
+               .HasMaxLength(64);
 
-            builder.Property(x => x.Name)
-                .HasColumnName("Name")
+            builder.Property(x => x.Summary)
+                .HasColumnName("Summary")
                 .IsRequired()
                 .HasMaxLength(64);
 
             builder.Property(x => x.Description)
-                 .HasColumnName("Description");
-
-            // MANY-TO-MANY: Workspace <-> Category
-            builder.HasMany(w => w.Categories)
-                .WithMany(c => c.Workspaces)
-                .UsingEntity<Dictionary<string, object>>
-                (
-                    "WorkspaceCategory",
-                    j => j
-                        .HasOne<Category>()
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade),
-                    j => j
-                        .HasOne<Workspace>()
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                );
+                .HasColumnName("Description");
 
             builder.Property(x => x.Icon)
                 .HasColumnName("Icon")
                 .HasMaxLength(256)
-                .HasConversion
-                (
+                .HasConversion(
                     icon => icon != null && icon.Uri != null ? icon.Uri.ToString() : null,
                     uri => string.IsNullOrEmpty(uri) ? null : ImageIcon.FromString(uri)
                 );
-
 
             builder.Property(x => x.State)
                 .HasColumnName("State");
@@ -82,8 +61,23 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
-            builder.HasIndex(x => x.Name)
-                .IsUnique();
+            builder.Property(x => x.WorkspaceId)
+                .HasColumnName("Workspace")
+                .IsRequired();
+
+            builder.HasOne(x => x.Workspace)
+                .WithMany()
+                .HasForeignKey(x => x.WorkspaceId)
+                .HasPrincipalKey(w => w.Id);
+
+            builder.Property(x => x.ClassId)
+                .HasColumnName("Class")
+                .IsRequired();
+
+            builder.HasOne(x => x.Class)
+                .WithMany()
+                .HasForeignKey(x => x.ClassId)
+                .HasPrincipalKey(w => w.Id);
 
             builder.HasIndex(x => x.Key)
                 .IsUnique();

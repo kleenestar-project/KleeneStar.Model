@@ -1,6 +1,5 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebExpress.WebIndex.Queries;
@@ -13,7 +12,7 @@ namespace KleeneStar.Model
     internal static partial class ModelHub
     {
         /// <summary>
-        /// Returns a queryable collection of classes from the database, optionally filtered 
+        /// Returns a queryable collection of objects from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
         /// <remarks>
@@ -21,102 +20,103 @@ namespace KleeneStar.Model
         /// using logical AND. The query includes related category data for each class.
         /// </remarks>
         /// <param name="query">
-        /// The query criteria used to filter the returned classes. Must not be null.
+        /// The query criteria used to filter the returned objects. Must not be null.
         /// </param>
         /// <returns>
-        /// An enumeration representing the filtered collection of classes.
+        /// An enumeration representing the filtered collection of objects.
         /// </returns>
-        public static IEnumerable<Class> GetClasses(IQuery<Class> query)
+        public static IEnumerable<Object> GetObjects(IQuery<Object> query)
         {
             using var db = CreateDbContext();
 
-            return [.. GetClasses(query, db)]; // materialize query
+            return [.. GetObjects(query, db)]; // materialize query
         }
 
         /// <summary>
-        /// Returns a queryable collection of classes from the database, optionally filtered 
+        /// Returns a queryable collection of objects from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
         /// <param name="query">
-        /// The query criteria used to filter the returned classes. Must not be null.
+        /// The query criteria used to filter the returned objects. Must not be null.
         /// </param>
         /// <param name="context">
         /// The context in which the query is executed. Provides additional information or constraints 
         /// for the retrieval operation. Cannot be null.
         /// </param>
         /// <returns>
-        /// An enumeration representing the filtered collection of classes.
+        /// An enumeration representing the filtered collection of objects.
         /// </returns>
-        public static IEnumerable<Class> GetClasses(IQuery<Class> query, KleeneStarDbContext context)
+        public static IEnumerable<Object> GetObjects(IQuery<Object> query, KleeneStarDbContext context)
         {
-            var data = context.Classes
-                .AsNoTracking();
+            var data = context.Objects
+                .AsNoTracking()
+                .Include(x => x.Workspace);
 
             return query.Apply(data); // none materialize query
         }
 
         /// <summary>
-        /// Adds the specified class to the database if it does not already exist.
+        /// Adds the specified object to the database if it does not already exist.
         /// </summary>
         /// <remarks>
-        /// If a class with the same key (case-insensitive) already exists in the 
+        /// If a object with the same key (case-insensitive) already exists in the 
         /// database, this method does nothing.
         /// </remarks>
-        /// <param name="classEntry">
-        /// The class to add. The class's id property is used to determine uniqueness. 
+        /// <param name="objectEntry">
+        /// The object to add. The object's id property is used to determine uniqueness. 
         /// Cannot be null.
         /// </param>
-        public static void Add(Class classEntry)
+        public static void Add(Object objectEntry)
         {
-            ArgumentNullException.ThrowIfNull(classEntry);
+            System.ArgumentNullException.ThrowIfNull(objectEntry);
 
             using var db = CreateDbContext();
 
-            var query = new Query<Class>()
-                .WhereEquals(x => x.Id, classEntry.Id);
+            var query = new Query<Object>()
+                .WhereEquals(x => x.Id, objectEntry.Id);
 
-            if (query.Apply(db.Classes).Any())
+            if (query.Apply(db.Objects).Any())
             {
                 return;
             }
 
-            db.AddEntity(classEntry);
+            db.AddEntity(objectEntry);
 
             // persist changes
             db.SaveChanges();
         }
 
         /// <summary>
-        /// Updates the specified class in the database.
+        /// Updates the specified object in the database.
         /// </summary>
-        /// <param name="classEntry">
-        /// The class to update. Cannot be null.
+        /// <param name="objectEntry">
+        /// The object to update. Cannot be null.
         /// </param>
-        public static void Update(Class classEntry)
+        public static void Update(Object objectEntry)
         {
-            ArgumentNullException.ThrowIfNull(classEntry);
+            System.ArgumentNullException.ThrowIfNull(objectEntry);
 
             using var db = CreateDbContext();
 
-            db.UpdateEntity(classEntry);
+            db.UpdateEntity(objectEntry);
 
             // persist changes
             db.SaveChanges();
         }
 
         /// <summary>
-        /// Removes the specified class from the data store if it exists.
+        /// Removes the specified object from the data store if it exists.
         /// </summary>
-        /// <param name="classEntry">
-        /// The class entity to remove.
+        /// <param name="objectEntry">
+        /// The object entity to remove.
         /// </param>
-        public static void Remove(Class classEntry)
+        public static void Remove(Object objectEntry)
         {
-            ArgumentNullException.ThrowIfNull(classEntry);
+            System.ArgumentNullException.ThrowIfNull(objectEntry);
 
             using var db = CreateDbContext();
 
-            db.RemoveEntity(classEntry, ["Categories"]);
+            db.RemoveEntity(objectEntry);
 
             // persist changes
             db.SaveChanges();
