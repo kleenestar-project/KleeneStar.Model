@@ -50,6 +50,7 @@ namespace KleeneStar.Model
         public static IEnumerable<Class> GetClasses(IQuery<Class> query, KleeneStarDbContext context)
         {
             var data = context.Classes
+                .Include(x => x.Workspace)
                 .AsNoTracking();
 
             return query.Apply(data); // none materialize query

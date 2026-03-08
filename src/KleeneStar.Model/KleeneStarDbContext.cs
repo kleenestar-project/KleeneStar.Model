@@ -17,14 +17,19 @@ namespace KleeneStar.Model
         public DbSet<Category> Categories { get; set; }
 
         /// <summary>
+        /// Returns or sets the collection of workspaces.
+        /// </summary>
+        public DbSet<Workspace> Workspaces { get; set; }
+
+        /// <summary>
         /// Returns or sets the collection of classes.
         /// </summary>
         public DbSet<Class> Classes { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of workspaces.
+        /// Returns or sets the collection of fields.
         /// </summary>
-        public DbSet<Workspace> Workspaces { get; set; }
+        public DbSet<Field> Fields { get; set; }
 
         /// <summary>
         /// Returns or sets the collection of objects.

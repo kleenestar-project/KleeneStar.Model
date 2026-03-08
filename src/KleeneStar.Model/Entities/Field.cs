@@ -8,9 +8,9 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a class entity.
+    /// Represents a field entity.
     /// </summary>
-    public class Class : IEntity
+    public class Field : IEntity
     {
         /// <summary>
         /// Returns or sets the database id.
@@ -67,19 +67,19 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the workspace associated with this instance.
+        /// Returns or sets the unique identifier of the class associated with this instance.
         /// </summary>
-        public Guid WorkspaceId { get; set; }
+        public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Returns or sets the workspace associated with the current context.
+        /// Returns or sets the class associated with the current context.
         /// </summary>
-        public Workspace Workspace { get; set; }
+        public Class Class { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        public Class()
+        public Field()
         {
             Id = Guid.NewGuid();
         }
@@ -89,9 +89,9 @@ namespace KleeneStar.Model.Entities
         /// specified unique identifier.
         /// </summary>
         /// <param name="id">
-        /// The unique identifier to assign to the class.
+        /// The unique identifier to assign to the field.
         /// </param>
-        public Class(Guid id)
+        public Field(Guid id)
         {
             Id = id;
         }

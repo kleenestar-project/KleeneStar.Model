@@ -6,17 +6,17 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Configure
 {
     /// <summary>
-    /// Provides the Entity Framework Core configuration for the class entity type.
+    /// Provides the Entity Framework Core configuration for the field entity type.
     /// </summary>
-    internal class ClassConfiguration : IEntityTypeConfiguration<Class>
+    internal class FieldConfiguration : IEntityTypeConfiguration<Field>
     {
         /// <summary>
-        /// Configuration of the class entity.
+        /// Configuration of the field entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<Class> builder)
+        public void Configure(EntityTypeBuilder<Field> builder)
         {
-            builder.ToTable("Class");
+            builder.ToTable("Field");
 
             builder.HasKey(x => x.RawId);
 
@@ -57,16 +57,16 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
-            builder.Property(x => x.WorkspaceId)
-                .HasColumnName("Workspace")
+            builder.Property(x => x.ClassId)
+                .HasColumnName("Class")
                 .IsRequired();
 
-            builder.HasOne(x => x.Workspace)
+            builder.HasOne(x => x.Class)
                 .WithMany()
-                .HasForeignKey(x => x.WorkspaceId)
+                .HasForeignKey(x => x.ClassId)
                 .HasPrincipalKey(w => w.Id);
 
-            builder.HasIndex(x => new { x.WorkspaceId, x.Name })
+            builder.HasIndex(x => new { x.ClassId, x.Name })
                 .IsUnique();
         }
     }

@@ -40,7 +40,8 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Icon)
                 .HasColumnName("Icon")
                 .HasMaxLength(256)
-                .HasConversion(
+                .HasConversion
+                (
                     icon => icon != null && icon.Uri != null ? icon.Uri.ToString() : null,
                     uri => string.IsNullOrEmpty(uri) ? null : ImageIcon.FromString(uri)
                 );
