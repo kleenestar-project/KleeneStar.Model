@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using WebExpress.WebApp.WebAttribute;
-using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
@@ -50,8 +49,6 @@ namespace KleeneStar.Model.Entities
         /// Returns the icon associated with this workspace.
         /// </summary>
         [RestHidden]
-        [RestIcon]
-        [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
 
         /// <summary>
