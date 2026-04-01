@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
 
 namespace KleeneStar.Model.Entities
@@ -15,7 +14,6 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the database id.
         /// </summary>
-        [RestHidden]
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
@@ -23,26 +21,21 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns or sets the unique identifier for the workspace.
         /// </summary>
-        [RestHidden()]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Returns the name of the workspace category.
         /// </summary>
-        [RestTableColumnName("Name")]
-        [RestText]
         public string Name { get; set; }
 
         /// <summary>
         /// Returns the description of the category.
         /// </summary>
-        [RestTableColumnName("Description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Returns or sets the collection of workspaces associated with the current category.
         /// </summary>
-        [RestHidden()]
         [JsonIgnore]
         public List<Workspace> Workspaces { get; set; } = [];
 

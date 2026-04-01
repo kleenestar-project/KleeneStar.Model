@@ -1,6 +1,4 @@
 ﻿using KleeneStar.Model.Entities;
-using System.Reflection;
-using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
 namespace Kleenestar.Model.Test.Entity
@@ -71,27 +69,6 @@ namespace Kleenestar.Model.Test.Entity
 
             // validation
             Assert.Equal(categoriesList, workspace.Categories);
-        }
-
-        /// <summary>
-        /// Verifies that the Id and Icon properties of the Workspace class are decorated with the
-        /// RestTableColumnHiddenAttribute.
-        /// </summary>
-        [Fact]
-        public void HiddenAttribute()
-        {
-            // act
-            var idAttr = typeof(Workspace)
-                .GetProperty(nameof(Workspace.Id))
-                .GetCustomAttribute<RestHiddenAttribute>();
-
-            var iconAttr = typeof(Workspace)
-                .GetProperty(nameof(Workspace.Icon))
-                .GetCustomAttribute<RestHiddenAttribute>();
-
-            // validation
-            Assert.NotNull(idAttr);
-            Assert.NotNull(iconAttr);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using KleeneStar.Model.Entities;
-using System.Reflection;
-using WebExpress.WebApp.WebAttribute;
 
 namespace Kleenestar.Model.Test.Entity
 {
@@ -41,22 +39,6 @@ namespace Kleenestar.Model.Test.Entity
             // validation
             Assert.Equal(name, category.Name);
             Assert.Equal(description, category.Description);
-        }
-
-        /// <summary>
-        /// Verifies that the Id and Icon properties of the Workspace class are decorated with the
-        /// RestTableColumnHiddenAttribute.
-        /// </summary>
-        [Fact]
-        public void HiddenAttribute()
-        {
-            // act
-            var idAttr = typeof(Category)
-                .GetProperty(nameof(Category.Id))
-                .GetCustomAttribute<RestHiddenAttribute>();
-
-            // validation
-            Assert.NotNull(idAttr);
         }
     }
 }
