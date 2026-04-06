@@ -16,7 +16,7 @@ namespace KleeneStar.Model
         /// Adds a predefined set of field entities to the specified database context.
         /// </summary>
         /// <remarks>
-        /// This method is intended to seed the database with a standard set of categories. 
+        /// This method is intended to seed the database with a standard set of fields. 
         /// It does not save changes to the database; callers must call SaveChanges on the 
         /// context to persist the additions.
         /// </remarks>

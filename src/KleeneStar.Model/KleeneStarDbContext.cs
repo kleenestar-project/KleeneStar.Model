@@ -32,6 +32,11 @@ namespace KleeneStar.Model
         public DbSet<Field> Fields { get; set; }
 
         /// <summary>
+        /// Returns or sets the collection of priorities.
+        /// </summary>
+        public DbSet<Priority> Priorities { get; set; }
+
+        /// <summary>
         /// Returns or sets the collection of objects.
         /// </summary>
         public DbSet<Object> Objects { get; set; }
