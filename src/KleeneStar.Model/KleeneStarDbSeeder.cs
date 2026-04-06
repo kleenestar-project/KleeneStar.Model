@@ -66,7 +66,7 @@ namespace KleeneStar.Model
                 catch (Exception ex)
                 {
                     // Log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding objects: {ex.InnerException.Message}");
+                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
                     throw; // Re-throwing the exception after logging
                 }
             }

@@ -7,7 +7,7 @@ namespace KleeneStar.Model.Sqlite
     /// Provides a design-time factory for creating instances of KleeneStarDbContext configured 
     /// to use a local SQLite database.
     /// </summary>
-    public class KleeneStarSqlServerDesignTimeFactory : IDesignTimeDbContextFactory<KleeneStarDbContext>
+    public class KleeneStarSqliteDesignTimeFactory : IDesignTimeDbContextFactory<KleeneStarDbContext>
     {
         /// <summary>
         /// Creates a new instance of the KleeneStarDbContext configured for design-time operations.

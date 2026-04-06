@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Kleenestar.Model\Kleenestar.Model.csproj" />
+    <ProjectReference Include="..\KleeneStar.Model\KleeneStar.Model.csproj" />
   </ItemGroup>
 
 </Project>

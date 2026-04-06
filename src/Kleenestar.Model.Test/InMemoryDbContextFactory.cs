@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 namespace KleeneStar.Model.Test
 {
     /// <summary>
-    /// Provides a factory for creating a SQLite-specific KleeneStarDbContext instance.
+    /// Provides a factory for creating an in-memory KleeneStarDbContext instance.
     /// </summary>
     public static class InMemoryDbContextFactory
     {
@@ -12,9 +12,9 @@ namespace KleeneStar.Model.Test
             = new();
 
         /// <summary>
-        /// Creates a SQLite-configured DbContext using the given connection string.
+        /// Creates an in-memory DbContext using the given database name.
         /// </summary>
-        /// <param name="connectionString">The SQLite connection string.</param>
+        /// <param name="connectionString">The in-memory database name.</param>
         /// <returns>A configured KleeneStarDbContext instance.</returns>
         public static KleeneStarDbContext Create(string connectionString)
         {

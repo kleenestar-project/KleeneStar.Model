@@ -14,7 +14,7 @@ This repository is the starting point when extending models, adding new domain o
 
 ## Legal & Licensing
 
-**KleeneStar.Core** is released under the `MIT License`, a permissive open-source license that allows reuse, modification, and distribution with minimal restrictions. You're free to use **KleeneStar** in personal, academic, or commercial projects, just include the original copyright notice.
+**KleeneStar.Model** is released under the `MIT License`, a permissive open-source license that allows reuse, modification, and distribution with minimal restrictions. You're free to use **KleeneStar** in personal, academic, or commercial projects, just include the original copyright notice.
 
 The system is designed to be GDPR-compliant:
 - No tracking

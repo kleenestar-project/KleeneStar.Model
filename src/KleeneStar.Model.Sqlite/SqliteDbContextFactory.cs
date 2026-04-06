@@ -5,12 +5,12 @@ namespace KleeneStar.Model.Sqlite
     /// <summary>
     /// Provides a factory for creating a SQLite-specific KleeneStarDbContext instance.
     /// </summary>
-    public static class SqlServerDbContextFactory
+    public static class SqliteDbContextFactory
     {
         /// <summary>
-        /// Creates a SqlServer-configured DbContext using the given connection string.
+        /// Creates a SQLite-configured DbContext using the given connection string.
         /// </summary>
-        /// <param name="connectionString">The SqlServer connection string.</param>
+        /// <param name="connectionString">The SQLite connection string.</param>
         /// <returns>A configured KleeneStarDbContext instance.</returns>
         public static KleeneStarDbContext Create(string connectionString)
         {
