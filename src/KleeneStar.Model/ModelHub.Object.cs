@@ -17,7 +17,7 @@ namespace KleeneStar.Model
         /// </summary>
         /// <remarks>
         /// The returned query is not executed until enumerated. Multiple predicates are combined
-        /// using logical AND. The query includes related category data for each class.
+        /// using logical AND. The query includes related Workspace data for each object.
         /// </remarks>
         /// <param name="query">
         /// The query criteria used to filter the returned objects. Must not be null.

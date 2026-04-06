@@ -81,7 +81,7 @@ namespace KleeneStar.Model
                     // fallback to query if Find fails for some providers
                     var query = context.Set<TEntity>().AsQueryable();
                     var existing = query.AsEnumerable()
-                                        .FirstOrDefault(e => keyProp.PropertyInfo.GetValue(e).Equals(keyVal));
+                                        .FirstOrDefault(e => keyProp.PropertyInfo.GetValue(e)?.Equals(keyVal) == true);
                     if (existing != null)
                     {
                         throw new InvalidOperationException("An entity with the same primary key already exists.");
@@ -312,17 +312,15 @@ namespace KleeneStar.Model
                 ?? throw new InvalidOperationException("No PK found.");
             var keyValue = keyProperty.PropertyInfo.GetValue(incomingEntity);
 
-            // prepare query
-            var query = context.Set<TEntity>().AsQueryable();
+            // load existing entity via server-side PK lookup
+            var existingEntity = context.Find<TEntity>(keyValue)
+                ?? throw new InvalidOperationException("Entity not found.");
+
+            // load collection navigations for diffing
             foreach (var relation in includeRelations)
             {
-                query = query.Include(relation);
+                context.Entry(existingEntity).Collection(relation).Load();
             }
-
-            // load existing
-            var existingEntity = query.AsEnumerable()
-                .FirstOrDefault(e => keyProperty.PropertyInfo.GetValue(e).Equals(keyValue))
-                ?? throw new InvalidOperationException("Entity not found.");
 
             // update scalar
             context.Entry(existingEntity).CurrentValues.SetValues(incomingEntity);
@@ -446,40 +444,22 @@ namespace KleeneStar.Model
                 }
             }
 
-            // load existing entity (we need the tracked instance and its relations)
-            var existingEntity = query.AsEnumerable()
-                .FirstOrDefault(e => keyProperty.PropertyInfo.GetValue(e).Equals(keyValue));
+            // load existing entity via server-side PK lookup
+            var existingEntity = context.Find<TEntity>(keyValue);
 
             if (existingEntity is null)
             {
                 return; // entity not found, nothing to remove
             }
 
-            // capture related items for each requested relation before removal
-            var removedItemsByRelation = new Dictionary<string, List<object>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var relationName in includeRelations)
+            // load collection navigations so EF tracks the join-table entries
+            foreach (var relation in includeRelations)
             {
-                var navigation = entityType.FindNavigation(relationName);
-                // Validation here ensures we don't process invalid relations
-                if (navigation is null || !navigation.IsCollection)
+                var navigation = entityType.FindNavigation(relation);
+                if (navigation != null)
                 {
-                    continue;
+                    context.Entry(existingEntity).Collection(relation).Load();
                 }
-
-                var propInfo = typeof(TEntity).GetProperty(relationName);
-                if (propInfo is null)
-                {
-                    continue;
-                }
-
-                var existingCollection = propInfo.GetValue(existingEntity) as IList;
-                if (existingCollection is null)
-                {
-                    continue;
-                }
-
-                // collect current related items (clone list to avoid modification issues)
-                removedItemsByRelation[relationName] = existingCollection.Cast<object>().ToList();
             }
 
             // remove the entity (join table entries will be removed on SaveChanges)

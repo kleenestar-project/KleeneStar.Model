@@ -14,6 +14,7 @@ namespace Kleenestar.Model.Test.Hub
         /// <summary>
         /// Verifies that all workspaces can be retrieved from the database and that the expected number of workspaces
         /// is returned.
+        /// </summary>
         [Fact]
         public void AllWorkspaces()
         {
@@ -27,7 +28,7 @@ namespace Kleenestar.Model.Test.Hub
             using (var db = ModelHub.CreateDbContext())
             {
                 db.Workspaces.Add(new Workspace { Id = Guid.NewGuid(), Name = "A", Key = "A" });
-                db.Workspaces.Add(new Workspace { Id = Guid.NewGuid(), Name = "A", Key = "B" });
+                db.Workspaces.Add(new Workspace { Id = Guid.NewGuid(), Name = "B", Key = "B" });
                 db.SaveChanges();
             }
 

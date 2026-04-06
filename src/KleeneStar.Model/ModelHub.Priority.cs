@@ -18,7 +18,7 @@ namespace KleeneStar.Model
         /// </summary>
         /// <remarks>
         /// The returned query is not executed until enumerated. Multiple predicates are combined
-        /// using logical AND. The query includes related category data for each field.
+        /// using logical AND.
         /// </remarks>
         /// <param name="query">
         /// The query criteria used to filter the returned priorities. Must not be null.

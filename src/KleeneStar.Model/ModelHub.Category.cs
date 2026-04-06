@@ -18,6 +18,7 @@ namespace KleeneStar.Model
         /// <param name="query">
         /// An object that defines the filtering, sorting, or projection to apply to the categories.
         /// </param>
+        /// <returns>
         /// An enumerable collection of categories that match the specified predicate. The 
         /// collection is empty if no categories meet the criteria.
         /// </returns>
@@ -58,6 +59,8 @@ namespace KleeneStar.Model
         /// </param>
         public static void Add(Category category)
         {
+            ArgumentNullException.ThrowIfNull(category);
+
             using var db = CreateDbContext();
             var exists = db.Categories.Any(x => x.Name.Equals(category.Name, StringComparison.InvariantCultureIgnoreCase));
 
@@ -81,6 +84,8 @@ namespace KleeneStar.Model
         /// </param>
         public static void Remove(Category category)
         {
+            ArgumentNullException.ThrowIfNull(category);
+
             using var db = CreateDbContext();
 
             db.RemoveEntity(category, ["Workspaces"]);
@@ -97,8 +102,12 @@ namespace KleeneStar.Model
             using var db = CreateDbContext();
 
             // find categories that are not referenced by any workspace
+            var usedCategoryIds = db.Set<Workspace>()
+                .SelectMany(w => w.Categories.Select(c => c.RawId))
+                .Distinct();
+
             var orphans = db.Set<Category>()
-                .Where(c => !db.Set<Workspace>().Any(w => w.Categories.Any(c2 => c2.RawId == c.RawId)))
+                .Where(c => !usedCategoryIds.Contains(c.RawId))
                 .ToList();
 
             if (orphans.Count == 0)
