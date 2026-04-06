@@ -18,27 +18,27 @@ namespace KleeneStar.Model.Entities
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the class.
+        /// Returns or sets the unique identifier for the field.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the class.
+        /// Returns or sets the name of the field.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the workspace.
+        /// Returns the description of the field.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the workspace.
+        /// Returns the current state of the field.
         /// </summary>
         public TypeWorkspaceState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this workspace.
+        /// Returns the icon associated with this field.
         /// </summary>
         public ImageIcon Icon { get; set; }
 
@@ -53,12 +53,12 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the class associated with this instance.
+        /// Returns or sets the unique identifier of the class associated with this field.
         /// </summary>
         public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Returns or sets the class associated with the current context.
+        /// Returns or sets the class associated with the current field.
         /// </summary>
         public Class Class { get; set; }
 

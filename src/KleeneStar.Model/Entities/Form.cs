@@ -6,9 +6,9 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a priority entity.
+    /// Represents a form entity.
     /// </summary>
-    public class Priority : IEntity
+    public class Form : IEntity
     {
         /// <summary>
         /// Returns or sets the database id.
@@ -18,27 +18,27 @@ namespace KleeneStar.Model.Entities
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the priority.
+        /// Returns or sets the unique identifier for the form.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the priority.
+        /// Returns or sets the name of the form.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the priority.
+        /// Returns the description of the form.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the priority.
+        /// Returns the current state of the form.
         /// </summary>
         public TypeWorkspaceState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this priority.
+        /// Returns the icon associated with this form.
         /// </summary>
         public ImageIcon Icon { get; set; }
 
@@ -53,19 +53,19 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the class associated with this priority.
+        /// Returns or sets the unique identifier of the class associated with this form.
         /// </summary>
         public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Returns or sets the class associated with the current priority.
+        /// Returns or sets the class associated with the current form.
         /// </summary>
         public Class Class { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        public Priority()
+        public Form()
         {
             Id = Guid.NewGuid();
         }
@@ -75,9 +75,9 @@ namespace KleeneStar.Model.Entities
         /// specified unique identifier.
         /// </summary>
         /// <param name="id">
-        /// The unique identifier to assign to the priority.
+        /// The unique identifier to assign to the form.
         /// </param>
-        public Priority(Guid id)
+        public Form(Guid id)
         {
             Id = id;
         }

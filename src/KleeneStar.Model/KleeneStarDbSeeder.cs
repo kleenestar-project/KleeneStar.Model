@@ -50,6 +50,12 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (!db.Forms.Any())
+            {
+                SeedForms(db);
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Priorities.Any())
             {
                 SeedPriorities(db);

@@ -8,7 +8,7 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a class entity.
+    /// Represents a object entity.
     /// </summary>
     public class Object : IEntity
     {
@@ -20,33 +20,33 @@ namespace KleeneStar.Model.Entities
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the class.
+        /// Returns or sets the unique identifier for the object.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the key of the workspace.
+        /// Returns or sets the key of the object.
         /// </summary>
         [ValidateMinLength(2)]
         public string Key { get; set; }
 
         /// <summary>
-        /// Returns or sets the summary of the class.
+        /// Returns or sets the summary of the object.
         /// </summary>
         public string Summary { get; set; }
 
         /// <summary>
-        /// Returns the description of the workspace.
+        /// Returns the description of the object.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the workspace.
+        /// Returns the current state of the object.
         /// </summary>
         public TypeWorkspaceState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this workspace.
+        /// Returns the icon associated with this object.
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
@@ -62,12 +62,12 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the workspace associated with this instance.
+        /// Returns or sets the unique identifier of the workspace associated with this object.
         /// </summary>
         public Guid WorkspaceId { get; set; }
 
         /// <summary>
-        /// Returns or sets the workspace associated with the current context.
+        /// Returns or sets the workspace associated with the current object.
         /// </summary>
         public Workspace Workspace { get; set; }
 
@@ -94,7 +94,7 @@ namespace KleeneStar.Model.Entities
         /// specified unique identifier.
         /// </summary>
         /// <param name="id">
-        /// The unique identifier to assign to the workspace.
+        /// The unique identifier to assign to the object.
         /// </param>
         public Object(Guid id)
         {

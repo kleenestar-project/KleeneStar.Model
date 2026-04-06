@@ -30,17 +30,17 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the workspace.
+        /// Returns the description of the class.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the workspace.
+        /// Returns the current state of the class.
         /// </summary>
         public TypeWorkspaceState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this workspace.
+        /// Returns the icon associated with this class.
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
@@ -56,12 +56,12 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the workspace associated with this instance.
+        /// Returns or sets the unique identifier of the workspace associated with this class.
         /// </summary>
         public Guid WorkspaceId { get; set; }
 
         /// <summary>
-        /// Returns or sets the workspace associated with the current context.
+        /// Returns or sets the workspace associated with the current class.
         /// </summary>
         public Workspace Workspace { get; set; }
 
