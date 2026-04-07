@@ -11,7 +11,7 @@ namespace KleeneStar.Model.Entities
         Active,
 
         /// <summary>
-        /// Indicates that the dashboard has been permanently and irreversibly deleted.
+        /// Indicates that the dashboard has been deleted and is no longer active or accessible.
         /// </summary>
         Deleted
     }
