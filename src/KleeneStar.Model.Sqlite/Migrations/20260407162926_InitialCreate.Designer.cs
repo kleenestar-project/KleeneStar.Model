@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260407124951_InitialCreate")]
+    [Migration("20260407162926_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,6 +19,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
+
+            modelBuilder.Entity("DashboardCategory", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DashboardId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CategoryId", "DashboardId");
+
+                    b.HasIndex("DashboardId");
+
+                    b.ToTable("DashboardCategory");
+                });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Category", b =>
                 {
@@ -98,6 +113,53 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Class", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Dashboard", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Field", b =>
@@ -316,6 +378,40 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Priority", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Widget", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("DashboardId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Dashboard");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Wql")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Wql");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("DashboardId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Widget", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workflow", b =>
@@ -559,6 +655,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("WorkspaceCategory");
                 });
 
+            modelBuilder.Entity("DashboardCategory", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Dashboard", null)
+                        .WithMany()
+                        .HasForeignKey("DashboardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
@@ -626,6 +737,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Widget", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Dashboard", "Dashboard")
+                        .WithMany("Widgets")
+                        .HasForeignKey("DashboardId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dashboard");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workflow", b =>
@@ -708,6 +831,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>
+                {
+                    b.Navigation("Widgets");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workflow", b =>
