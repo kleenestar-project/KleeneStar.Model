@@ -11,19 +11,19 @@ namespace KleeneStar.Model.Entities
     public class Field : IEntity
     {
         /// <summary>
-        /// Returns or sets the database id.
+        /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the field.
+        /// Gets or sets the unique identifier for the field.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the field.
+        /// Gets or sets the name of the field.
         /// </summary>
         public string Name { get; set; }
 
@@ -53,12 +53,12 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the class associated with this field.
+        /// Gets or sets the unique identifier of the class associated with this field.
         /// </summary>
         public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Returns or sets the class associated with the current field.
+        /// Gets or sets the class associated with the current field.
         /// </summary>
         public Class Class { get; set; }
 

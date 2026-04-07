@@ -12,37 +12,52 @@ namespace KleeneStar.Model
     public class KleeneStarDbContext : DbContext, IQueryContext
     {
         /// <summary>
-        /// Returns or sets the collection of categories.
+        /// Gets or sets the collection of categories.
         /// </summary>
         public DbSet<Category> Categories { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of workspaces.
+        /// Gets or sets the collection of workspaces.
         /// </summary>
         public DbSet<Workspace> Workspaces { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of classes.
+        /// Gets or sets the collection of classes.
         /// </summary>
         public DbSet<Class> Classes { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of fields.
+        /// Gets or sets the collection of fields.
         /// </summary>
         public DbSet<Field> Fields { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of forms.
+        /// Gets or sets the collection of forms.
         /// </summary>
         public DbSet<Form> Forms { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of priorities.
+        /// Gets or sets the collection of priorities.
         /// </summary>
         public DbSet<Priority> Priorities { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of objects.
+        /// Gets or sets the collection of workflows.
+        /// </summary>
+        public DbSet<Workflow> Workflows { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of workflow states.
+        /// </summary>
+        public DbSet<WorkflowState> WorkflowStates { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of workflow transitions.
+        /// </summary>
+        public DbSet<WorkflowTransition> WorkflowTransitions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of objects.
         /// </summary>
         public DbSet<Object> Objects { get; set; }
 

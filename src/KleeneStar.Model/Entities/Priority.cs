@@ -11,19 +11,19 @@ namespace KleeneStar.Model.Entities
     public class Priority : IEntity
     {
         /// <summary>
-        /// Returns or sets the database id.
+        /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the priority.
+        /// Gets or sets the unique identifier for the priority.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the priority.
+        /// Gets or sets the name of the priority.
         /// </summary>
         public string Name { get; set; }
 
@@ -53,12 +53,12 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the class associated with this priority.
+        /// Gets or sets the unique identifier of the class associated with this priority.
         /// </summary>
         public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Returns or sets the class associated with the current priority.
+        /// Gets or sets the class associated with the current priority.
         /// </summary>
         public Class Class { get; set; }
 

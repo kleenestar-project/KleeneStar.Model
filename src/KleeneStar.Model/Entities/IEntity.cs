@@ -11,7 +11,7 @@ namespace KleeneStar.Model.Entities
     public interface IEntity : IIndexItem, IDomain
     {
         /// <summary>
-        /// Returns the database id.
+        /// Gets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]

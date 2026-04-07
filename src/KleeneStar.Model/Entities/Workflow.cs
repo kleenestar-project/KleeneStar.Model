@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
@@ -6,9 +7,9 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a form entity.
+    /// Represents a workflow entity.
     /// </summary>
-    public class Form : IEntity
+    public class Workflow : IEntity
     {
         /// <summary>
         /// Gets or sets the database id.
@@ -18,27 +19,27 @@ namespace KleeneStar.Model.Entities
         public int RawId { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier for the form.
+        /// Gets or sets the unique identifier for the workflow.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the form.
+        /// Gets or sets the name of the workflow.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the form.
+        /// Returns the description of the workflow.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the form.
+        /// Returns the current state of the workflow.
         /// </summary>
         public TypeWorkspaceState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this form.
+        /// Returns the icon associated with this workflow.
         /// </summary>
         public ImageIcon Icon { get; set; }
 
@@ -53,19 +54,33 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the class associated with this form.
+        /// Gets or sets the unique identifier of the class associated with this workflow.
         /// </summary>
         public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Gets or sets the class associated with the current form.
+        /// Gets or sets the class associated with the current workflow.
         /// </summary>
         public Class Class { get; set; }
 
         /// <summary>
+        /// Gets or sets the list of states defined in the workflow.
+        /// </summary>
+        public List<WorkflowState> States { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of workflow transitions associated with this instance.
+        /// </summary>
+        /// <remarks>
+        /// Each transition defines a possible state change within the workflow. Modifying this
+        /// collection affects the available transitions for the workflow.
+        /// </remarks>
+        public List<WorkflowTransition> Transitions { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        public Form()
+        public Workflow()
         {
             Id = Guid.NewGuid();
         }
@@ -75,9 +90,9 @@ namespace KleeneStar.Model.Entities
         /// specified unique identifier.
         /// </summary>
         /// <param name="id">
-        /// The unique identifier to assign to the form.
+        /// The unique identifier to assign to the workflow.
         /// </param>
-        public Form(Guid id)
+        public Workflow(Guid id)
         {
             Id = id;
         }

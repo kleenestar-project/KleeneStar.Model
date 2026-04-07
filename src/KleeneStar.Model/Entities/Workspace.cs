@@ -15,19 +15,19 @@ namespace KleeneStar.Model.Entities
     public class Workspace : IEntity
     {
         /// <summary>
-        /// Returns or sets the database id.
+        /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the workspace.
+        /// Gets or sets the unique identifier for the workspace.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the key of the workspace.
+        /// Gets or sets the key of the workspace.
         /// </summary>
         [ValidateMinLength(2)]
         public string Key { get; set; }

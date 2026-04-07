@@ -9,19 +9,19 @@ namespace KleeneStar.Model.Config
     public sealed class DbConfig
     {
         /// <summary>
-        /// Returns or sets the name of the provider associated with this instance.
+        /// Gets or sets the name of the provider associated with this instance.
         /// </summary>
         [XmlElement("provider")]
         public string Provider { get; set; }
 
         /// <summary>
-        /// Returns or sets the connection string used to establish a connection to the data source.
+        /// Gets or sets the connection string used to establish a connection to the data source.
         /// </summary>
         [XmlElement("connectionstring")]
         public string ConnectionString { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the assembly associated with the provider.
+        /// Gets or sets the name of the assembly associated with the provider.
         /// </summary>
         [XmlElement("assembly")]
         public string Assembly { get; set; }

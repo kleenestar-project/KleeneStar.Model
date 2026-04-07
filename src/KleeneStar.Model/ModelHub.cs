@@ -27,7 +27,7 @@ namespace KleeneStar.Model
         public static IHttpServerContext HttpServerContext { get; set; }
 
         /// <summary>
-        /// Returns or sets the configuration settings for the database connection.
+        /// Gets or sets the configuration settings for the database connection.
         /// </summary>
         public static DbConfig DatabaseConfig { get; set; }
 

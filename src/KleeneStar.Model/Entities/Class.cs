@@ -13,19 +13,19 @@ namespace KleeneStar.Model.Entities
     public class Class : IEntity
     {
         /// <summary>
-        /// Returns or sets the database id.
+        /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the class.
+        /// Gets or sets the unique identifier for the class.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the name of the class.
+        /// Gets or sets the name of the class.
         /// </summary>
         public string Name { get; set; }
 
@@ -56,12 +56,12 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the workspace associated with this class.
+        /// Gets or sets the unique identifier of the workspace associated with this class.
         /// </summary>
         public Guid WorkspaceId { get; set; }
 
         /// <summary>
-        /// Returns or sets the workspace associated with the current class.
+        /// Gets or sets the workspace associated with the current class.
         /// </summary>
         public Workspace Workspace { get; set; }
 

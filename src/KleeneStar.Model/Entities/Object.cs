@@ -13,25 +13,25 @@ namespace KleeneStar.Model.Entities
     public class Object : IEntity
     {
         /// <summary>
-        /// Returns or sets the database id.
+        /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the object.
+        /// Gets or sets the unique identifier for the object.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns or sets the key of the object.
+        /// Gets or sets the key of the object.
         /// </summary>
         [ValidateMinLength(2)]
         public string Key { get; set; }
 
         /// <summary>
-        /// Returns or sets the summary of the object.
+        /// Gets or sets the summary of the object.
         /// </summary>
         public string Summary { get; set; }
 
@@ -62,22 +62,22 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the workspace associated with this object.
+        /// Gets or sets the unique identifier of the workspace associated with this object.
         /// </summary>
         public Guid WorkspaceId { get; set; }
 
         /// <summary>
-        /// Returns or sets the workspace associated with the current object.
+        /// Gets or sets the workspace associated with the current object.
         /// </summary>
         public Workspace Workspace { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier of the class associated with this instance.
+        /// Gets or sets the unique identifier of the class associated with this instance.
         /// </summary>
         public Guid ClassId { get; set; }
 
         /// <summary>
-        /// Returns or sets the class associated with the current context.
+        /// Gets or sets the class associated with the current context.
         /// </summary>
         public Class Class { get; set; }
 

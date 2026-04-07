@@ -12,14 +12,14 @@ namespace KleeneStar.Model.Entities
     public class Category : IEntity
     {
         /// <summary>
-        /// Returns or sets the database id.
+        /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
         [Key]
         public int RawId { get; set; }
 
         /// <summary>
-        /// Returns or sets the unique identifier for the workspace.
+        /// Gets or sets the unique identifier for the workspace.
         /// </summary>
         public Guid Id { get; set; }
 
@@ -34,7 +34,7 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns or sets the collection of workspaces associated with the current category.
+        /// Gets or sets the collection of workspaces associated with the current category.
         /// </summary>
         [JsonIgnore]
         public List<Workspace> Workspaces { get; set; } = [];

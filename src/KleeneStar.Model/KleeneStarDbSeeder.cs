@@ -62,6 +62,12 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (!db.Workflows.Any())
+            {
+                SeedWorkflows(db);
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Objects.Any())
             {
                 SeedObjects(db);
