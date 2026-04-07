@@ -40,6 +40,12 @@ namespace KleeneStar.Model.Entities
         public List<Workspace> Workspaces { get; set; } = [];
 
         /// <summary>
+        /// Gets or sets the collection of dashboards associated with the current category.
+        /// </summary>
+        [JsonIgnore]
+        public List<Dashboard> Dashboards { get; set; } = [];
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Category()
