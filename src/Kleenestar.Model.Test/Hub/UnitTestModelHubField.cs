@@ -169,5 +169,32 @@ namespace Kleenestar.Model.Test.Hub
             using var db = ModelHub.CreateDbContext();
             Assert.Empty(db.Fields);
         }
+
+        /// <summary>
+        /// Updates an existing field in the database and verifies that the changes are persisted.
+        /// </summary>
+        [Fact]
+        public void UpdateExistingField()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "UpdateExistingField",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using var db = ModelHub.CreateDbContext();
+            var field = new Field { Id = Guid.NewGuid(), Name = "Original" };
+            db.Fields.Add(field);
+            db.SaveChanges();
+
+            // act
+            field.Name = "Updated";
+            ModelHub.Update(field);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", db2.Fields.Single().Name);
+        }
     }
 }

@@ -169,5 +169,32 @@ namespace Kleenestar.Model.Test.Hub
             using var db = ModelHub.CreateDbContext();
             Assert.Empty(db.Priorities);
         }
+
+        /// <summary>
+        /// Updates an existing priority in the database and verifies that the changes are persisted.
+        /// </summary>
+        [Fact]
+        public void UpdateExistingPriority()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "UpdateExistingPriority",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using var db = ModelHub.CreateDbContext();
+            var priority = new Priority { Id = Guid.NewGuid(), Name = "Original" };
+            db.Priorities.Add(priority);
+            db.SaveChanges();
+
+            // act
+            priority.Name = "Updated";
+            ModelHub.Update(priority);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", db2.Priorities.Single().Name);
+        }
     }
 }

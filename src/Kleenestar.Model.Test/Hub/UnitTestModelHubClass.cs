@@ -175,5 +175,32 @@ namespace Kleenestar.Model.Test.Hub
             using var db = ModelHub.CreateDbContext();
             Assert.Empty(db.Classes);
         }
+
+        /// <summary>
+        /// Updates an existing class in the database and verifies that the changes are persisted.
+        /// </summary>
+        [Fact]
+        public void UpdateExistingClass()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "UpdateExistingClass",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using var db = ModelHub.CreateDbContext();
+            var classEntry = new Class { Id = Guid.NewGuid(), Name = "Original" };
+            db.Classes.Add(classEntry);
+            db.SaveChanges();
+
+            // act
+            classEntry.Name = "Updated";
+            ModelHub.Update(classEntry);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", db2.Classes.Single().Name);
+        }
     }
 }

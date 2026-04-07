@@ -169,5 +169,32 @@ namespace Kleenestar.Model.Test.Hub
             using var db = ModelHub.CreateDbContext();
             Assert.Empty(db.Forms);
         }
+
+        /// <summary>
+        /// Updates an existing form in the database and verifies that the changes are persisted.
+        /// </summary>
+        [Fact]
+        public void UpdateExistingForm()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "UpdateExistingForm",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using var db = ModelHub.CreateDbContext();
+            var form = new Form { Id = Guid.NewGuid(), Name = "Original" };
+            db.Forms.Add(form);
+            db.SaveChanges();
+
+            // act
+            form.Name = "Updated";
+            ModelHub.Update(form);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", db2.Forms.Single().Name);
+        }
     }
 }
