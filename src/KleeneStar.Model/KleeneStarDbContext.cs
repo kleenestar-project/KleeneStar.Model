@@ -62,6 +62,16 @@ namespace KleeneStar.Model
         public DbSet<Object> Objects { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of dashboards.
+        /// </summary>
+        public DbSet<Dashboard> Dashboards { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of widgets.
+        /// </summary>
+        public DbSet<Widget> Widgets { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

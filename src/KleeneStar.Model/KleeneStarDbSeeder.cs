@@ -82,6 +82,12 @@ namespace KleeneStar.Model
                     throw; // Re-throwing the exception after logging
                 }
             }
+
+            if (!db.Dashboards.Any())
+            {
+                SeedDashboards(db);
+                await db.SaveChangesAsync();
+            }
         }
     }
 }
