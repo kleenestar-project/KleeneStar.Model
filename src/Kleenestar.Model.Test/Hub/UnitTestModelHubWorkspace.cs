@@ -177,5 +177,32 @@ namespace Kleenestar.Model.Test.Hub
             Assert.Empty(db.Workspaces);
         }
 
+        /// <summary>
+        /// Updates an existing workspace in the database and verifies that the changes are persisted.
+        /// </summary>
+        [Fact]
+        public void UpdateExistingWorkspace()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "UpdateExistingWorkspace",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using var db = ModelHub.CreateDbContext();
+            var workspace = new Workspace { Id = Guid.NewGuid(), Name = "Original", Key = "K" };
+            db.Workspaces.Add(workspace);
+            db.SaveChanges();
+
+            // act
+            workspace.Name = "Updated";
+            ModelHub.Update(workspace);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", db2.Workspaces.Single().Name);
+        }
+
     }
 }

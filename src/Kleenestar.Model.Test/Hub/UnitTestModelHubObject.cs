@@ -176,5 +176,32 @@ namespace Kleenestar.Model.Test.Hub
             using var db = ModelHub.CreateDbContext();
             Assert.Empty(db.Objects);
         }
+
+        /// <summary>
+        /// Updates an existing object in the database and verifies that the changes are persisted.
+        /// </summary>
+        [Fact]
+        public void UpdateExistingObject()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "UpdateExistingObject",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using var db = ModelHub.CreateDbContext();
+            var obj = new KleeneStarObject { Id = Guid.NewGuid(), Key = "original-key", Summary = "Original" };
+            db.Objects.Add(obj);
+            db.SaveChanges();
+
+            // act
+            obj.Summary = "Updated";
+            ModelHub.Update(obj);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", db2.Objects.Single().Summary);
+        }
     }
 }
