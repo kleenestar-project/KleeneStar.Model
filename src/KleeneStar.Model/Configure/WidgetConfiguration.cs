@@ -36,16 +36,16 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
-            builder.Property(x => x.DashboardId)
-                .HasColumnName("Dashboard")
+            builder.Property(x => x.ColumnId)
+                .HasColumnName("Column")
                 .IsRequired();
 
-            builder.HasOne(x => x.Dashboard)
-                .WithMany(d => d.Widgets)
-                .HasForeignKey(x => x.DashboardId)
-                .HasPrincipalKey(d => d.Id);
+            builder.HasOne(x => x.Column)
+                .WithMany(c => c.Widgets)
+                .HasForeignKey(x => x.ColumnId)
+                .HasPrincipalKey(c => c.Id);
 
-            builder.HasIndex(x => new { x.DashboardId, x.Name })
+            builder.HasIndex(x => new { x.ColumnId, x.Name })
                 .IsUnique();
         }
     }

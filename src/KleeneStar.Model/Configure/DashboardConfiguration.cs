@@ -79,10 +79,10 @@ namespace KleeneStar.Model.Configure
             builder.HasIndex(x => x.Name)
                 .IsUnique();
 
-            // ONE-TO-MANY: Dashboard -> Widget
-            builder.HasMany(d => d.Widgets)
-                .WithOne(w => w.Dashboard)
-                .HasForeignKey(w => w.DashboardId)
+            // ONE-TO-MANY: Dashboard -> DashboardColumn
+            builder.HasMany(d => d.Columns)
+                .WithOne(c => c.Dashboard)
+                .HasForeignKey(c => c.DashboardId)
                 .HasPrincipalKey(d => d.Id)
                 .OnDelete(DeleteBehavior.Cascade);
         }

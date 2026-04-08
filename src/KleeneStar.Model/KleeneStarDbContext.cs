@@ -67,6 +67,11 @@ namespace KleeneStar.Model
         public DbSet<Dashboard> Dashboards { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of dashboard columns.
+        /// </summary>
+        public DbSet<DashboardColumn> DashboardColumns { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of widgets.
         /// </summary>
         public DbSet<Widget> Widgets { get; set; }

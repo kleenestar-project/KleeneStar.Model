@@ -70,26 +70,26 @@ namespace Kleenestar.Model.Test.Entity
         }
 
         /// <summary>
-        /// Sets the widgets for the dashboard and verifies that the collection is assigned correctly.
+        /// Sets the columns for the dashboard and verifies that the collection is assigned correctly.
         /// </summary>
         [Fact]
-        public void SetWidgets()
+        public void SetColumns()
         {
             // arrange
             var dashboard = new Dashboard();
-            var widgets = new List<Widget>
+            var columns = new List<DashboardColumn>
             {
-                new Widget { Name = "Widget A", Wql = "SELECT * FROM objects" },
-                new Widget { Name = "Widget B", Wql = "SELECT * FROM classes" }
+                new DashboardColumn { Name = "Column A", Size = "small" },
+                new DashboardColumn { Name = "Column B" }
             };
 
             // act
-            dashboard.Widgets = widgets;
+            dashboard.Columns = columns;
 
             // validation
-            Assert.Equal(2, dashboard.Widgets.Count);
-            Assert.Equal("Widget A", dashboard.Widgets[0].Name);
-            Assert.Equal("Widget B", dashboard.Widgets[1].Name);
+            Assert.Equal(2, dashboard.Columns.Count);
+            Assert.Equal("Column A", dashboard.Columns[0].Name);
+            Assert.Equal("Column B", dashboard.Columns[1].Name);
         }
     }
 }

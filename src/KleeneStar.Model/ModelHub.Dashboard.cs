@@ -54,7 +54,8 @@ namespace KleeneStar.Model
             var data = context.Dashboards
                 .AsNoTracking()
                 .Include(d => d.Categories)
-                .Include(d => d.Widgets);
+                .Include(d => d.Columns)
+                    .ThenInclude(c => c.Widgets);
 
             return query.Apply(data); // none materialize query
         }

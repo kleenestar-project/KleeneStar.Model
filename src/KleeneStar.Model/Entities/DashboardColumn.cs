@@ -7,10 +7,9 @@ using WebExpress.WebIndex.WebAttribute;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a widget that belongs to a dashboard and provides a dynamic data view
-    /// via a WQL (Widget Query Language) query.
+    /// Represents a column within a dashboard, used to arrange widgets in a structured layout.
     /// </summary>
-    public class Widget : IEntity
+    public class DashboardColumn : IEntity
     {
         /// <summary>
         /// Gets or sets the database id.
@@ -20,35 +19,40 @@ namespace KleeneStar.Model.Entities
         public int RawId { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier for the widget.
+        /// Gets or sets the unique identifier for the dashboard column.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the widget.
+        /// Gets or sets the name of the dashboard column.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the WQL (Widget Query Language) query used to dynamically bind data sources.
+        /// Gets or sets the optional size of the dashboard column (e.g. "small", "medium", "large").
         /// </summary>
-        public string Wql { get; set; }
+        public string Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the dashboard column that contains this widget.
+        /// Gets or sets the unique identifier of the dashboard that contains this column.
         /// </summary>
-        public Guid ColumnId { get; set; }
+        public Guid DashboardId { get; set; }
 
         /// <summary>
-        /// Gets or sets the dashboard column that contains this widget.
+        /// Gets or sets the dashboard that contains this column.
         /// </summary>
         [JsonIgnore]
-        public DashboardColumn Column { get; set; }
+        public Dashboard Dashboard { get; set; }
+
+        /// <summary>
+        /// Returns the collection of widgets arranged in this column.
+        /// </summary>
+        public List<Widget> Widgets { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        public Widget()
+        public DashboardColumn()
         {
             Id = Guid.NewGuid();
         }
@@ -57,9 +61,9 @@ namespace KleeneStar.Model.Entities
         /// Initializes a new instance of the class with the specified unique identifier.
         /// </summary>
         /// <param name="id">
-        /// The unique identifier to assign to the widget.
+        /// The unique identifier to assign to the dashboard column.
         /// </param>
-        public Widget(Guid id)
+        public DashboardColumn(Guid id)
         {
             Id = id;
         }
