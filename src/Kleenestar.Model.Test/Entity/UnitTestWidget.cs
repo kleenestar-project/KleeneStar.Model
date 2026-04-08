@@ -40,5 +40,24 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Equal(name, widget.Name);
             Assert.Equal(wql, widget.Wql);
         }
+
+        /// <summary>
+        /// Sets the column reference on a Widget instance and verifies that the value is assigned correctly.
+        /// </summary>
+        [Fact]
+        public void SetColumn()
+        {
+            // arrange
+            var widget = new Widget();
+            var column = new DashboardColumn { Name = "Main Column" };
+
+            // act
+            widget.ColumnId = column.Id;
+            widget.Column = column;
+
+            // validation
+            Assert.Equal(column.Id, widget.ColumnId);
+            Assert.Equal(column, widget.Column);
+        }
     }
 }

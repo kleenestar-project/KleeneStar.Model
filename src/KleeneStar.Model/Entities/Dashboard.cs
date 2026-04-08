@@ -65,9 +65,9 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns the collection of widgets associated with this dashboard.
+        /// Returns the collection of columns associated with this dashboard.
         /// </summary>
-        public List<Widget> Widgets { get; set; } = [];
+        public List<DashboardColumn> Columns { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the class.

@@ -1,5 +1,6 @@
 using KleeneStar.Model.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using WebExpress.WebUI.WebIcon;
 
@@ -18,7 +19,8 @@ namespace KleeneStar.Model
         /// </param>
         private static void SeedDashboards(KleeneStarDbContext db)
         {
-            void add(string id, string name, string description, string icon, params string[] categories) =>
+            void add(string id, string name, string description, string icon,
+                     IEnumerable<DashboardColumn> columns, params string[] categories) =>
                 db.Dashboards.Add(new Dashboard
                 {
                     Id = Guid.Parse(id),
@@ -27,6 +29,7 @@ namespace KleeneStar.Model
                     Icon = ImageIcon.FromString(icon),
                     State = TypeDashboardState.Active,
                     Categories = [.. db.Categories.Where(x => categories.Contains(x.Name))],
+                    Columns = [.. columns],
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
                 });
@@ -37,6 +40,26 @@ namespace KleeneStar.Model
                 "Operations Overview",
                 "Dashboard for monitoring key operational metrics and service health.",
                 "/kleenestar/assets/icons/dashboard-ops.svg",
+                [
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("A1000001-0000-0000-0000-000000000001"),
+                        Name = "Service Health",
+                        Size = "large"
+                    },
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("A1000001-0000-0000-0000-000000000002"),
+                        Name = "Incident Overview",
+                        Size = "medium"
+                    },
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("A1000001-0000-0000-0000-000000000003"),
+                        Name = "Support Queue",
+                        Size = "small"
+                    }
+                ],
                 "Operations", "Support"
             );
 
@@ -46,6 +69,26 @@ namespace KleeneStar.Model
                 "Engineering Insights",
                 "Dashboard for tracking development progress, build pipelines, and code quality.",
                 "/kleenestar/assets/icons/dashboard-dev.svg",
+                [
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("B2000002-0000-0000-0000-000000000001"),
+                        Name = "Build Pipelines",
+                        Size = "large"
+                    },
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("B2000002-0000-0000-0000-000000000002"),
+                        Name = "Code Quality",
+                        Size = "medium"
+                    },
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("B2000002-0000-0000-0000-000000000003"),
+                        Name = "Open Issues",
+                        Size = "medium"
+                    }
+                ],
                 "Engineering", "Development"
             );
 
@@ -55,6 +98,26 @@ namespace KleeneStar.Model
                 "Finance Summary",
                 "Dashboard for visualizing budget, costs, and financial KPIs.",
                 "/kleenestar/assets/icons/dashboard-fin.svg",
+                [
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("C3000003-0000-0000-0000-000000000001"),
+                        Name = "Budget Overview",
+                        Size = "large"
+                    },
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("C3000003-0000-0000-0000-000000000002"),
+                        Name = "Cost Centers",
+                        Size = "medium"
+                    },
+                    new DashboardColumn
+                    {
+                        Id = Guid.Parse("C3000003-0000-0000-0000-000000000003"),
+                        Name = "KPIs",
+                        Size = "small"
+                    }
+                ],
                 "Finance"
             );
         }
