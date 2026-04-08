@@ -62,31 +62,70 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
-            if (!db.Workflows.Any())
+            if (!db.StatusCategories.Any())
             {
-                SeedWorkflows(db);
+                SeedStatusCategories(db);
                 await db.SaveChangesAsync();
             }
 
-            if (!db.Objects.Any())
+            if (!db.Statuses.Any())
             {
-                SeedObjects(db);
                 try
                 {
+                    SeedStatuses(db);
                     await db.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
-                    // Log the exception or handle it as needed
+                    // log the exception or handle it as needed
                     Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
-                    throw; // Re-throwing the exception after logging
+                    throw;
+                }
+            }
+
+            if (!db.Workflows.Any())
+            {
+                try
+                {
+                    SeedWorkflows(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // log the exception or handle it as needed
+                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            if (!db.Objects.Any())
+            {
+                try
+                {
+                    SeedObjects(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // log the exception or handle it as needed
+                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
                 }
             }
 
             if (!db.Dashboards.Any())
             {
-                SeedDashboards(db);
-                await db.SaveChangesAsync();
+                try
+                {
+                    SeedDashboards(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // log the exception or handle it as needed
+                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
             }
         }
     }

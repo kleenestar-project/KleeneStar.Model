@@ -33,39 +33,39 @@ namespace KleeneStar.Model.Entities
         public string Key { get; set; }
 
         /// <summary>
-        /// Returns the name of the workspace.
+        /// Gets or sets the name of the workspace.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the collection of category names associated with the item.
+        /// Gets or sets the collection of category names associated with the item.
         /// </summary>
         [RestConverter<CategoryConverter>()]
         public List<Category> Categories { get; set; } = [];
 
         /// <summary>
-        /// Returns the current state of the workspace.
+        /// Gets or sets the current state of the workspace.
         /// </summary>
-        public TypeWorkspaceState State { get; set; }
+        public WorkspaceState State { get; set; }
 
         /// <summary>
-        /// Returns the description of the workspace.
+        /// Gets or sets the description of the workspace.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this workspace.
+        /// Gets or sets the icon associated with this workspace.
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was created.
+        /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was updated.
+        /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
 

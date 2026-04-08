@@ -7,15 +7,15 @@ namespace KleeneStar.Model.Configure
     /// <summary>
     /// Provides the Entity Framework Core configuration for the workflow transition entity type.
     /// </summary>
-    internal class WorkflowTransitionConfiguration : IEntityTypeConfiguration<WorkflowTransition>
+    internal class TransitionConfiguration : IEntityTypeConfiguration<Transition>
     {
         /// <summary>
         /// Configuration of the workflow transition entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<WorkflowTransition> builder)
+        public void Configure(EntityTypeBuilder<Transition> builder)
         {
-            builder.ToTable("WorkflowTransition");
+            builder.ToTable("Transition");
 
             builder.HasKey(x => x.RawId);
 
@@ -51,21 +51,21 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Workflow")
                 .IsRequired();
 
-            // Workflow (many transitions → one workflow)
+            // workflow (many transitions → one workflow)
             builder.HasOne(x => x.Workflow)
                 .WithMany(w => w.Transitions)
                 .HasForeignKey(x => x.WorkflowId)
                 .HasPrincipalKey(w => w.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Source (many transitions → one state)
+            // source (many transitions → one state)
             builder.HasOne(x => x.Source)
                 .WithMany()
                 .HasForeignKey(x => x.SourceId)
                 .HasPrincipalKey(s => s.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Target (many transitions → one state)
+            // target (many transitions → one state)
             builder.HasOne(x => x.Target)
                 .WithMany()
                 .HasForeignKey(x => x.TargetId)

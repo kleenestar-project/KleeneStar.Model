@@ -25,9 +25,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a Field instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Field A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("Field B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("Field A", "Description A", FieldState.Active)]
+        [InlineData("Field B", null, FieldState.Archived)]
+        public void SetProperties(string name, string description, FieldState state)
         {
             // arrange
             var field = new Field();

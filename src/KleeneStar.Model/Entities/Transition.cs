@@ -7,7 +7,7 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents a workflow transition entity.
     /// </summary>
-    public class WorkflowTransition : IEntity
+    public class Transition : IEntity
     {
         /// <summary>
         /// Gets or sets the database id.
@@ -27,22 +27,22 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the workflow transition.
+        /// Gets or sets the description of the workflow transition.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the workflow transition.
+        /// Gets or sets the current state of the workflow transition.
         /// </summary>
-        public TypeWorkspaceState State { get; set; }
+        public TransitionState State { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was created.
+        /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was updated.
+        /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
 
@@ -64,7 +64,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the source workflow state for the transition.
         /// </summary>
-        public WorkflowState Source { get; set; }
+        public Status Source { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the target entity.
@@ -74,12 +74,12 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the target workflow state for the operation.
         /// </summary>
-        public WorkflowState Target { get; set; }
+        public Status Target { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        public WorkflowTransition()
+        public Transition()
         {
             Id = Guid.NewGuid();
         }
@@ -91,7 +91,7 @@ namespace KleeneStar.Model.Entities
         /// <param name="id">
         /// The unique identifier to assign to the workflow transition.
         /// </param>
-        public WorkflowTransition(Guid id)
+        public Transition(Guid id)
         {
             Id = id;
         }

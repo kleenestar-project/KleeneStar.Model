@@ -29,27 +29,27 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the workflow.
+        /// Gets or sets the description of the workflow.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the workflow.
+        /// Gets or sets the current state of the workflow.
         /// </summary>
-        public TypeWorkspaceState State { get; set; }
+        public WorkflowState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this workflow.
+        /// Gets or sets the icon associated with this workflow.
         /// </summary>
         public ImageIcon Icon { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was created.
+        /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was updated.
+        /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
 
@@ -66,7 +66,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the list of states defined in the workflow.
         /// </summary>
-        public List<WorkflowState> States { get; set; }
+        public List<Status> Statuses { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of workflow transitions associated with this instance.
@@ -75,7 +75,7 @@ namespace KleeneStar.Model.Entities
         /// Each transition defines a possible state change within the workflow. Modifying this
         /// collection affects the available transitions for the workflow.
         /// </remarks>
-        public List<WorkflowTransition> Transitions { get; set; }
+        public List<Transition> Transitions { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.

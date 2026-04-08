@@ -49,12 +49,17 @@ namespace KleeneStar.Model
         /// <summary>
         /// Gets or sets the collection of workflow states.
         /// </summary>
-        public DbSet<WorkflowState> WorkflowStates { get; set; }
+        public DbSet<Status> Statuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of status categories.
+        /// </summary>
+        public DbSet<StatusCategory> StatusCategories { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of workflow transitions.
         /// </summary>
-        public DbSet<WorkflowTransition> WorkflowTransitions { get; set; }
+        public DbSet<Transition> Transitions { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of objects.

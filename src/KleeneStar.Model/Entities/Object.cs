@@ -43,7 +43,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns the current state of the object.
         /// </summary>
-        public TypeWorkspaceState State { get; set; }
+        public WorkspaceState State { get; set; }
 
         /// <summary>
         /// Returns the icon associated with this object.
@@ -52,12 +52,12 @@ namespace KleeneStar.Model.Entities
         public ImageIcon Icon { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was created.
+        /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was updated.
+        /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
 

@@ -3,7 +3,7 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Specifies the state of a dashboard, indicating whether it is active or deleted.
     /// </summary>
-    public enum TypeDashboardState
+    public enum DashboardState
     {
         /// <summary>
         /// Indicates that the dashboard is fully configured, visible, and interactively usable.

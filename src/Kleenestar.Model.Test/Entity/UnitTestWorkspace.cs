@@ -26,9 +26,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a Workspace instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("key-1", "Workspace A", TypeWorkspaceState.Active, "Description A")]
-        [InlineData("key-2", "Workspace B", TypeWorkspaceState.Archived, null)]
-        public void SetProperties(string key, string name, TypeWorkspaceState state, string description)
+        [InlineData("key-1", "Workspace A", WorkspaceState.Active, "Description A")]
+        [InlineData("key-2", "Workspace B", WorkspaceState.Archived, null)]
+        public void SetProperties(string key, string name, WorkspaceState state, string description)
         {
             // arrange
             var workspace = new Workspace();

@@ -25,9 +25,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a form instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Form A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("Form B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("Form A", "Description A", FormState.Active)]
+        [InlineData("Form B", null, FormState.Archived)]
+        public void SetProperties(string name, string description, FormState state)
         {
             // arrange
             var form = new Form();

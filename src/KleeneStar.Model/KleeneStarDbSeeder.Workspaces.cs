@@ -19,13 +19,14 @@ namespace KleeneStar.Model
         /// </param>
         private static void SeedWorkspaces(KleeneStarDbContext db)
         {
-            void add(string id, string name, string key, string description, string icon, params string[] categories) =>
+            void add(string id, string name, string key, string description, string icon, WorkspaceState state, params string[] categories) =>
                 db.Workspaces.Add(new Workspace
                 {
                     Id = Guid.Parse(id),
                     Name = name,
                     Key = key,
                     Description = description,
+                    State = state,
                     Icon = ImageIcon.FromString(icon),
                     Categories = [.. db.Categories.Where(x => categories.Contains(x.Name))],
                     Created = DateTime.UtcNow,
@@ -39,6 +40,7 @@ namespace KleeneStar.Model
                 "CMDB",
                 "Workspace for managing configuration items and asset relationships.",
                 "/kleenestar/assets/icons/cmdb.svg",
+                WorkspaceState.Active,
                 "Infrastructure", "Compliance"
             );
 
@@ -49,6 +51,7 @@ namespace KleeneStar.Model
                 "DEV",
                 "Workspace for managing source code, repositories, development tasks, and release pipelines.",
                 "/kleenestar/assets/icons/dev.svg",
+                WorkspaceState.Active,
                 "Engineering"
             );
 
@@ -59,6 +62,7 @@ namespace KleeneStar.Model
                 "FIN",
                 "Workspace for managing budgets, invoices, and financial approvals.",
                 "/kleenestar/assets/icons/fin.svg",
+                WorkspaceState.Active,
                 "Finance"
             );
 
@@ -69,6 +73,7 @@ namespace KleeneStar.Model
                 "HR",
                 "Workspace for managing employee records, onboarding, and organizational structure.",
                 "/kleenestar/assets/icons/hr.svg",
+                WorkspaceState.Active,
                 "HumanResources"
             );
 
@@ -79,6 +84,7 @@ namespace KleeneStar.Model
                 "PM",
                 "Workspace for planning features, tracking releases, and coordinating product strategy.",
                 "/kleenestar/assets/icons/pm.svg",
+                WorkspaceState.Archived,
                 "Development"
             );
 
@@ -89,6 +95,7 @@ namespace KleeneStar.Model
                 "PROC",
                 "Workspace for managing purchase orders, supplier relations, and procurement workflows.",
                 "/kleenestar/assets/icons/proc.svg",
+                WorkspaceState.Archived,
                 "Operations"
             );
 
@@ -99,6 +106,7 @@ namespace KleeneStar.Model
                 "SD",
                 "Workspace for handling service desk operations.",
                 "/kleenestar/assets/icons/sd.svg",
+                WorkspaceState.Active,
                 "Support"
             );
         }

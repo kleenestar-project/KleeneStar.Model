@@ -42,7 +42,7 @@ namespace KleeneStar.Model
                         Id = Guid.NewGuid(),
                         Name = template.Name,
                         Description = template.Description,
-                        State = TypeWorkspaceState.Active,
+                        State = PriorityState.Active,
                         Icon = ImageIcon.FromString(template.Icon),
                         ClassId = cls.Id,
                         Created = DateTime.UtcNow,

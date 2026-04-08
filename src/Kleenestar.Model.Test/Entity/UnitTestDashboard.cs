@@ -26,9 +26,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a Dashboard instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Dashboard A", TypeDashboardState.Active, "Description A")]
-        [InlineData("Dashboard B", TypeDashboardState.Deleted, null)]
-        public void SetProperties(string name, TypeDashboardState state, string description)
+        [InlineData("Dashboard A", DashboardState.Active, "Description A")]
+        [InlineData("Dashboard B", DashboardState.Deleted, null)]
+        public void SetProperties(string name, DashboardState state, string description)
         {
             // arrange
             var dashboard = new Dashboard();

@@ -7,7 +7,7 @@
     public class TempDir : IDisposable
     {
         /// <summary>
-        /// Returns the file system path associated with this instance.
+        /// Gets the file system path associated with this instance.
         /// </summary>
         public string Path { get; }
 

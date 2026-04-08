@@ -6,7 +6,7 @@ namespace Kleenestar.Model.Test.Entity
     /// Contains unit tests for the WorkflowState class.
     /// </summary>
     [Collection("NonParallelTests")]
-    public class UnitTestWorkflowState
+    public class UnitTestStatus
     {
         /// <summary>
         /// Verifies that a new WorkflowState instance is assigned a non-empty unique identifier upon initialization.
@@ -15,7 +15,7 @@ namespace Kleenestar.Model.Test.Entity
         public void InitializeId()
         {
             // act
-            var workflowState = new WorkflowState();
+            var workflowState = new Status();
 
             // validation
             Assert.NotEqual(Guid.Empty, workflowState.Id);
@@ -25,28 +25,28 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a WorkflowState instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("State A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("State B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("State A", "Description A", StatusState.Active)]
+        [InlineData("State B", null, StatusState.Archived)]
+        public void SetProperties(string name, string description, StatusState state)
         {
             // arrange
-            var workflowState = new WorkflowState();
+            var workflowState = new Status();
             var classId = Guid.NewGuid();
-            var workflowId = Guid.NewGuid();
+            var categoryId = Guid.NewGuid();
 
             // act
             workflowState.Name = name;
             workflowState.Description = description;
             workflowState.State = state;
             workflowState.ClassId = classId;
-            workflowState.WorkflowId = workflowId;
+            workflowState.CategoryId = categoryId;
 
             // validation
             Assert.Equal(name, workflowState.Name);
             Assert.Equal(description, workflowState.Description);
             Assert.Equal(state, workflowState.State);
             Assert.Equal(classId, workflowState.ClassId);
-            Assert.Equal(workflowId, workflowState.WorkflowId);
+            Assert.Equal(categoryId, workflowState.CategoryId);
         }
     }
 }

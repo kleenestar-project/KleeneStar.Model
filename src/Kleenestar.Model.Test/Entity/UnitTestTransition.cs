@@ -6,7 +6,7 @@ namespace Kleenestar.Model.Test.Entity
     /// Contains unit tests for the WorkflowTransition class.
     /// </summary>
     [Collection("NonParallelTests")]
-    public class UnitTestWorkflowTransition
+    public class UnitTestTransition
     {
         /// <summary>
         /// Verifies that a new WorkflowTransition instance is assigned a non-empty unique identifier upon initialization.
@@ -15,7 +15,7 @@ namespace Kleenestar.Model.Test.Entity
         public void InitializeId()
         {
             // act
-            var transition = new WorkflowTransition();
+            var transition = new Transition();
 
             // validation
             Assert.NotEqual(Guid.Empty, transition.Id);
@@ -25,12 +25,12 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a WorkflowTransition instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Transition A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("Transition B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("Transition A", "Description A", TransitionState.Active)]
+        [InlineData("Transition B", null, TransitionState.Archived)]
+        public void SetProperties(string name, string description, TransitionState state)
         {
             // arrange
-            var transition = new WorkflowTransition();
+            var transition = new Transition();
             var workflowId = Guid.NewGuid();
             var sourceId = Guid.NewGuid();
             var targetId = Guid.NewGuid();

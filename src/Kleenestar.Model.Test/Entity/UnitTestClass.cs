@@ -25,9 +25,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a Class instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Class A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("Class B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("Class A", "Description A", ClassState.Active)]
+        [InlineData("Class B", null, ClassState.Archived)]
+        public void SetProperties(string name, string description, ClassState state)
         {
             // arrange
             var classEntry = new Class();

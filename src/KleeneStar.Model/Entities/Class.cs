@@ -30,28 +30,28 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the class.
+        /// Gets or sets the description of the class.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the class.
+        /// Gets or sets the current state of the class.
         /// </summary>
-        public TypeWorkspaceState State { get; set; }
+        public ClassState State { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this class.
+        /// Gets or sets the icon associated with this class.
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was created.
+        /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was updated.
+        /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
 

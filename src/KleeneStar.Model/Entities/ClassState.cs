@@ -1,12 +1,12 @@
-﻿namespace KleeneStar.Model.Entities
+namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Specifies the state of a workspace type, indicating whether it is active or archived.
+    /// Specifies the state of a class, indicating whether it is active or deleted.
     /// </summary>
-    public enum TypeWorkspaceState
+    public enum ClassState
     {
         /// <summary>
-        /// Indicates whether the entity is currently active.
+        /// Indicates that the class is fully configured, visible, and interactively usable.
         /// </summary>
         Active,
 

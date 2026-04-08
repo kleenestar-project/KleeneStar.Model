@@ -26,9 +26,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of an Object instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("key-1", "Summary A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("key-2", null, null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string key, string summary, string description, TypeWorkspaceState state)
+        [InlineData("key-1", "Summary A", "Description A", WorkspaceState.Active)]
+        [InlineData("key-2", null, null, WorkspaceState.Archived)]
+        public void SetProperties(string key, string summary, string description, WorkspaceState state)
         {
             // arrange
             var obj = new KleeneStarObject();

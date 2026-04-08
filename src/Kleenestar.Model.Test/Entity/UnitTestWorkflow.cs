@@ -25,9 +25,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a Workflow instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Workflow A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("Workflow B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("Workflow A", "Description A", WorkflowState.Active)]
+        [InlineData("Workflow B", null, WorkflowState.Archived)]
+        public void SetProperties(string name, string description, WorkflowState state)
         {
             // arrange
             var workflow = new Workflow();

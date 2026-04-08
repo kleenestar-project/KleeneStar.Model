@@ -8,15 +8,15 @@ namespace KleeneStar.Model.Configure
     /// <summary>
     /// Provides the Entity Framework Core configuration for the workflow state entity type.
     /// </summary>
-    internal class WorkflowStateConfiguration : IEntityTypeConfiguration<WorkflowState>
+    internal class StatusConfiguration : IEntityTypeConfiguration<Status>
     {
         /// <summary>
         /// Configuration of the workflow state entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<WorkflowState> builder)
+        public void Configure(EntityTypeBuilder<Status> builder)
         {
-            builder.ToTable("WorkflowState");
+            builder.ToTable("Status");
 
             builder.HasKey(x => x.RawId);
 
@@ -69,16 +69,16 @@ namespace KleeneStar.Model.Configure
             builder.HasIndex(x => new { x.ClassId, x.Name })
                 .IsUnique();
 
-            builder.Property(x => x.WorkflowId)
-                .HasColumnName("Workflow")
+            builder.Property(x => x.CategoryId)
+                .HasColumnName("Category")
                 .IsRequired();
 
-            builder.HasOne(x => x.Workflow)
+            builder.HasOne(x => x.Category)
                 .WithMany()
-                .HasForeignKey(x => x.WorkflowId)
+                .HasForeignKey(x => x.CategoryId)
                 .HasPrincipalKey(w => w.Id);
 
-            builder.HasIndex(x => new { x.WorkflowId, x.Name })
+            builder.HasIndex(x => new { x.CategoryId, x.Name, x.ClassId })
                 .IsUnique();
         }
     }

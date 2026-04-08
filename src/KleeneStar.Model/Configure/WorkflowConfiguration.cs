@@ -8,7 +8,7 @@ namespace KleeneStar.Model.Configure
     /// <summary>
     /// Provides the Entity Framework Core configuration for the workflow entity type.
     /// </summary>
-    internal class FWorkflowConfiguration : IEntityTypeConfiguration<Workflow>
+    internal class WorkflowConfiguration : IEntityTypeConfiguration<Workflow>
     {
         /// <summary>
         /// Configuration of the workflow entity.
@@ -56,12 +56,6 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Guid")
                 .IsRequired()
                 .HasMaxLength(36);
-
-            // MANY - TO - 1: Workflow <-> State
-            builder.HasMany(w => w.States)
-                .WithOne(s => s.Workflow)
-                .HasForeignKey(s => s.WorkflowId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             // MANY - TO - 1: Workflow <-> Transition
             builder.HasMany(w => w.Transitions)

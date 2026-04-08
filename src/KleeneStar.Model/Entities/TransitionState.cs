@@ -1,12 +1,12 @@
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Specifies the state of a workflow, indicating whether it is active or deleted.
+    /// Specifies the state of a transition, indicating whether it is active or deleted.
     /// </summary>
-    public enum WorkflowState
+    public enum TransitionState
     {
         /// <summary>
-        /// Indicates that the workflow is fully configured, visible, and interactively usable.
+        /// Indicates that the transition is fully configured, visible, and interactively usable.
         /// </summary>
         Active,
 

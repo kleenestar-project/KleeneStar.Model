@@ -35,7 +35,7 @@ namespace KleeneStar.Model
                         Summary = summary,
                         Description = description,
                         Icon = cls.Icon,
-                        State = TypeWorkspaceState.Active,
+                        State = WorkspaceState.Active,
                         WorkspaceId = cls.WorkspaceId,
                         ClassId = cls.Id,
                         Created = DateTime.UtcNow,

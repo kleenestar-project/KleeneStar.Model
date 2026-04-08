@@ -33,39 +33,39 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the icon associated with this dashboard.
+        /// Gets or sets the icon associated with this dashboard.
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
 
         /// <summary>
-        /// Returns the collection of category names associated with the dashboard.
+        /// Gets or sets the collection of category names associated with the dashboard.
         /// </summary>
         [RestConverter<CategoryConverter>()]
         public List<Category> Categories { get; set; } = [];
 
         /// <summary>
-        /// Returns the description of the dashboard.
+        /// Gets or sets the description of the dashboard.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Returns the current state of the dashboard.
+        /// Gets or sets the current state of the dashboard.
         /// </summary>
-        public TypeDashboardState State { get; set; }
+        public DashboardState State { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was created.
+        /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Returns the date and time when the entity was updated.
+        /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Returns the collection of columns associated with this dashboard.
+        /// Gets or sets the collection of columns associated with this dashboard.
         /// </summary>
         public List<DashboardColumn> Columns { get; set; } = [];
 

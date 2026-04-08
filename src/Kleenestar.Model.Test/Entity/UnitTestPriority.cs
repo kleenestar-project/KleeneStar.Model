@@ -25,9 +25,9 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a Priority instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Priority A", "Description A", TypeWorkspaceState.Active)]
-        [InlineData("Priority B", null, TypeWorkspaceState.Archived)]
-        public void SetProperties(string name, string description, TypeWorkspaceState state)
+        [InlineData("Priority A", "Description A", PriorityState.Active)]
+        [InlineData("Priority B", null, PriorityState.Archived)]
+        public void SetProperties(string name, string description, PriorityState state)
         {
             // arrange
             var priority = new Priority();

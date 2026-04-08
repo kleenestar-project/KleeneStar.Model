@@ -24,12 +24,12 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Returns the name of the workspace category.
+        /// Gets or sets the name of the workspace category.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Returns the description of the category.
+        /// Gets or sets the description of the category.
         /// </summary>
         public string Description { get; set; }
 
