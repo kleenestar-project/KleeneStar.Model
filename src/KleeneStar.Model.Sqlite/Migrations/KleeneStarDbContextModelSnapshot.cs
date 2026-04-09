@@ -201,6 +201,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<int>("AccessModifier")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AccessModifier");
+
+                    b.Property<int>("Cardinality")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Cardinality");
+
                     b.Property<Guid>("ClassId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Class");
@@ -209,9 +217,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
 
+                    b.Property<string>("DefaultSpec")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DefaultSpec");
+
+                    b.Property<bool>("Deprecated")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Deprecated");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT")
                         .HasColumnName("Description");
+
+                    b.Property<string>("FieldType")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("FieldType");
+
+                    b.Property<string>("HelpText")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("HelpText");
 
                     b.Property<string>("Icon")
                         .HasMaxLength(256)
@@ -229,13 +254,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<string>("Placeholder")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Placeholder");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Required");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
 
+                    b.Property<bool>("Unique")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Unique");
+
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
+
+                    b.Property<string>("ValidationRules")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ValidationRules");
 
                     b.HasKey("RawId");
 
