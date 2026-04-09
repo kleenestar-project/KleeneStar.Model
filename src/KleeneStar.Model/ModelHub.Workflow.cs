@@ -50,6 +50,8 @@ namespace KleeneStar.Model
         public static IEnumerable<Workflow> GetWorkflows(IQuery<Workflow> query, KleeneStarDbContext context)
         {
             var data = context.Workflows
+                .Include(x => x.Class)
+                    .ThenInclude(x => x.Workspace)
                 .AsNoTracking();
 
             return query.Apply(data); // none materialize query
