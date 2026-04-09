@@ -50,6 +50,8 @@ namespace KleeneStar.Model
         public static IEnumerable<Form> GetForms(IQuery<Form> query, KleeneStarDbContext context)
         {
             var data = context.Forms
+                .Include(form => form.Class)
+                    .ThenInclude(@class => @class.Workspace)
                 .AsNoTracking();
 
             return query.Apply(data); // none materialize query
