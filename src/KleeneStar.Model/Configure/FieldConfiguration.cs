@@ -1,6 +1,7 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
 using System.Text.Json;
 using WebExpress.WebUI.WebIcon;
 
@@ -87,8 +88,8 @@ namespace KleeneStar.Model.Configure
                 (
                     v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
                     v => string.IsNullOrEmpty(v)
-                        ? new System.Collections.Generic.List<string>()
-                        : JsonSerializer.Deserialize<System.Collections.Generic.List<string>>(v, (JsonSerializerOptions)null)
+                        ? new List<string>()
+                        : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)
                 );
 
             builder.Property(x => x.DefaultSpec)
