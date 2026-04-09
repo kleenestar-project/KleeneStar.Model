@@ -109,14 +109,32 @@ namespace KleeneStar.Model
         /// <summary>
         /// Removes the specified form from the data store if it exists.
         /// </summary>
+        /// <remarks>
+        /// Standard forms cannot be removed. Only additional forms can be deleted.
+        /// </remarks>
         /// <param name="formEntry">
         /// The form entity to remove.
         /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when attempting to remove a standard form.
+        /// </exception>
         public static void Remove(Form formEntry)
         {
             ArgumentNullException.ThrowIfNull(formEntry);
 
+            if (formEntry.FormType == FormType.Standard)
+            {
+                throw new InvalidOperationException("A standard form cannot be deleted.");
+            }
+
             using var db = CreateDbContext();
+
+            // verify the form in the database is not a standard form
+            var existing = db.Forms.FirstOrDefault(f => f.Id == formEntry.Id);
+            if (existing != null && existing.FormType == FormType.Standard)
+            {
+                throw new InvalidOperationException("A standard form cannot be deleted.");
+            }
 
             db.RemoveEntity(formEntry);
 

@@ -134,7 +134,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             using var db = ModelHub.CreateDbContext();
-            var form = new Form { Id = id, Name = "A" };
+            var form = new Form { Id = id, Name = "A", FormType = FormType.Additional };
             db.Forms.Add(form);
             db.SaveChanges();
 
@@ -163,7 +163,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             // act
-            ModelHub.Remove(new Form { RawId = 1, Id = id });
+            ModelHub.Remove(new Form { RawId = 1, Id = id, FormType = FormType.Additional });
 
             // validation
             using var db = ModelHub.CreateDbContext();
@@ -195,6 +195,62 @@ namespace Kleenestar.Model.Test.Hub
             // validation
             using var db2 = ModelHub.CreateDbContext();
             Assert.Equal("Updated", db2.Forms.Single().Name);
+        }
+
+        /// <summary>
+        /// Verifies that attempting to remove a standard form throws an InvalidOperationException.
+        /// </summary>
+        [Fact]
+        public void RemoveStandardFormThrows()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "RemoveStandardFormThrows",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var id = Guid.NewGuid();
+
+            using var db = ModelHub.CreateDbContext();
+            var form = new Form { Id = id, Name = "Standard", FormType = FormType.Standard };
+            db.Forms.Add(form);
+            db.SaveChanges();
+
+            // act & validation
+            Assert.Throws<InvalidOperationException>(() => ModelHub.Remove(form));
+
+            // verify the form still exists
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Single(db2.Forms);
+        }
+
+        /// <summary>
+        /// Verifies that an additional form can be removed successfully.
+        /// </summary>
+        [Fact]
+        public void RemoveAdditionalForm()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "RemoveAdditionalForm",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var id = Guid.NewGuid();
+
+            using var db = ModelHub.CreateDbContext();
+            var form = new Form { Id = id, Name = "Custom", FormType = FormType.Additional };
+            db.Forms.Add(form);
+            db.SaveChanges();
+
+            // act
+            ModelHub.Remove(form);
+
+            // validation
+            using var db2 = ModelHub.CreateDbContext();
+            Assert.Empty(db2.Forms);
         }
     }
 }

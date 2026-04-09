@@ -44,6 +44,9 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.State)
                 .HasColumnName("State");
 
+            builder.Property(x => x.FormType)
+                .HasColumnName("FormType");
+
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
                 .IsRequired();

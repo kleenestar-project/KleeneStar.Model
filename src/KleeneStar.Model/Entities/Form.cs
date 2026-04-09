@@ -33,6 +33,11 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the form, indicating whether it is a standard form or an additional form.
+        /// </summary>
+        public FormType FormType { get; set; }
+
+        /// <summary>
         /// Gets or sets the current state of the form.
         /// </summary>
         public FormState State { get; set; }

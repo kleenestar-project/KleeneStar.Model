@@ -202,5 +202,31 @@ namespace Kleenestar.Model.Test.Hub
             using var db2 = ModelHub.CreateDbContext();
             Assert.Equal("Updated", db2.Classes.Single().Name);
         }
+
+        /// <summary>
+        /// Verifies that adding a class automatically creates a standard form for it.
+        /// </summary>
+        [Fact]
+        public void AddClassCreatesStandardForm()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "AddClassCreatesStandardForm",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var classEntry = new Class { Id = Guid.NewGuid(), Name = "TestClass" };
+
+            // act
+            ModelHub.Add(classEntry);
+
+            // validation
+            using var db = ModelHub.CreateDbContext();
+            var forms = db.Forms.Where(f => f.ClassId == classEntry.Id).ToList();
+            Assert.Single(forms);
+            Assert.Equal("Standard", forms[0].Name);
+            Assert.Equal(FormType.Standard, forms[0].FormType);
+        }
     }
 }
