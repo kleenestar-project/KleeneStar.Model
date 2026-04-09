@@ -23,7 +23,7 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the display name of the status category (e.g. "In Progress").
+        /// Gets or sets the display name of the status category (e.g., "In Progress").
         /// </summary>
         public string Name { get; set; }
 
