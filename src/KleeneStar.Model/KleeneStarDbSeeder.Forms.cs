@@ -17,6 +17,8 @@ namespace KleeneStar.Model
         /// </summary>
         /// <remarks>
         /// This method is intended to seed the database with a standard set of forms. 
+        /// The first form created for each class is the standard form; all additional
+        /// forms are marked as additional forms.
         /// It does not save changes to the database; callers must call SaveChanges on the 
         /// context to persist the additions.
         /// </remarks>
@@ -29,17 +31,32 @@ namespace KleeneStar.Model
 
             foreach (var cls in classes)
             {
-                // retrieve the specific form templates for the current class
+                // create the standard form for this class
+                db.Forms.Add(new Form
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Standard",
+                    Description = "Standard form for the class.",
+                    FormType = FormType.Standard,
+                    State = FormState.Active,
+                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/default.svg"),
+                    ClassId = cls.Id,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
+                });
+
+                // retrieve the additional form templates for the current class
                 var templates = GetFormsTemplatesForClass(cls.Name);
 
                 foreach (var template in templates)
                 {
-                    // add the instantiated form entity to the context
+                    // add the instantiated form entity as an additional form
                     db.Forms.Add(new Form
                     {
                         Id = Guid.NewGuid(),
                         Name = template.Name,
                         Description = template.Description,
+                        FormType = FormType.Additional,
                         State = FormState.Active,
                         Icon = ImageIcon.FromString(template.Icon),
                         ClassId = cls.Id,

@@ -58,6 +58,7 @@ namespace KleeneStar.Model
 
         /// <summary>
         /// Adds the specified class to the database if it does not already exist.
+        /// A standard form is automatically created for the class.
         /// </summary>
         /// <remarks>
         /// If a class with the same key (case-insensitive) already exists in the 
@@ -82,6 +83,21 @@ namespace KleeneStar.Model
             }
 
             db.AddEntity(classEntry);
+
+            // automatically create a standard form for the new class
+            var standardForm = new Form
+            {
+                Id = Guid.NewGuid(),
+                Name = "Standard",
+                Description = "Standard form for the class.",
+                FormType = FormType.Standard,
+                State = FormState.Active,
+                ClassId = classEntry.Id,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+
+            db.AddEntity(standardForm);
 
             // persist changes
             db.SaveChanges();
