@@ -122,11 +122,6 @@ namespace KleeneStar.Model
         {
             ArgumentNullException.ThrowIfNull(formEntry);
 
-            if (formEntry.FormType == FormType.Standard)
-            {
-                throw new InvalidOperationException("A standard form cannot be deleted.");
-            }
-
             using var db = CreateDbContext();
 
             // verify the form in the database is not a standard form
