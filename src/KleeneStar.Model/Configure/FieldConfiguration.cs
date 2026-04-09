@@ -1,6 +1,8 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
+using System.Text.Json;
 using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Configure
@@ -31,6 +33,13 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
+
+            builder.Property(x => x.HelpText)
+                .HasColumnName("HelpText");
+
+            builder.Property(x => x.Placeholder)
+                .HasColumnName("Placeholder")
+                .HasMaxLength(256);
 
             builder.Property(x => x.Icon)
                 .HasColumnName("Icon")
@@ -65,6 +74,38 @@ namespace KleeneStar.Model.Configure
                 .WithMany()
                 .HasForeignKey(x => x.ClassId)
                 .HasPrincipalKey(w => w.Id);
+
+            builder.Property(x => x.FieldType)
+                .HasColumnName("FieldType")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.Cardinality)
+                .HasColumnName("Cardinality");
+
+            builder.Property(x => x.ValidationRules)
+                .HasColumnName("ValidationRules")
+                .HasConversion
+                (
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => string.IsNullOrEmpty(v)
+                        ? new List<string>()
+                        : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)
+                );
+
+            builder.Property(x => x.DefaultSpec)
+                .HasColumnName("DefaultSpec");
+
+            builder.Property(x => x.Required)
+                .HasColumnName("Required");
+
+            builder.Property(x => x.Unique)
+                .HasColumnName("Unique");
+
+            builder.Property(x => x.Deprecated)
+                .HasColumnName("Deprecated");
+
+            builder.Property(x => x.AccessModifier)
+                .HasColumnName("AccessModifier");
 
             builder.HasIndex(x => new { x.ClassId, x.Name })
                 .IsUnique();
