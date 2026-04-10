@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260410072057_InitialCreate")]
+    [Migration("20260410105404_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -449,6 +449,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Object", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.PermissionProfile", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("PermissionProfile", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Priority", b =>
                 {
                     b.Property<int>("RawId")
@@ -607,6 +637,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("StatusCategory", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Tenant", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Tenant", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Transition", b =>
                 {
                     b.Property<int>("RawId")
@@ -755,6 +815,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<int>("AccessModifier")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AccessModifier");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
@@ -773,6 +837,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Guid");
 
+                    b.Property<Guid?>("InheritedId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Inherited");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -785,6 +853,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<bool>("Sealed")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Sealed");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
@@ -794,6 +866,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Updated");
 
                     b.HasKey("RawId");
+
+                    b.HasIndex("InheritedId");
 
                     b.HasIndex("Key")
                         .IsUnique();
@@ -817,6 +891,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("WorkspaceId");
 
                     b.ToTable("WorkspaceCategory");
+                });
+
+            modelBuilder.Entity("WorkspacePermissionProfile", b =>
+                {
+                    b.Property<int>("PermissionProfileId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PermissionProfileId", "WorkspaceId");
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.ToTable("WorkspacePermissionProfile");
+                });
+
+            modelBuilder.Entity("WorkspaceTenant", b =>
+                {
+                    b.Property<int>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TenantId", "WorkspaceId");
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.ToTable("WorkspaceTenant");
                 });
 
             modelBuilder.Entity("ClassAllowedChild", b =>
@@ -864,7 +968,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
-                        .WithMany()
+                        .WithMany("Classes")
                         .HasForeignKey("WorkspaceId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -923,7 +1027,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
-                        .WithMany()
+                        .WithMany("Objects")
                         .HasForeignKey("WorkspaceId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1025,11 +1129,52 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Class");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Inherited")
+                        .WithMany()
+                        .HasForeignKey("InheritedId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Inherited");
+                });
+
             modelBuilder.Entity("WorkspaceCategory", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WorkspacePermissionProfile", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.PermissionProfile", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WorkspaceTenant", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1055,6 +1200,13 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Statuses");
 
                     b.Navigation("Transitions");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
+                {
+                    b.Navigation("Classes");
+
+                    b.Navigation("Objects");
                 });
 #pragma warning restore 612, 618
         }
