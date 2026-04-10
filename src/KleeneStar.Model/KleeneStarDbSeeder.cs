@@ -15,7 +15,8 @@ public static class KleeneStarDbSeeder
     /// <param name="context">The database context to seed.</param>
     public static async Task SeedAsync(KleeneStarDbContext context)
     {
-        // ensure the database schema is created
+        // ensure the database schema is created (intended for development/testing only;
+        // production environments should use context.Database.MigrateAsync() instead)
         await context.Database.EnsureCreatedAsync();
 
         // seed permissions first as policies depend on them
@@ -265,10 +266,13 @@ public static class KleeneStarDbSeeder
 
         foreach (var (workspaceName, groupName, policyName) in profileDefinitions)
         {
-            // resolve the referenced entities
-            var workspace = workspaces[workspaceName];
-            var group = groups[groupName];
-            var policy = policies[policyName];
+            // resolve the referenced entities with validation
+            if (!workspaces.TryGetValue(workspaceName, out var workspace))
+                throw new InvalidOperationException($"workspace '{workspaceName}' not found during seeding.");
+            if (!groups.TryGetValue(groupName, out var group))
+                throw new InvalidOperationException($"group '{groupName}' not found during seeding.");
+            if (!policies.TryGetValue(policyName, out var policy))
+                throw new InvalidOperationException($"policy '{policyName}' not found during seeding.");
 
             // create a permission profile linking them together
             var profile = new PermissionProfile
