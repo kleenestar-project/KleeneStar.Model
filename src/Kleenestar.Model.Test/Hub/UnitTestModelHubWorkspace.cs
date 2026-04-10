@@ -358,7 +358,7 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
-        /// Verifies that permission profiles can be associated with a workspace through the many-to-many relationship.
+        /// Verifies that permission profiles can be associated with a workspace through the one-to-many relationship.
         /// </summary>
         [Fact]
         public void PersistWorkspaceWithPermissionProfiles()
@@ -372,18 +372,26 @@ namespace Kleenestar.Model.Test.Hub
 
             using (var db = ModelHub.CreateDbContext())
             {
-                var p1 = new PermissionProfile { Id = Guid.NewGuid(), Name = "Admin" };
-                var p2 = new PermissionProfile { Id = Guid.NewGuid(), Name = "Viewer" };
-                db.PermissionProfiles.AddRange(p1, p2);
+                var group1 = new Group { Id = Guid.NewGuid(), Name = "Admin" };
+                var group2 = new Group { Id = Guid.NewGuid(), Name = "Viewer" };
+                db.Groups.AddRange(group1, group2);
+
+                var policy = new Policy { Id = Guid.NewGuid(), Name = "workspace_admin_policy" };
+                db.Policies.Add(policy);
                 db.SaveChanges();
 
+                var workspaceId = Guid.NewGuid();
                 db.Workspaces.Add(new Workspace
                 {
-                    Id = Guid.NewGuid(),
+                    Id = workspaceId,
                     Name = "Profiled WS",
-                    Key = "PP",
-                    PermissionProfiles = [p1, p2]
+                    Key = "PP"
                 });
+                db.SaveChanges();
+
+                var p1 = new PermissionProfile { Id = Guid.NewGuid(), GroupId = group1.Id, PolicyId = policy.Id, WorkspaceId = workspaceId };
+                var p2 = new PermissionProfile { Id = Guid.NewGuid(), GroupId = group2.Id, PolicyId = policy.Id, WorkspaceId = workspaceId };
+                db.PermissionProfiles.AddRange(p1, p2);
                 db.SaveChanges();
             }
 

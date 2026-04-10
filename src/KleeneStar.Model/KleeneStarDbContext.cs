@@ -87,6 +87,21 @@ namespace KleeneStar.Model
         public DbSet<Tenant> Tenants { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of permissions.
+        /// </summary>
+        public DbSet<Permission> Permissions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of policies.
+        /// </summary>
+        public DbSet<Policy> Policies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of groups.
+        /// </summary>
+        public DbSet<Group> Groups { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of permission profiles.
         /// </summary>
         public DbSet<PermissionProfile> PermissionProfiles { get; set; }

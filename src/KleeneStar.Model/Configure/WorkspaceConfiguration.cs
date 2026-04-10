@@ -115,24 +115,6 @@ namespace KleeneStar.Model.Configure
                         .OnDelete(DeleteBehavior.Cascade)
                 );
 
-            // MANY-TO-MANY: Workspace <-> PermissionProfile
-            builder.HasMany(w => w.PermissionProfiles)
-                .WithMany(p => p.Workspaces)
-                .UsingEntity<Dictionary<string, object>>
-                (
-                    "WorkspacePermissionProfile",
-                    j => j
-                        .HasOne<PermissionProfile>()
-                        .WithMany()
-                        .HasForeignKey("PermissionProfileId")
-                        .OnDelete(DeleteBehavior.Cascade),
-                    j => j
-                        .HasOne<Workspace>()
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                );
-
             builder.HasIndex(x => x.Name)
                 .IsUnique();
 

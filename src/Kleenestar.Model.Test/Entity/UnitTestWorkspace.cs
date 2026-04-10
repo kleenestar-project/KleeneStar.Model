@@ -302,8 +302,8 @@ namespace Kleenestar.Model.Test.Entity
             var workspace = new Workspace();
             var profilesList = new List<PermissionProfile>
             {
-                new PermissionProfile { Name = "Admin" },
-                new PermissionProfile { Name = "Viewer" }
+                new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() },
+                new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() }
             };
 
             // act
