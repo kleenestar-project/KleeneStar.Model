@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
@@ -58,6 +59,18 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of classes associated with this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<Class> Classes { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the collection of objects associated with this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<Object> Objects { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the date and time when the entity was created.

@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model.Entities;
 using WebExpress.WebUI.WebIcon;
+using KleeneStarObject = KleeneStar.Model.Entities.Object;
 
 namespace Kleenestar.Model.Test.Entity
 {
@@ -69,6 +70,79 @@ namespace Kleenestar.Model.Test.Entity
 
             // validation
             Assert.Equal(categoriesList, workspace.Categories);
+        }
+
+        /// <summary>
+        /// Verifies that a new Workspace instance has an empty Classes collection by default.
+        /// </summary>
+        [Fact]
+        public void DefaultClassesCollectionIsEmpty()
+        {
+            // act
+            var workspace = new Workspace();
+
+            // validation
+            Assert.NotNull(workspace.Classes);
+            Assert.Empty(workspace.Classes);
+        }
+
+        /// <summary>
+        /// Verifies that a new Workspace instance has an empty Objects collection by default.
+        /// </summary>
+        [Fact]
+        public void DefaultObjectsCollectionIsEmpty()
+        {
+            // act
+            var workspace = new Workspace();
+
+            // validation
+            Assert.NotNull(workspace.Objects);
+            Assert.Empty(workspace.Objects);
+        }
+
+        /// <summary>
+        /// Sets the classes for the workspace and verifies the collection is assigned correctly.
+        /// </summary>
+        [Fact]
+        public void SetClasses()
+        {
+            // arrange
+            var workspace = new Workspace();
+            var classesList = new List<Class>
+            {
+                new Class { Name = "ClassA" },
+                new Class { Name = "ClassB" },
+                new Class { Name = "ClassC" }
+            };
+
+            // act
+            workspace.Classes = classesList;
+
+            // validation
+            Assert.Equal(3, workspace.Classes.Count);
+            Assert.Equal(classesList, workspace.Classes);
+        }
+
+        /// <summary>
+        /// Sets the objects for the workspace and verifies the collection is assigned correctly.
+        /// </summary>
+        [Fact]
+        public void SetObjects()
+        {
+            // arrange
+            var workspace = new Workspace();
+            var objectsList = new List<KleeneStarObject>
+            {
+                new KleeneStarObject { Key = "OBJ-1", Summary = "Object 1" },
+                new KleeneStarObject { Key = "OBJ-2", Summary = "Object 2" }
+            };
+
+            // act
+            workspace.Objects = objectsList;
+
+            // validation
+            Assert.Equal(2, workspace.Objects.Count);
+            Assert.Equal(objectsList, workspace.Objects);
         }
     }
 }

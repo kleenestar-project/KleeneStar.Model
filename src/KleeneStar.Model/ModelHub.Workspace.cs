@@ -53,7 +53,9 @@ namespace KleeneStar.Model
         {
             var data = context.Workspaces
                 .AsNoTracking()
-                .Include(w => w.Categories);
+                .Include(w => w.Categories)
+                .Include(w => w.Classes)
+                .Include(w => w.Objects);
 
             return query.Apply(data); // none materialize query
         }
@@ -83,7 +85,7 @@ namespace KleeneStar.Model
                 return;
             }
 
-            db.AddEntity(workspace, ["Categories"]);
+            db.AddEntity(workspace, ["Categories", "Classes", "Objects"]);
 
             // persist changes
             db.SaveChanges();
@@ -101,7 +103,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
-            db.UpdateEntity(workspace, ["Categories"]);
+            db.UpdateEntity(workspace, ["Categories", "Classes", "Objects"]);
 
             // persist changes
             db.SaveChanges();
@@ -121,7 +123,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
-            db.RemoveEntity(workspace, ["Categories"]);
+            db.RemoveEntity(workspace, ["Categories", "Classes", "Objects"]);
 
             // persist changes
             db.SaveChanges();
