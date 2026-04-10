@@ -51,6 +51,9 @@ namespace KleeneStar.Model
         {
             var data = context.Classes
                 .Include(x => x.Workspace)
+                .Include(x => x.Inherited)
+                .Include(x => x.Parent)
+                .Include(x => x.AllowedChildren)
                 .AsNoTracking();
 
             return query.Apply(data); // none materialize query

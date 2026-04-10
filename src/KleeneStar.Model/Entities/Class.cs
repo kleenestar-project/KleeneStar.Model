@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
@@ -23,6 +25,12 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the unique identifier for the class.
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the key of the class.
+        /// </summary>
+        [ValidateMinLength(2)]
+        public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the class.
@@ -54,6 +62,49 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the date and time when the entity was updated.
         /// </summary>
         public DateTime Updated { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the class is abstract.
+        /// </summary>
+        public bool IsAbstract { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the class this class inherits from.
+        /// </summary>
+        public Guid? InheritedId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the class this class inherits from.
+        /// </summary>
+        [JsonIgnore]
+        public Class Inherited { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the class is sealed.
+        /// </summary>
+        public bool Sealed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the parent class.
+        /// </summary>
+        public Guid? ParentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent class.
+        /// </summary>
+        [JsonIgnore]
+        public Class Parent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the access modifier controlling the visibility of this class.
+        /// </summary>
+        public AccessModifier AccessModifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of classes allowed as children of this class.
+        /// </summary>
+        [JsonIgnore]
+        public List<Class> AllowedChildren { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the unique identifier of the workspace associated with this class.

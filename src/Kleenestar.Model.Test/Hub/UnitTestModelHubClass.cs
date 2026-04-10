@@ -29,8 +29,8 @@ namespace Kleenestar.Model.Test.Hub
             using (var db = ModelHub.CreateDbContext())
             {
                 db.Workspaces.Add(new Workspace { Id = workspaceId, Name = "W", Key = "W" });
-                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Alpha", WorkspaceId = workspaceId });
-                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Beta", WorkspaceId = workspaceId });
+                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Alpha", Key = "ALPHA", WorkspaceId = workspaceId });
+                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Beta", Key = "BETA", WorkspaceId = workspaceId });
                 db.SaveChanges();
             }
 
@@ -60,8 +60,8 @@ namespace Kleenestar.Model.Test.Hub
             using (var db = ModelHub.CreateDbContext())
             {
                 db.Workspaces.Add(new Workspace { Id = workspaceId, Name = "W", Key = "W" });
-                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Alpha", WorkspaceId = workspaceId });
-                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Beta", WorkspaceId = workspaceId });
+                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Alpha", Key = "ALPHA", WorkspaceId = workspaceId });
+                db.Classes.Add(new Class { Id = Guid.NewGuid(), Name = "Beta", Key = "BETA", WorkspaceId = workspaceId });
                 db.SaveChanges();
             }
 
@@ -87,7 +87,7 @@ namespace Kleenestar.Model.Test.Hub
                 Assembly = "KleeneStar.Model.Test"
             };
 
-            var classEntry = new Class { Id = Guid.NewGuid(), Name = "A" };
+            var classEntry = new Class { Id = Guid.NewGuid(), Name = "A", Key = "A" };
 
             // act
             ModelHub.Add(classEntry);
@@ -112,8 +112,8 @@ namespace Kleenestar.Model.Test.Hub
             };
 
             var id = Guid.NewGuid();
-            var class1 = new Class { Id = id, Name = "Alpha" };
-            var class2 = new Class { Id = id, Name = "Beta" }; // same ID
+            var class1 = new Class { Id = id, Name = "Alpha", Key = "ALPHA" };
+            var class2 = new Class { Id = id, Name = "Beta", Key = "BETA" }; // same ID
 
             // act
             ModelHub.Add(class1);
@@ -140,7 +140,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             using var db = ModelHub.CreateDbContext();
-            var classEntry = new Class { Id = id, Name = "A" };
+            var classEntry = new Class { Id = id, Name = "A", Key = "A" };
             db.Classes.Add(classEntry);
             db.SaveChanges();
 
@@ -190,7 +190,7 @@ namespace Kleenestar.Model.Test.Hub
             };
 
             using var db = ModelHub.CreateDbContext();
-            var classEntry = new Class { Id = Guid.NewGuid(), Name = "Original" };
+            var classEntry = new Class { Id = Guid.NewGuid(), Name = "Original", Key = "ORIGINAL" };
             db.Classes.Add(classEntry);
             db.SaveChanges();
 
@@ -216,7 +216,7 @@ namespace Kleenestar.Model.Test.Hub
                 Assembly = "KleeneStar.Model.Test"
             };
 
-            var classEntry = new Class { Id = Guid.NewGuid(), Name = "TestClass" };
+            var classEntry = new Class { Id = Guid.NewGuid(), Name = "TestClass", Key = "TESTCLASS" };
 
             // act
             ModelHub.Add(classEntry);

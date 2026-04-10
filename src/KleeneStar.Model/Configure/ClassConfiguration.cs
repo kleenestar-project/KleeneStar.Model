@@ -1,6 +1,7 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
 using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Configure
@@ -23,6 +24,11 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.RawId)
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();
+
+            builder.Property(x => x.Key)
+                .HasColumnName("Key")
+                .IsRequired()
+                .HasMaxLength(64);
 
             builder.Property(x => x.Name)
                 .HasColumnName("Name")
@@ -57,6 +63,51 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
+            builder.Property(x => x.IsAbstract)
+                .HasColumnName("IsAbstract");
+
+            builder.Property(x => x.InheritedId)
+                .HasColumnName("Inherited");
+
+            builder.HasOne(x => x.Inherited)
+                .WithMany()
+                .HasForeignKey(x => x.InheritedId)
+                .HasPrincipalKey(c => c.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.Sealed)
+                .HasColumnName("Sealed");
+
+            builder.Property(x => x.ParentId)
+                .HasColumnName("Parent");
+
+            builder.HasOne(x => x.Parent)
+                .WithMany()
+                .HasForeignKey(x => x.ParentId)
+                .HasPrincipalKey(c => c.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.AccessModifier)
+                .HasColumnName("AccessModifier");
+
+            // MANY-TO-MANY: Class <-> AllowedChildren (self-referencing)
+            builder.HasMany(x => x.AllowedChildren)
+                .WithMany()
+                .UsingEntity<Dictionary<string, object>>
+                (
+                    "ClassAllowedChild",
+                    j => j
+                        .HasOne<Class>()
+                        .WithMany()
+                        .HasForeignKey("ChildId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<Class>()
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                );
+
             builder.Property(x => x.WorkspaceId)
                 .HasColumnName("Workspace")
                 .IsRequired();
@@ -67,6 +118,9 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(w => w.Id);
 
             builder.HasIndex(x => new { x.WorkspaceId, x.Name })
+                .IsUnique();
+
+            builder.HasIndex(x => new { x.WorkspaceId, x.Key })
                 .IsUnique();
         }
     }
