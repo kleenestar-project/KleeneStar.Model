@@ -26,8 +26,41 @@ namespace Kleenestar.Model.Test.Hub
 
             using (var db = ModelHub.CreateDbContext())
             {
-                db.Workflows.Add(new Workflow { Id = Guid.NewGuid(), Name = "Alpha" });
-                db.Workflows.Add(new Workflow { Id = Guid.NewGuid(), Name = "Beta" });
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.Parse("659147B8-2463-40CA-ACBE-3E0290F747AA"),
+                    Key = "ws-1",
+                    Name = "workspace"
+                });
+                db.SaveChanges();
+            }
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Classes.Add(new Class
+                {
+                    Id = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A"),
+                    Key = "class-1",
+                    Name = "class",
+                    WorkspaceId = Guid.Parse("659147B8-2463-40CA-ACBE-3E0290F747AA")
+                });
+                db.SaveChanges();
+            }
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workflows.Add(new Workflow
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Alpha",
+                    ClassId = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A")
+                });
+                db.Workflows.Add(new Workflow
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Beta",
+                    ClassId = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A")
+                });
                 db.SaveChanges();
             }
 
@@ -54,8 +87,41 @@ namespace Kleenestar.Model.Test.Hub
 
             using (var db = ModelHub.CreateDbContext())
             {
-                db.Workflows.Add(new Workflow { Id = Guid.NewGuid(), Name = "Alpha" });
-                db.Workflows.Add(new Workflow { Id = Guid.NewGuid(), Name = "Beta" });
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.Parse("659147B8-2463-40CA-ACBE-3E0290F747AA"),
+                    Key = "ws-1",
+                    Name = "workspace"
+                });
+                db.SaveChanges();
+            }
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Classes.Add(new Class
+                {
+                    Id = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A"),
+                    Key = "class-1",
+                    Name = "class",
+                    WorkspaceId = Guid.Parse("659147B8-2463-40CA-ACBE-3E0290F747AA")
+                });
+                db.SaveChanges();
+            }
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workflows.Add(new Workflow
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Alpha",
+                    ClassId = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A")
+                });
+                db.Workflows.Add(new Workflow
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Beta",
+                    ClassId = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A")
+                });
                 db.SaveChanges();
             }
 
