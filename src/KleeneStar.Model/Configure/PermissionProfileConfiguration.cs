@@ -28,15 +28,41 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
-            builder.Property(x => x.Name)
-                .HasColumnName("Name")
-                .IsRequired()
-                .HasMaxLength(64);
+            builder.Property(x => x.GroupId)
+                .HasColumnName("GroupId")
+                .IsRequired();
 
-            builder.Property(x => x.Description)
-                .HasColumnName("Description");
+            builder.Property(x => x.PolicyId)
+                .HasColumnName("PolicyId")
+                .IsRequired();
 
-            builder.HasIndex(x => x.Name)
+            builder.Property(x => x.WorkspaceId)
+                .HasColumnName("WorkspaceId")
+                .IsRequired();
+
+            // ONE-TO-MANY: Group -> PermissionProfile
+            builder.HasOne(x => x.Group)
+                .WithMany(g => g.PermissionProfiles)
+                .HasForeignKey(x => x.GroupId)
+                .HasPrincipalKey(g => g.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ONE-TO-MANY: Policy -> PermissionProfile
+            builder.HasOne(x => x.Policy)
+                .WithMany(p => p.PermissionProfiles)
+                .HasForeignKey(x => x.PolicyId)
+                .HasPrincipalKey(p => p.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ONE-TO-MANY: Workspace -> PermissionProfile
+            builder.HasOne(x => x.Workspace)
+                .WithMany(w => w.PermissionProfiles)
+                .HasForeignKey(x => x.WorkspaceId)
+                .HasPrincipalKey(w => w.Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // a group may appear at most once per workspace
+            builder.HasIndex(x => new { x.WorkspaceId, x.GroupId })
                 .IsUnique();
         }
     }

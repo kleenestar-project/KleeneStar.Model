@@ -19,10 +19,11 @@ namespace KleeneStar.Model
         /// </param>
         private static void SeedWorkspaces(KleeneStarDbContext db)
         {
+            // helper to add a workspace with optional tenants and categories
             void add(string id, string name, string key, string description, string icon,
                 WorkspaceState state, WorkspaceAccessModifier accessModifier = WorkspaceAccessModifier.Private,
                 bool isSealed = false, string inheritedId = null,
-                string[] tenantNames = null, string[] permissionProfileNames = null,
+                string[] tenantNames = null,
                 params string[] categories) =>
                 db.Workspaces.Add(new Workspace
                 {
@@ -39,9 +40,6 @@ namespace KleeneStar.Model
                     Tenants = tenantNames != null
                         ? [.. db.Tenants.Where(x => tenantNames.Contains(x.Name))]
                         : [],
-                    PermissionProfiles = permissionProfileNames != null
-                        ? [.. db.PermissionProfiles.Where(x => permissionProfileNames.Contains(x.Name))]
-                        : [],
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
                 });
@@ -56,7 +54,6 @@ namespace KleeneStar.Model
                 WorkspaceState.Active,
                 accessModifier: WorkspaceAccessModifier.Public,
                 tenantNames: ["Acme Corp", "Globex Inc"],
-                permissionProfileNames: ["Administrator", "Viewer"],
                 categories: ["Infrastructure", "Compliance"]
             );
 
@@ -70,7 +67,6 @@ namespace KleeneStar.Model
                 WorkspaceState.Active,
                 accessModifier: WorkspaceAccessModifier.Internal,
                 tenantNames: ["Acme Corp"],
-                permissionProfileNames: ["Administrator", "Editor"],
                 categories: ["Engineering"]
             );
 
@@ -135,7 +131,6 @@ namespace KleeneStar.Model
                 WorkspaceState.Active,
                 accessModifier: WorkspaceAccessModifier.Public,
                 tenantNames: ["Acme Corp", "Globex Inc", "Initech"],
-                permissionProfileNames: ["Administrator", "Editor", "Viewer"],
                 categories: ["Support"]
             );
         }

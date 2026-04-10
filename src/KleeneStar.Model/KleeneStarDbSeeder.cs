@@ -38,15 +38,33 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
-            if (!db.PermissionProfiles.Any())
+            if (!db.Permissions.Any())
             {
-                SeedPermissionProfiles(db);
+                SeedPermissions(db);
+                await db.SaveChangesAsync();
+            }
+
+            if (!db.Policies.Any())
+            {
+                SeedPolicies(db);
+                await db.SaveChangesAsync();
+            }
+
+            if (!db.Groups.Any())
+            {
+                SeedGroups(db);
                 await db.SaveChangesAsync();
             }
 
             if (!db.Workspaces.Any())
             {
                 SeedWorkspaces(db);
+                await db.SaveChangesAsync();
+            }
+
+            if (!db.PermissionProfiles.Any())
+            {
+                SeedPermissionProfiles(db);
                 await db.SaveChangesAsync();
             }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using WebExpress.WebIndex.WebAttribute;
@@ -7,7 +6,8 @@ using WebExpress.WebIndex.WebAttribute;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a permission profile that can be assigned to one or more workspaces.
+    /// Represents a permission profile that defines which policy a group receives
+    /// in a specific workspace. A profile is always scoped to exactly one workspace.
     /// </summary>
     public class PermissionProfile : IEntity
     {
@@ -24,20 +24,37 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the permission profile.
+        /// Gets or sets the unique identifier of the group assigned to this profile.
         /// </summary>
-        public string Name { get; set; }
+        public Guid GroupId { get; set; }
 
         /// <summary>
-        /// Gets or sets the description of the permission profile.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Gets or sets the collection of workspaces associated with this permission profile.
+        /// Gets or sets the group assigned to this profile.
         /// </summary>
         [JsonIgnore]
-        public List<Workspace> Workspaces { get; set; } = [];
+        public Group Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the policy assigned to this profile.
+        /// </summary>
+        public Guid PolicyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the policy assigned to this profile.
+        /// </summary>
+        [JsonIgnore]
+        public Policy Policy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the workspace this profile is scoped to.
+        /// </summary>
+        public Guid WorkspaceId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the workspace this profile is scoped to.
+        /// </summary>
+        [JsonIgnore]
+        public Workspace Workspace { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.
