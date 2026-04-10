@@ -82,6 +82,16 @@ namespace KleeneStar.Model
         public DbSet<Widget> Widgets { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of tenants.
+        /// </summary>
+        public DbSet<Tenant> Tenants { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of permission profiles.
+        /// </summary>
+        public DbSet<PermissionProfile> PermissionProfiles { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

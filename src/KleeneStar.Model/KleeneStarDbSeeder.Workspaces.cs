@@ -19,7 +19,11 @@ namespace KleeneStar.Model
         /// </param>
         private static void SeedWorkspaces(KleeneStarDbContext db)
         {
-            void add(string id, string name, string key, string description, string icon, WorkspaceState state, params string[] categories) =>
+            void add(string id, string name, string key, string description, string icon,
+                WorkspaceState state, WorkspaceAccessModifier accessModifier = WorkspaceAccessModifier.Private,
+                bool isSealed = false, string inheritedId = null,
+                string[] tenantNames = null, string[] permissionProfileNames = null,
+                params string[] categories) =>
                 db.Workspaces.Add(new Workspace
                 {
                     Id = Guid.Parse(id),
@@ -28,7 +32,16 @@ namespace KleeneStar.Model
                     Description = description,
                     State = state,
                     Icon = ImageIcon.FromString(icon),
+                    AccessModifier = accessModifier,
+                    Sealed = isSealed,
+                    InheritedId = inheritedId != null ? Guid.Parse(inheritedId) : null,
                     Categories = [.. db.Categories.Where(x => categories.Contains(x.Name))],
+                    Tenants = tenantNames != null
+                        ? [.. db.Tenants.Where(x => tenantNames.Contains(x.Name))]
+                        : [],
+                    PermissionProfiles = permissionProfileNames != null
+                        ? [.. db.PermissionProfiles.Where(x => permissionProfileNames.Contains(x.Name))]
+                        : [],
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
                 });
@@ -41,7 +54,10 @@ namespace KleeneStar.Model
                 "Workspace for managing configuration items and asset relationships.",
                 "/kleenestar/assets/icons/cmdb.svg",
                 WorkspaceState.Active,
-                "Infrastructure", "Compliance"
+                accessModifier: WorkspaceAccessModifier.Public,
+                tenantNames: ["Acme Corp", "Globex Inc"],
+                permissionProfileNames: ["Administrator", "Viewer"],
+                categories: ["Infrastructure", "Compliance"]
             );
 
             add
@@ -52,7 +68,10 @@ namespace KleeneStar.Model
                 "Workspace for managing source code, repositories, development tasks, and release pipelines.",
                 "/kleenestar/assets/icons/dev.svg",
                 WorkspaceState.Active,
-                "Engineering"
+                accessModifier: WorkspaceAccessModifier.Internal,
+                tenantNames: ["Acme Corp"],
+                permissionProfileNames: ["Administrator", "Editor"],
+                categories: ["Engineering"]
             );
 
             add
@@ -63,7 +82,10 @@ namespace KleeneStar.Model
                 "Workspace for managing budgets, invoices, and financial approvals.",
                 "/kleenestar/assets/icons/fin.svg",
                 WorkspaceState.Active,
-                "Finance"
+                accessModifier: WorkspaceAccessModifier.Protected,
+                isSealed: true,
+                tenantNames: ["Globex Inc"],
+                categories: ["Finance"]
             );
 
             add
@@ -74,7 +96,9 @@ namespace KleeneStar.Model
                 "Workspace for managing employee records, onboarding, and organizational structure.",
                 "/kleenestar/assets/icons/hr.svg",
                 WorkspaceState.Active,
-                "HumanResources"
+                accessModifier: WorkspaceAccessModifier.Private,
+                tenantNames: ["Initech"],
+                categories: ["HumanResources"]
             );
 
             add
@@ -85,7 +109,9 @@ namespace KleeneStar.Model
                 "Workspace for planning features, tracking releases, and coordinating product strategy.",
                 "/kleenestar/assets/icons/pm.svg",
                 WorkspaceState.Archived,
-                "Development"
+                accessModifier: WorkspaceAccessModifier.Internal,
+                inheritedId: "660E9B11-2D54-4A36-84F9-F3BF5C78B748",
+                categories: ["Development"]
             );
 
             add
@@ -96,7 +122,7 @@ namespace KleeneStar.Model
                 "Workspace for managing purchase orders, supplier relations, and procurement workflows.",
                 "/kleenestar/assets/icons/proc.svg",
                 WorkspaceState.Archived,
-                "Operations"
+                categories: ["Operations"]
             );
 
             add
@@ -107,7 +133,10 @@ namespace KleeneStar.Model
                 "Workspace for handling service desk operations.",
                 "/kleenestar/assets/icons/sd.svg",
                 WorkspaceState.Active,
-                "Support"
+                accessModifier: WorkspaceAccessModifier.Public,
+                tenantNames: ["Acme Corp", "Globex Inc", "Initech"],
+                permissionProfileNames: ["Administrator", "Editor", "Viewer"],
+                categories: ["Support"]
             );
         }
     }

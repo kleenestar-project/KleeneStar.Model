@@ -32,6 +32,18 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (!db.Tenants.Any())
+            {
+                SeedTenants(db);
+                await db.SaveChangesAsync();
+            }
+
+            if (!db.PermissionProfiles.Any())
+            {
+                SeedPermissionProfiles(db);
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Workspaces.Any())
             {
                 SeedWorkspaces(db);

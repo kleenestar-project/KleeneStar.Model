@@ -61,6 +61,40 @@ namespace KleeneStar.Model.Entities
         public ImageIcon Icon { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the workspace this workspace inherits from.
+        /// </summary>
+        public Guid? InheritedId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the workspace this workspace inherits from.
+        /// </summary>
+        [JsonIgnore]
+        public Workspace Inherited { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the workspace is sealed
+        /// and cannot be inherited or structurally modified.
+        /// </summary>
+        public bool Sealed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the access modifier controlling the visibility and accessibility of this workspace.
+        /// </summary>
+        public WorkspaceAccessModifier AccessModifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of tenants associated with this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<Tenant> Tenants { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the collection of permission profiles assigned to this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
+
+        /// <summary>
         /// Gets or sets the collection of classes associated with this workspace.
         /// </summary>
         [JsonIgnore]
