@@ -52,7 +52,7 @@ namespace KleeneStar.Model
             // workspace: Finance and Controlling (FIN)
             add("9BDF73BB-9777-4FA5-9335-DA00A55D5337", "Budget", "BUDGET", "Budget planning and allocation.", "/kleenestar/assets/icons/budget.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("EFD694A1-5E7E-4C21-BC4A-1F270A9BDE01", "Invoice", "INVOICE", "Invoices and billing documents.", "/kleenestar/assets/icons/invoice.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
-            add("2DC257FD-74D5-4187-B845-E36BAAC30694", "Approval", "APPROVAL_FIN", "Financial approval workflows.", "/kleenestar/assets/icons/approval.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
+            add("2DC257FD-74D5-4187-B845-E36BAAC30694", "Approval", "FIN_APPROVAL", "Financial approval workflows.", "/kleenestar/assets/icons/approval.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("20C2A713-0593-4A01-8E54-44FCC8D09035", "CostCenter", "COSTCENTER", "Cost center management.", "/kleenestar/assets/icons/costcenter.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("C9CF53BA-1114-463F-B053-18469914E3E6", "Contract", "CONTRACT", "Financial contracts and agreements.", "/kleenestar/assets/icons/contract.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("2113E9E7-5F5F-48B7-8E16-57BD1EBBDA0B", "Forecast", "FORECAST", "Financial forecasting.", "/kleenestar/assets/icons/forecast.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
@@ -76,9 +76,9 @@ namespace KleeneStar.Model
             // workspace: Procurement (PROC)
             add("EBA77F0B-0EF1-4548-AC2C-9F6669D54AA4", "PurchaseOrder", "PURCHASEORDER", "Purchase orders and requests.", "/kleenestar/assets/icons/po.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
             add("858ADDB3-3A1B-4995-A340-1BF761259FA5", "Supplier", "SUPPLIER", "Supplier and vendor data.", "/kleenestar/assets/icons/supplier.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
-            add("8E6647BB-E2CF-416C-B0E3-C445686E271D", "Contract", "CONTRACT_PROC", "Procurement contracts.", "/kleenestar/assets/icons/contract.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
+            add("8E6647BB-E2CF-416C-B0E3-C445686E271D", "Contract", "PROC_CONTRACT", "Procurement contracts.", "/kleenestar/assets/icons/contract.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
             add("CF323A7C-FDC2-486C-895B-C7AFA4978C1D", "Tender", "TENDER", "Tender and bidding processes.", "/kleenestar/assets/icons/tender.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
-            add("AD4EF26A-B871-4000-B5F1-89D4510F4992", "Invoice", "INVOICE_PROC", "Procurement-related invoices.", "/kleenestar/assets/icons/invoice.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
+            add("AD4EF26A-B871-4000-B5F1-89D4510F4992", "Invoice", "PROC_INVOICE", "Procurement-related invoices.", "/kleenestar/assets/icons/invoice.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
             add("E8E3A5FD-BD60-40AC-8590-4C24C0E5A7ED", "Delivery", "DELIVERY", "Delivery and logistics tracking.", "/kleenestar/assets/icons/delivery.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
 
             // workspace: IT Service Desk (SD)
