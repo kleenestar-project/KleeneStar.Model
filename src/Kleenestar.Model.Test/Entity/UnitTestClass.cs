@@ -42,5 +42,177 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Equal(description, classEntry.Description);
             Assert.Equal(state, classEntry.State);
         }
+
+        /// <summary>
+        /// Sets the key property and verifies it is assigned correctly.
+        /// </summary>
+        [Theory]
+        [InlineData("KEY1")]
+        [InlineData("MY_CLASS")]
+        public void SetKey(string key)
+        {
+            // arrange
+            var classEntry = new Class();
+
+            // act
+            classEntry.Key = key;
+
+            // validation
+            Assert.Equal(key, classEntry.Key);
+        }
+
+        /// <summary>
+        /// Sets the IsAbstract property and verifies the value.
+        /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void SetIsAbstract(bool isAbstract)
+        {
+            // arrange
+            var classEntry = new Class();
+
+            // act
+            classEntry.IsAbstract = isAbstract;
+
+            // validation
+            Assert.Equal(isAbstract, classEntry.IsAbstract);
+        }
+
+        /// <summary>
+        /// Sets the Sealed property and verifies the value.
+        /// </summary>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void SetSealed(bool isSealed)
+        {
+            // arrange
+            var classEntry = new Class();
+
+            // act
+            classEntry.Sealed = isSealed;
+
+            // validation
+            Assert.Equal(isSealed, classEntry.Sealed);
+        }
+
+        /// <summary>
+        /// Sets the AccessModifier property and verifies the value.
+        /// </summary>
+        [Theory]
+        [InlineData(AccessModifier.Private)]
+        [InlineData(AccessModifier.Protected)]
+        [InlineData(AccessModifier.Public)]
+        [InlineData(AccessModifier.Internal)]
+        public void SetAccessModifier(AccessModifier accessModifier)
+        {
+            // arrange
+            var classEntry = new Class();
+
+            // act
+            classEntry.AccessModifier = accessModifier;
+
+            // validation
+            Assert.Equal(accessModifier, classEntry.AccessModifier);
+        }
+
+        /// <summary>
+        /// Sets the Inherited navigation property and verifies the value.
+        /// </summary>
+        [Fact]
+        public void SetInherited()
+        {
+            // arrange
+            var baseClass = new Class { Name = "Base", Key = "BASE" };
+            var derivedClass = new Class { Name = "Derived", Key = "DERIVED" };
+
+            // act
+            derivedClass.InheritedId = baseClass.Id;
+            derivedClass.Inherited = baseClass;
+
+            // validation
+            Assert.Equal(baseClass.Id, derivedClass.InheritedId);
+            Assert.Same(baseClass, derivedClass.Inherited);
+        }
+
+        /// <summary>
+        /// Verifies that InheritedId defaults to null.
+        /// </summary>
+        [Fact]
+        public void InheritedIdDefaultsToNull()
+        {
+            // act
+            var classEntry = new Class();
+
+            // validation
+            Assert.Null(classEntry.InheritedId);
+        }
+
+        /// <summary>
+        /// Sets the Parent navigation property and verifies the value.
+        /// </summary>
+        [Fact]
+        public void SetParent()
+        {
+            // arrange
+            var parentClass = new Class { Name = "Parent", Key = "PARENT" };
+            var childClass = new Class { Name = "Child", Key = "CHILD" };
+
+            // act
+            childClass.ParentId = parentClass.Id;
+            childClass.Parent = parentClass;
+
+            // validation
+            Assert.Equal(parentClass.Id, childClass.ParentId);
+            Assert.Same(parentClass, childClass.Parent);
+        }
+
+        /// <summary>
+        /// Verifies that ParentId defaults to null.
+        /// </summary>
+        [Fact]
+        public void ParentIdDefaultsToNull()
+        {
+            // act
+            var classEntry = new Class();
+
+            // validation
+            Assert.Null(classEntry.ParentId);
+        }
+
+        /// <summary>
+        /// Sets the AllowedChildren collection and verifies the value.
+        /// </summary>
+        [Fact]
+        public void SetAllowedChildren()
+        {
+            // arrange
+            var parentClass = new Class { Name = "Parent", Key = "PARENT" };
+            var child1 = new Class { Name = "Child1", Key = "CHILD1" };
+            var child2 = new Class { Name = "Child2", Key = "CHILD2" };
+
+            // act
+            parentClass.AllowedChildren.Add(child1);
+            parentClass.AllowedChildren.Add(child2);
+
+            // validation
+            Assert.Equal(2, parentClass.AllowedChildren.Count);
+            Assert.Contains(child1, parentClass.AllowedChildren);
+            Assert.Contains(child2, parentClass.AllowedChildren);
+        }
+
+        /// <summary>
+        /// Verifies that AllowedChildren defaults to an empty collection.
+        /// </summary>
+        [Fact]
+        public void AllowedChildrenDefaultsToEmpty()
+        {
+            // act
+            var classEntry = new Class();
+
+            // validation
+            Assert.Empty(classEntry.AllowedChildren);
+        }
     }
 }

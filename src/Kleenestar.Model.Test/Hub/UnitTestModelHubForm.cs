@@ -41,6 +41,7 @@ namespace Kleenestar.Model.Test.Hub
                 {
                     Id = Guid.Parse("B54AA5B2-01D5-490A-90A3-4D57FE50320B"),
                     Name = "class",
+                    Key = "CLASS",
                     WorkspaceId = Guid.Parse("3946B811-DFBB-4575-A83B-5C1C0240DF22")
                 });
                 db.SaveChanges();
@@ -101,6 +102,7 @@ namespace Kleenestar.Model.Test.Hub
                 {
                     Id = Guid.Parse("B54AA5B2-01D5-490A-90A3-4D57FE50320B"),
                     Name = "class",
+                    Key = "CLASS",
                     WorkspaceId = Guid.Parse("3946B811-DFBB-4575-A83B-5C1C0240DF22")
                 });
                 db.SaveChanges();
