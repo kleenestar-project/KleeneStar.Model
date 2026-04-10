@@ -27,12 +27,6 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the key of the class.
-        /// </summary>
-        [ValidateMinLength(2)]
-        public string Key { get; set; }
-
-        /// <summary>
         /// Gets or sets the name of the class.
         /// </summary>
         public string Name { get; set; }

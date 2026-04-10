@@ -113,12 +113,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("IsAbstract");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Key");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -150,9 +144,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("InheritedId");
 
                     b.HasIndex("ParentId");
-
-                    b.HasIndex("WorkspaceId", "Key")
-                        .IsUnique();
 
                     b.HasIndex("WorkspaceId", "Name")
                         .IsUnique();

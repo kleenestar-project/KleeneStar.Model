@@ -44,24 +44,6 @@ namespace Kleenestar.Model.Test.Entity
         }
 
         /// <summary>
-        /// Sets the key property and verifies it is assigned correctly.
-        /// </summary>
-        [Theory]
-        [InlineData("KEY1")]
-        [InlineData("MY_CLASS")]
-        public void SetKey(string key)
-        {
-            // arrange
-            var classEntry = new Class();
-
-            // act
-            classEntry.Key = key;
-
-            // validation
-            Assert.Equal(key, classEntry.Key);
-        }
-
-        /// <summary>
         /// Sets the IsAbstract property and verifies the value.
         /// </summary>
         [Theory]
@@ -124,8 +106,8 @@ namespace Kleenestar.Model.Test.Entity
         public void SetInherited()
         {
             // arrange
-            var baseClass = new Class { Name = "Base", Key = "BASE" };
-            var derivedClass = new Class { Name = "Derived", Key = "DERIVED" };
+            var baseClass = new Class { Name = "Base" };
+            var derivedClass = new Class { Name = "Derived" };
 
             // act
             derivedClass.InheritedId = baseClass.Id;
@@ -156,8 +138,8 @@ namespace Kleenestar.Model.Test.Entity
         public void SetParent()
         {
             // arrange
-            var parentClass = new Class { Name = "Parent", Key = "PARENT" };
-            var childClass = new Class { Name = "Child", Key = "CHILD" };
+            var parentClass = new Class { Name = "Parent" };
+            var childClass = new Class { Name = "Child" };
 
             // act
             childClass.ParentId = parentClass.Id;
@@ -188,9 +170,9 @@ namespace Kleenestar.Model.Test.Entity
         public void SetAllowedChildren()
         {
             // arrange
-            var parentClass = new Class { Name = "Parent", Key = "PARENT" };
-            var child1 = new Class { Name = "Child1", Key = "CHILD1" };
-            var child2 = new Class { Name = "Child2", Key = "CHILD2" };
+            var parentClass = new Class { Name = "Parent" };
+            var child1 = new Class { Name = "Child1" };
+            var child2 = new Class { Name = "Child2" };
 
             // act
             parentClass.AllowedChildren.Add(child1);

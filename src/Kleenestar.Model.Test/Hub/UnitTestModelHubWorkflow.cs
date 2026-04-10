@@ -40,7 +40,6 @@ namespace Kleenestar.Model.Test.Hub
                 db.Classes.Add(new Class
                 {
                     Id = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A"),
-                    Key = "class-1",
                     Name = "class",
                     WorkspaceId = Guid.Parse("659147B8-2463-40CA-ACBE-3E0290F747AA")
                 });
@@ -101,7 +100,6 @@ namespace Kleenestar.Model.Test.Hub
                 db.Classes.Add(new Class
                 {
                     Id = Guid.Parse("C3E6B7FC-13C1-4FF7-B6E5-264CCD8B184A"),
-                    Key = "class-1",
                     Name = "class",
                     WorkspaceId = Guid.Parse("659147B8-2463-40CA-ACBE-3E0290F747AA")
                 });

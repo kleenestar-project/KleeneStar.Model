@@ -141,7 +141,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
@@ -493,12 +492,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_Class_Parent",
                 table: "Class",
                 column: "Parent");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Class_Workspace_Key",
-                table: "Class",
-                columns: new[] { "Workspace", "Key" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Class_Workspace_Name",

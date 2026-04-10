@@ -25,11 +25,6 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Key)
-                .HasColumnName("Key")
-                .IsRequired()
-                .HasMaxLength(64);
-
             builder.Property(x => x.Name)
                 .HasColumnName("Name")
                 .IsRequired()
@@ -118,9 +113,6 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(w => w.Id);
 
             builder.HasIndex(x => new { x.WorkspaceId, x.Name })
-                .IsUnique();
-
-            builder.HasIndex(x => new { x.WorkspaceId, x.Key })
                 .IsUnique();
         }
     }
