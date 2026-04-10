@@ -67,7 +67,7 @@ namespace KleeneStar.Model.Configure
                 .IsRequired();
 
             builder.HasOne(x => x.Workspace)
-                .WithMany()
+                .WithMany(w => w.Objects)
                 .HasForeignKey(x => x.WorkspaceId)
                 .HasPrincipalKey(w => w.Id);
 

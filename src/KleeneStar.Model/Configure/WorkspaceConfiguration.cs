@@ -65,7 +65,6 @@ namespace KleeneStar.Model.Configure
                     uri => string.IsNullOrEmpty(uri) ? null : ImageIcon.FromString(uri)
                 );
 
-
             builder.Property(x => x.State)
                 .HasColumnName("State");
 
@@ -81,6 +80,58 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Guid")
                 .IsRequired()
                 .HasMaxLength(36);
+
+            // Self-referencing: Inherited workspace
+            builder.Property(x => x.InheritedId)
+                .HasColumnName("Inherited");
+
+            builder.HasOne(x => x.Inherited)
+                .WithMany()
+                .HasForeignKey(x => x.InheritedId)
+                .HasPrincipalKey(w => w.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.Sealed)
+                .HasColumnName("Sealed");
+
+            builder.Property(x => x.AccessModifier)
+                .HasColumnName("AccessModifier");
+
+            // MANY-TO-MANY: Workspace <-> Tenant
+            builder.HasMany(w => w.Tenants)
+                .WithMany(t => t.Workspaces)
+                .UsingEntity<Dictionary<string, object>>
+                (
+                    "WorkspaceTenant",
+                    j => j
+                        .HasOne<Tenant>()
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<Workspace>()
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                );
+
+            // MANY-TO-MANY: Workspace <-> PermissionProfile
+            builder.HasMany(w => w.PermissionProfiles)
+                .WithMany(p => p.Workspaces)
+                .UsingEntity<Dictionary<string, object>>
+                (
+                    "WorkspacePermissionProfile",
+                    j => j
+                        .HasOne<PermissionProfile>()
+                        .WithMany()
+                        .HasForeignKey("PermissionProfileId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<Workspace>()
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                );
 
             builder.HasIndex(x => x.Name)
                 .IsUnique();

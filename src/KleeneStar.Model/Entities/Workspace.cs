@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
@@ -58,6 +59,52 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [RestConverter<RestValueConverterImageIcon>]
         public ImageIcon Icon { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the workspace this workspace inherits from.
+        /// </summary>
+        public Guid? InheritedId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the workspace this workspace inherits from.
+        /// </summary>
+        [JsonIgnore]
+        public Workspace Inherited { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the workspace is sealed
+        /// and cannot be inherited or structurally modified.
+        /// </summary>
+        public bool Sealed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the access modifier controlling the visibility and accessibility of this workspace.
+        /// </summary>
+        public WorkspaceAccessModifier AccessModifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of tenants associated with this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<Tenant> Tenants { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the collection of permission profiles assigned to this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the collection of classes associated with this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<Class> Classes { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the collection of objects associated with this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<Object> Objects { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the date and time when the entity was created.

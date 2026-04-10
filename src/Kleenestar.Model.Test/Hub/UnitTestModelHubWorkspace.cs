@@ -204,5 +204,195 @@ namespace Kleenestar.Model.Test.Hub
             Assert.Equal("Updated", db2.Workspaces.Single().Name);
         }
 
+        /// <summary>
+        /// Verifies that the Sealed property can be persisted and retrieved.
+        /// </summary>
+        [Fact]
+        public void PersistSealedProperty()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "PersistSealedProperty",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Sealed WS",
+                    Key = "SEALED",
+                    Sealed = true
+                });
+                db.SaveChanges();
+            }
+
+            // act
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).ToList();
+
+            // validation
+            Assert.Single(result);
+            Assert.True(result[0].Sealed);
+        }
+
+        /// <summary>
+        /// Verifies that the AccessModifier property can be persisted and retrieved.
+        /// </summary>
+        [Theory]
+        [InlineData(WorkspaceAccessModifier.Private)]
+        [InlineData(WorkspaceAccessModifier.Protected)]
+        [InlineData(WorkspaceAccessModifier.Public)]
+        [InlineData(WorkspaceAccessModifier.Internal)]
+        public void PersistAccessModifier(WorkspaceAccessModifier accessModifier)
+        {
+            // arrange
+            var dbName = $"PersistAccessModifier_{accessModifier}";
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = dbName,
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "AM WS",
+                    Key = "AM",
+                    AccessModifier = accessModifier
+                });
+                db.SaveChanges();
+            }
+
+            // act
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).ToList();
+
+            // validation
+            Assert.Single(result);
+            Assert.Equal(accessModifier, result[0].AccessModifier);
+        }
+
+        /// <summary>
+        /// Verifies that the Inherited self-referencing relationship can be persisted and retrieved.
+        /// </summary>
+        [Fact]
+        public void PersistInheritedWorkspace()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "PersistInheritedWorkspace",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var parentId = Guid.NewGuid();
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = parentId,
+                    Name = "Parent",
+                    Key = "PARENT"
+                });
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Child",
+                    Key = "CHILD",
+                    InheritedId = parentId
+                });
+                db.SaveChanges();
+            }
+
+            // act
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Key == "CHILD"))
+                .ToList();
+
+            // validation
+            Assert.Single(result);
+            Assert.Equal(parentId, result[0].InheritedId);
+            Assert.NotNull(result[0].Inherited);
+            Assert.Equal("Parent", result[0].Inherited.Name);
+        }
+
+        /// <summary>
+        /// Verifies that tenants can be associated with a workspace through the many-to-many relationship.
+        /// </summary>
+        [Fact]
+        public void PersistWorkspaceWithTenants()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "PersistWorkspaceWithTenants",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                var t1 = new Tenant { Id = Guid.NewGuid(), Name = "Tenant A" };
+                var t2 = new Tenant { Id = Guid.NewGuid(), Name = "Tenant B" };
+                db.Tenants.AddRange(t1, t2);
+                db.SaveChanges();
+
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Multi-Tenant WS",
+                    Key = "MT",
+                    Tenants = [t1, t2]
+                });
+                db.SaveChanges();
+            }
+
+            // act
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).ToList();
+
+            // validation
+            Assert.Single(result);
+            Assert.Equal(2, result[0].Tenants.Count);
+        }
+
+        /// <summary>
+        /// Verifies that permission profiles can be associated with a workspace through the many-to-many relationship.
+        /// </summary>
+        [Fact]
+        public void PersistWorkspaceWithPermissionProfiles()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "PersistWorkspaceWithPermissionProfiles",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                var p1 = new PermissionProfile { Id = Guid.NewGuid(), Name = "Admin" };
+                var p2 = new PermissionProfile { Id = Guid.NewGuid(), Name = "Viewer" };
+                db.PermissionProfiles.AddRange(p1, p2);
+                db.SaveChanges();
+
+                db.Workspaces.Add(new Workspace
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Profiled WS",
+                    Key = "PP",
+                    PermissionProfiles = [p1, p2]
+                });
+                db.SaveChanges();
+            }
+
+            // act
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).ToList();
+
+            // validation
+            Assert.Single(result);
+            Assert.Equal(2, result[0].PermissionProfiles.Count);
+        }
     }
 }
