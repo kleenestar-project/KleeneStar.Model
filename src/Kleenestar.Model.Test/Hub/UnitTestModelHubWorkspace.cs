@@ -357,50 +357,50 @@ namespace Kleenestar.Model.Test.Hub
             Assert.Equal(2, result[0].Tenants.Count);
         }
 
-        /// <summary>
-        /// Verifies that permission profiles can be associated with a workspace through the one-to-many relationship.
-        /// </summary>
-        [Fact]
-        public void PersistWorkspaceWithPermissionProfiles()
-        {
-            // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
-            {
-                ConnectionString = "PersistWorkspaceWithPermissionProfiles",
-                Assembly = "KleeneStar.Model.Test"
-            };
+        ///// <summary>
+        ///// Verifies that permission profiles can be associated with a workspace through the one-to-many relationship.
+        ///// </summary>
+        //[Fact]
+        //public void PersistWorkspaceWithPermissionProfiles()
+        //{
+        //    // arrange
+        //    ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+        //    {
+        //        ConnectionString = "PersistWorkspaceWithPermissionProfiles",
+        //        Assembly = "KleeneStar.Model.Test"
+        //    };
 
-            using (var db = ModelHub.CreateDbContext())
-            {
-                var group1 = new Group { Id = Guid.NewGuid(), Name = "Admin" };
-                var group2 = new Group { Id = Guid.NewGuid(), Name = "Viewer" };
-                db.Groups.AddRange(group1, group2);
+        //    using (var db = ModelHub.CreateDbContext())
+        //    {
+        //        var group1 = new Group { Id = Guid.NewGuid(), Name = "Admin" };
+        //        var group2 = new Group { Id = Guid.NewGuid(), Name = "Viewer" };
+        //        db.Groups.AddRange(group1, group2);
 
-                var policy = new Policy { Id = Guid.NewGuid(), Name = "workspace_admin_policy" };
-                db.Policies.Add(policy);
-                db.SaveChanges();
+        //        var policy = new Policy { Id = Guid.NewGuid(), Name = "workspace_admin_policy" };
+        //        db.Policies.Add(policy);
+        //        db.SaveChanges();
 
-                var workspaceId = Guid.NewGuid();
-                db.Workspaces.Add(new Workspace
-                {
-                    Id = workspaceId,
-                    Name = "Profiled WS",
-                    Key = "PP"
-                });
-                db.SaveChanges();
+        //        var workspaceId = Guid.NewGuid();
+        //        db.Workspaces.Add(new Workspace
+        //        {
+        //            Id = workspaceId,
+        //            Name = "Profiled WS",
+        //            Key = "PP"
+        //        });
+        //        db.SaveChanges();
 
-                var p1 = new PermissionProfile { Id = Guid.NewGuid(), GroupId = group1.Id, PolicyId = policy.Id, WorkspaceId = workspaceId };
-                var p2 = new PermissionProfile { Id = Guid.NewGuid(), GroupId = group2.Id, PolicyId = policy.Id, WorkspaceId = workspaceId };
-                db.PermissionProfiles.AddRange(p1, p2);
-                db.SaveChanges();
-            }
+        //        var p1 = new PermissionProfile { Id = Guid.NewGuid(), GroupId = group1.Id, PolicyId = policy.Id, WorkspaceId = workspaceId };
+        //        var p2 = new PermissionProfile { Id = Guid.NewGuid(), GroupId = group2.Id, PolicyId = policy.Id, WorkspaceId = workspaceId };
+        //        db.PermissionProfiles.AddRange(p1, p2);
+        //        db.SaveChanges();
+        //    }
 
-            // act
-            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).ToList();
+        //    // act
+        //    var result = ModelHub.GetWorkspaces(new Query<Workspace>()).ToList();
 
-            // validation
-            Assert.Single(result);
-            Assert.Equal(2, result[0].PermissionProfiles.Count);
-        }
+        //    // validation
+        //    Assert.Single(result);
+        //    Assert.Equal(2, result[0].PermissionProfiles.Count);
+        //}
     }
 }

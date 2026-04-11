@@ -1,6 +1,7 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Configure
 {
@@ -28,6 +29,15 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
+            builder.Property(x => x.Icon)
+                .HasColumnName("Icon")
+                .HasMaxLength(256)
+                .HasConversion
+                (
+                    icon => icon != null && icon.Uri != null ? icon.Uri.ToString() : null,
+                    uri => string.IsNullOrEmpty(uri) ? null : ImageIcon.FromString(uri)
+                );
+
             builder.Property(x => x.Name)
                 .HasColumnName("Name")
                 .IsRequired()
@@ -35,6 +45,9 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
+
+            builder.Property(x => x.State)
+                .HasColumnName("State");
 
             builder.HasIndex(x => x.Name)
                 .IsUnique();

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebIndex.WebAttribute;
 
 namespace KleeneStar.Model.Entities
@@ -35,15 +37,11 @@ namespace KleeneStar.Model.Entities
         public Group Group { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the policy assigned to this profile.
-        /// </summary>
-        public Guid PolicyId { get; set; }
-
-        /// <summary>
         /// Gets or sets the policy assigned to this profile.
         /// </summary>
         [JsonIgnore]
-        public Policy Policy { get; set; }
+        [NotMapped]
+        public IIdentityPermission Policy { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the workspace this profile is scoped to.

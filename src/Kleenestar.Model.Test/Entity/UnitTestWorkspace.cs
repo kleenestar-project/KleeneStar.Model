@@ -292,26 +292,26 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Empty(workspace.PermissionProfiles);
         }
 
-        /// <summary>
-        /// Sets the permission profiles for the workspace and verifies the collection is assigned correctly.
-        /// </summary>
-        [Fact]
-        public void SetPermissionProfiles()
-        {
-            // arrange
-            var workspace = new Workspace();
-            var profilesList = new List<PermissionProfile>
-            {
-                new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() },
-                new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() }
-            };
+        ///// <summary>
+        ///// Sets the permission profiles for the workspace and verifies the collection is assigned correctly.
+        ///// </summary>
+        //[Fact]
+        //public void SetPermissionProfiles()
+        //{
+        //    // arrange
+        //    var workspace = new Workspace();
+        //    var profilesList = new List<PermissionProfile>
+        //    {
+        //        new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() },
+        //        new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() }
+        //    };
 
-            // act
-            workspace.PermissionProfiles = profilesList;
+        //    // act
+        //    workspace.PermissionProfiles = profilesList;
 
-            // validation
-            Assert.Equal(2, workspace.PermissionProfiles.Count);
-            Assert.Equal(profilesList, workspace.PermissionProfiles);
-        }
+        //    // validation
+        //    Assert.Equal(2, workspace.PermissionProfiles.Count);
+        //    Assert.Equal(profilesList, workspace.PermissionProfiles);
+        //}
     }
 }

@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using WebExpress.WebApp.WebAttribute;
+using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Entities
 {
@@ -24,6 +27,12 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the icon associated with this tenant.
+        /// </summary>
+        [RestConverter<RestValueConverterImageIcon>]
+        public ImageIcon Icon { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the tenant.
         /// </summary>
         public string Name { get; set; }
@@ -32,6 +41,11 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the description of the tenant.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current state of the tenant.
+        /// </summary>
+        public TenantState State { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of workspaces associated with this tenant.

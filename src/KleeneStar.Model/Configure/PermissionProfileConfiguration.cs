@@ -32,10 +32,6 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("GroupId")
                 .IsRequired();
 
-            builder.Property(x => x.PolicyId)
-                .HasColumnName("PolicyId")
-                .IsRequired();
-
             builder.Property(x => x.WorkspaceId)
                 .HasColumnName("WorkspaceId")
                 .IsRequired();
@@ -45,13 +41,6 @@ namespace KleeneStar.Model.Configure
                 .WithMany(g => g.PermissionProfiles)
                 .HasForeignKey(x => x.GroupId)
                 .HasPrincipalKey(g => g.Id)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // ONE-TO-MANY: Policy -> PermissionProfile
-            builder.HasOne(x => x.Policy)
-                .WithMany(p => p.PermissionProfiles)
-                .HasForeignKey(x => x.PolicyId)
-                .HasPrincipalKey(p => p.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ONE-TO-MANY: Workspace -> PermissionProfile
