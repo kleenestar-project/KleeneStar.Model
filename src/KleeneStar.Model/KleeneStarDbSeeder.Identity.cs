@@ -22,10 +22,10 @@ namespace KleeneStar.Model
                 Description = description
             });
 
-            addGroup("C0000001-0000-0000-0000-000000000001", "Admin", "Administrators with full system access.");
-            addGroup("C0000001-0000-0000-0000-000000000002", "Engineering", "Software engineering team members.");
-            addGroup("C0000001-0000-0000-0000-000000000003", "Marketing", "Marketing department members.");
-            addGroup("C0000001-0000-0000-0000-000000000004", "Support", "Customer support team members.");
+            addGroup("7F57823B-8B94-4284-8DA1-39C49E152C8C", "Admin", "Administrators with full system access.");
+            addGroup("7420A9F7-F23A-4EC2-91E4-EDDB2E3172BD", "Engineering", "Software engineering team members.");
+            addGroup("4D3739DF-EBB0-4113-A40D-EEEBF9B26182", "Marketing", "Marketing department members.");
+            addGroup("7EEB5E9D-87E6-4017-A94A-884F03DF129A", "Support", "Customer support team members.");
         }
 
         /// <summary>
@@ -59,33 +59,33 @@ namespace KleeneStar.Model
             }
 
             addIdentity(
-                "E0000001-0000-0000-0000-000000000001",
+                "77087646-B13A-44B1-9BAC-6E66443CEDFD",
                 "Admin User",
-                "admin@kleenestar.local",
+                "admin@kleenestar.org",
                 adminHash,
                 "Admin"
             );
 
             addIdentity(
-                "E0000001-0000-0000-0000-000000000002",
+                "BBF45E5D-AA35-4382-9B84-6055193CE544",
                 "Alice Engineer",
-                "alice.engineer@kleenestar.local",
+                "alice.engineer@kleenestar.org",
                 aliceHash,
                 "Engineering"
             );
 
             addIdentity(
-                "E0000001-0000-0000-0000-000000000003",
+                "1AA3B0E0-5C40-46D8-8ACF-ED12740FD239",
                 "Marketing User",
-                "marketer@kleenestar.local",
+                "marketer@kleenestar.org",
                 marketerHash,
                 "Marketing"
             );
 
             addIdentity(
-                "E0000001-0000-0000-0000-000000000004",
+                "D1C5AED2-78D3-45F7-BB19-E87B8F134301",
                 "Support User",
-                "support@kleenestar.local",
+                "support@kleenestar.org",
                 supportHash,
                 "Support"
             );

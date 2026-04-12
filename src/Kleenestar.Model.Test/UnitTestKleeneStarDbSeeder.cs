@@ -29,7 +29,7 @@ namespace KleeneStar.Model.Test
             var admin = db.Identities
                 .Include(x => x.GroupMemberships)
                     .ThenInclude(x => x.Group)
-                .Single(x => x.Email == "admin@kleenestar.local");
+                .Single(x => x.Email == "admin@kleenestar.org");
 
             Assert.Contains(admin.GroupMemberships, x => x.Group.Name == "Admin");
         }
