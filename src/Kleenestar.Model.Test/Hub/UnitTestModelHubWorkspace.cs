@@ -100,6 +100,16 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
+        /// Verifies that adding a null workspace throws an argument null exception.
+        /// </summary>
+        [Fact]
+        public void AddNullWorkspaceThrows()
+        {
+            // act & validation
+            Assert.Throws<ArgumentNullException>(() => ModelHub.Add(null));
+        }
+
+        /// <summary>
         /// Verifies that adding a workspace with a key that differs only in case from an 
         /// existing workspace does not result in duplicate entries.
         /// </summary>
@@ -202,6 +212,16 @@ namespace Kleenestar.Model.Test.Hub
             // validation
             using var db2 = ModelHub.CreateDbContext();
             Assert.Equal("Updated", db2.Workspaces.Single().Name);
+        }
+
+        /// <summary>
+        /// Verifies that updating a null workspace throws an argument null exception.
+        /// </summary>
+        [Fact]
+        public void UpdateNullWorkspaceThrows()
+        {
+            // act & validation
+            Assert.Throws<ArgumentNullException>(() => ModelHub.Update(null));
         }
 
         /// <summary>
@@ -355,6 +375,16 @@ namespace Kleenestar.Model.Test.Hub
             // validation
             Assert.Single(result);
             Assert.Equal(2, result[0].Tenants.Count);
+        }
+
+        /// <summary>
+        /// Verifies that removing a null workspace throws an argument null exception.
+        /// </summary>
+        [Fact]
+        public void RemoveNullWorkspaceThrows()
+        {
+            // act & validation
+            Assert.Throws<ArgumentNullException>(() => ModelHub.Remove(null));
         }
 
         ///// <summary>

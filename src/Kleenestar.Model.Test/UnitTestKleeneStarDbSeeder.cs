@@ -62,5 +62,57 @@ namespace KleeneStar.Model.Test
                 Assert.Equal(4, db.Identities.Include(x => x.GroupMemberships).Sum(x => x.GroupMemberships.Count));
             }
         }
+
+        /// <summary>
+        /// Verifies that repeated seeding does not change counts across all core seeded entity sets.
+        /// </summary>
+        [Fact]
+        public async Task SeedAllEntitiesIsIdempotent()
+        {
+            // arrange
+            var connectionString = $"SeedAllEntitiesIsIdempotent_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            var categories = db.Categories.Count();
+            var tenants = db.Tenants.Count();
+            var groups = db.Groups.Count();
+            var identities = db.Identities.Count();
+            var workspaces = db.Workspaces.Count();
+            var classes = db.Classes.Count();
+            var fields = db.Fields.Count();
+            var forms = db.Forms.Count();
+            var priorities = db.Priorities.Count();
+            var statusCategories = db.StatusCategories.Count();
+            var statuses = db.Statuses.Count();
+            var workflows = db.Workflows.Count();
+            var objects = db.Objects.Count();
+            var dashboards = db.Dashboards.Count();
+
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.True(categories > 0);
+            Assert.True(workspaces > 0);
+            Assert.True(objects > 0);
+
+            Assert.Equal(categories, db.Categories.Count());
+            Assert.Equal(tenants, db.Tenants.Count());
+            Assert.Equal(groups, db.Groups.Count());
+            Assert.Equal(identities, db.Identities.Count());
+            Assert.Equal(workspaces, db.Workspaces.Count());
+            Assert.Equal(classes, db.Classes.Count());
+            Assert.Equal(fields, db.Fields.Count());
+            Assert.Equal(forms, db.Forms.Count());
+            Assert.Equal(priorities, db.Priorities.Count());
+            Assert.Equal(statusCategories, db.StatusCategories.Count());
+            Assert.Equal(statuses, db.Statuses.Count());
+            Assert.Equal(workflows, db.Workflows.Count());
+            Assert.Equal(objects, db.Objects.Count());
+            Assert.Equal(dashboards, db.Dashboards.Count());
+        }
     }
 }
