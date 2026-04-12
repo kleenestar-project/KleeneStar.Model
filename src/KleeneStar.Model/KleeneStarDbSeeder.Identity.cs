@@ -15,17 +15,17 @@ namespace KleeneStar.Model
         /// <param name="db">The database context to which the group entities will be added. Cannot be null.</param>
         private static void SeedGroups(KleeneStarDbContext db)
         {
-            void add(string id, string name, string description) => db.Groups.Add(new Group
+            void addGroup(string id, string name, string description) => db.Groups.Add(new Group
             {
                 Id = Guid.Parse(id),
                 Name = name,
                 Description = description
             });
 
-            add("C0000001-0000-0000-0000-000000000001", "Admin", "Administrators with full system access.");
-            add("C0000001-0000-0000-0000-000000000002", "Engineering", "Software engineering team members.");
-            add("C0000001-0000-0000-0000-000000000003", "Marketing", "Marketing department members.");
-            add("C0000001-0000-0000-0000-000000000004", "Support", "Customer support team members.");
+            addGroup("C0000001-0000-0000-0000-000000000001", "Admin", "Administrators with full system access.");
+            addGroup("C0000001-0000-0000-0000-000000000002", "Engineering", "Software engineering team members.");
+            addGroup("C0000001-0000-0000-0000-000000000003", "Marketing", "Marketing department members.");
+            addGroup("C0000001-0000-0000-0000-000000000004", "Support", "Customer support team members.");
         }
 
         /// <summary>
@@ -34,7 +34,13 @@ namespace KleeneStar.Model
         /// <param name="db">The database context to which the identity entities will be added. Cannot be null.</param>
         private static void SeedIdentities(KleeneStarDbContext db)
         {
-            void add(string id, string name, string email, string passwordHash, params string[] groups)
+            // Placeholder non-production hash values for development seed identities.
+            const string adminHash = "$seed$v1$fb4e111dbf8b4c1cb95e0f6579f7f72f";
+            const string aliceHash = "$seed$v1$7d47a268f7df4d31bc8a32f8f60f8124";
+            const string marketerHash = "$seed$v1$903d043655ff45119a3d1ec0f7bc6f16";
+            const string supportHash = "$seed$v1$9b5ddb23be9945039f8d2bf8ff5b81c5";
+
+            void addIdentity(string id, string name, string email, string passwordHash, params string[] groups)
             {
                 db.Identities.Add(new Identity
                 {
@@ -51,35 +57,35 @@ namespace KleeneStar.Model
                 });
             }
 
-            add(
+            addIdentity(
                 "E0000001-0000-0000-0000-000000000001",
                 "Admin User",
                 "admin@kleenestar.local",
-                "seed:admin",
+                adminHash,
                 "Admin"
             );
 
-            add(
+            addIdentity(
                 "E0000001-0000-0000-0000-000000000002",
                 "Alice Engineer",
                 "alice.engineer@kleenestar.local",
-                "seed:alice",
+                aliceHash,
                 "Engineering"
             );
 
-            add(
+            addIdentity(
                 "E0000001-0000-0000-0000-000000000003",
                 "Marketer User",
                 "marketer@kleenestar.local",
-                "seed:marketer",
+                marketerHash,
                 "Marketing"
             );
 
-            add(
+            addIdentity(
                 "E0000001-0000-0000-0000-000000000004",
                 "Support User",
                 "support@kleenestar.local",
-                "seed:support",
+                supportHash,
                 "Support"
             );
         }
