@@ -54,7 +54,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,6 +71,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
                     PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
                 },

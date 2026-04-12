@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebExpress.WebCore.WebIdentity;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Configure
 {
@@ -25,11 +26,20 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();
 
-            // Business GUID
+            // business GUID
             builder.Property(x => x.Id)
                 .HasColumnName("Guid")
                 .IsRequired()
                 .HasMaxLength(36);
+
+            builder.Property(x => x.Avatar)
+                .HasColumnName("Icon")
+                .HasMaxLength(256)
+                .HasConversion
+                (
+                    icon => icon != null && icon.Uri != null ? icon.Uri.ToString() : null,
+                    uri => string.IsNullOrEmpty(uri) ? null : ImageIcon.FromString(uri)
+                );
 
             builder.Property(x => x.Name)
                 .HasColumnName("Name")
@@ -56,7 +66,7 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.IdentityId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Ignore interface projection
+            // ignore interface projection
             builder.Ignore(x => ((IIdentity)x).Groups);
         }
     }

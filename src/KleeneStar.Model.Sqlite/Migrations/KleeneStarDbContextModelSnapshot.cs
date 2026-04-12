@@ -403,6 +403,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
                     b.HasKey("RawId");
 
                     b.HasIndex("Name")
@@ -446,6 +450,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
+
+                    b.Property<string>("Avatar")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
 
                     b.Property<string>("Email")
                         .IsRequired()

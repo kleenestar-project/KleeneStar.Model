@@ -35,6 +35,11 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the group state (active, disabled, etc.).
+        /// </summary>
+        public GroupState State { get; set; }
+
+        /// <summary>
         /// Navigation property for persisted policy assignments.
         /// </summary>
         public List<GroupPolicy> GroupPolicies { get; set; } = [];

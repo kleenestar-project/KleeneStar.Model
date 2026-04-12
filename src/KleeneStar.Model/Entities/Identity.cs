@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using WebExpress.WebApp.WebAttribute;
+using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebIndex.WebAttribute;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Entities
 {
@@ -35,6 +38,12 @@ namespace KleeneStar.Model.Entities
         public string Email { get; set; }
 
         /// <summary>
+        /// Returns the avatar associated with this identity.
+        /// </summary>
+        [RestConverter<RestValueConverterImageIcon>]
+        public ImageIcon Avatar { get; set; }
+
+        /// <summary>
         /// Gets or sets the identity state (active, locked, disabled, etc.).
         /// </summary>
         public IdentityState State { get; set; }
@@ -63,6 +72,16 @@ namespace KleeneStar.Model.Entities
             State = IdentityState.Active;
         }
 
-
+        /// <summary>
+        /// Initializes a new instance of the class with the
+        /// specified unique identifier.
+        /// </summary>
+        /// <param name="id">
+        /// The unique identifier to assign to the identity.
+        /// </param>
+        public Identity(Guid id)
+        {
+            Id = id;
+        }
     }
 }

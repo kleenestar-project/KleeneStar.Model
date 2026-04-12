@@ -87,6 +87,11 @@ namespace KleeneStar.Model
         public DbSet<Tenant> Tenants { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of identities.
+        /// </summary>
+        public DbSet<Identity> Identities { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of groups.
         /// </summary>
         public DbSet<Group> Groups { get; set; }

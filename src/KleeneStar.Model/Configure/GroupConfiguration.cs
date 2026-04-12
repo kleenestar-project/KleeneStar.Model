@@ -38,6 +38,10 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
 
+            builder.Property(x => x.State)
+                .HasColumnName("State")
+                .IsRequired();
+
             // 1:n relation to GroupPolicy
             builder.HasMany(x => x.GroupPolicies)
                 .WithOne(x => x.Group)
