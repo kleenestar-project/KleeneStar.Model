@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.Linq;
+using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebIndex.WebAttribute;
 
 namespace KleeneStar.Model.Entities
@@ -9,7 +10,7 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents a global user group (e.g., "Marketing", "Admin", "Engineering").
     /// </summary>
-    public class Group : IEntity
+    public class Group : IEntity, IIdentityGroup
     {
         /// <summary>
         /// Gets or sets the database id.
@@ -34,10 +35,14 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of permission profiles assigned to this group.
+        /// Gets or sets the navigation property for persisted policy assignments.
         /// </summary>
-        [JsonIgnore]
-        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
+        public List<GroupPolicy> GroupPolicies { get; set; } = [];
+
+        /// <summary>
+        /// Gets the collection of policy names associated with the identity group.
+        /// </summary>
+        IEnumerable<string> IIdentityGroup.Policies => GroupPolicies.Select(x => x.Policy);
 
         /// <summary>
         /// Initializes a new instance of the class.

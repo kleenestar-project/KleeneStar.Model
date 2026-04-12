@@ -1,4 +1,3 @@
-using KleeneStar.Model;
 using KleeneStar.Model.Entities;
 using KleeneStar.Model.Test;
 
@@ -112,11 +111,11 @@ namespace Kleenestar.Model.Test.Entity
 
             // act
             field.HelpText = "Enter a value";
-            field.Placeholder = "e.g. 42";
+            field.Placeholder = "e.g., 42";
 
             // validation
             Assert.Equal("Enter a value", field.HelpText);
-            Assert.Equal("e.g. 42", field.Placeholder);
+            Assert.Equal("e.g., 42", field.Placeholder);
         }
 
         /// <summary>

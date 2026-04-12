@@ -92,11 +92,6 @@ namespace KleeneStar.Model
         public DbSet<Group> Groups { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of permission profiles.
-        /// </summary>
-        public DbSet<PermissionProfile> PermissionProfiles { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

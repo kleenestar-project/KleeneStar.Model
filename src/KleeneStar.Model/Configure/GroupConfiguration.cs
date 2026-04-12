@@ -1,6 +1,7 @@
 using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using WebExpress.WebCore.WebIdentity;
 
 namespace KleeneStar.Model.Configure
 {
@@ -17,6 +18,7 @@ namespace KleeneStar.Model.Configure
         {
             builder.ToTable("Group");
 
+            // Primary key
             builder.HasKey(x => x.RawId);
 
             builder.Property(x => x.RawId)
@@ -36,8 +38,18 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
 
+            // 1:n relation to GroupPolicy
+            builder.HasMany(x => x.GroupPolicies)
+                .WithOne(x => x.Group)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ignore interface property (derived, not persisted)
+            builder.Ignore(x => ((IIdentityGroup)x).Policies);
+
             builder.HasIndex(x => x.Name)
                 .IsUnique();
+
         }
     }
 }

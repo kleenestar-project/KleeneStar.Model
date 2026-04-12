@@ -277,41 +277,5 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Equal(2, workspace.Tenants.Count);
             Assert.Equal(tenantsList, workspace.Tenants);
         }
-
-        /// <summary>
-        /// Verifies that a new Workspace instance has an empty PermissionProfiles collection by default.
-        /// </summary>
-        [Fact]
-        public void DefaultPermissionProfilesCollectionIsEmpty()
-        {
-            // act
-            var workspace = new Workspace();
-
-            // validation
-            Assert.NotNull(workspace.PermissionProfiles);
-            Assert.Empty(workspace.PermissionProfiles);
-        }
-
-        ///// <summary>
-        ///// Sets the permission profiles for the workspace and verifies the collection is assigned correctly.
-        ///// </summary>
-        //[Fact]
-        //public void SetPermissionProfiles()
-        //{
-        //    // arrange
-        //    var workspace = new Workspace();
-        //    var profilesList = new List<PermissionProfile>
-        //    {
-        //        new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() },
-        //        new PermissionProfile { GroupId = Guid.NewGuid(), PolicyId = Guid.NewGuid(), WorkspaceId = Guid.NewGuid() }
-        //    };
-
-        //    // act
-        //    workspace.PermissionProfiles = profilesList;
-
-        //    // validation
-        //    Assert.Equal(2, workspace.PermissionProfiles.Count);
-        //    Assert.Equal(profilesList, workspace.PermissionProfiles);
-        //}
     }
 }

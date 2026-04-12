@@ -89,12 +89,6 @@ namespace KleeneStar.Model.Entities
         public List<Tenant> Tenants { get; set; } = [];
 
         /// <summary>
-        /// Gets or sets the collection of permission profiles assigned to this workspace.
-        /// </summary>
-        [JsonIgnore]
-        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
-
-        /// <summary>
         /// Gets or sets the collection of classes associated with this workspace.
         /// </summary>
         [JsonIgnore]

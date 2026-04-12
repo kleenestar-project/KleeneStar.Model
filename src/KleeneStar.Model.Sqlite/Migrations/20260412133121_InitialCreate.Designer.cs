@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260411162314_InitialCreate")]
+    [Migration("20260412133121_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -414,6 +414,35 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Group", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.GroupPolicy", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("GroupId");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Policy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Policy");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupPolicy", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
                 {
                     b.Property<int>("RawId")
@@ -477,36 +506,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("WorkspaceId");
 
                     b.ToTable("Object", (string)null);
-                });
-
-            modelBuilder.Entity("KleeneStar.Model.Entities.PermissionProfile", b =>
-                {
-                    b.Property<int>("RawId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("Id");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("GroupId");
-
-                    b.Property<Guid>("Id")
-                        .HasMaxLength(36)
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Guid");
-
-                    b.Property<Guid>("WorkspaceId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("WorkspaceId");
-
-                    b.HasKey("RawId");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("WorkspaceId", "GroupId")
-                        .IsUnique();
-
-                    b.ToTable("PermissionProfile", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Priority", b =>
@@ -1041,6 +1040,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Class");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.GroupPolicy", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Group", "Group")
+                        .WithMany("GroupPolicies")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Class", "Class")
@@ -1058,27 +1068,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
-
-                    b.Navigation("Workspace");
-                });
-
-            modelBuilder.Entity("KleeneStar.Model.Entities.PermissionProfile", b =>
-                {
-                    b.HasOne("KleeneStar.Model.Entities.Group", "Group")
-                        .WithMany("PermissionProfiles")
-                        .HasForeignKey("GroupId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
-                        .WithMany("PermissionProfiles")
-                        .HasForeignKey("WorkspaceId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
 
                     b.Navigation("Workspace");
                 });
@@ -1227,7 +1216,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Group", b =>
                 {
-                    b.Navigation("PermissionProfiles");
+                    b.Navigation("GroupPolicies");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workflow", b =>
@@ -1242,8 +1231,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Classes");
 
                     b.Navigation("Objects");
-
-                    b.Navigation("PermissionProfiles");
                 });
 #pragma warning restore 612, 618
         }

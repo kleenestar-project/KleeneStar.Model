@@ -57,8 +57,7 @@ namespace KleeneStar.Model
                 .Include(w => w.Classes)
                 .Include(w => w.Objects)
                 .Include(w => w.Inherited)
-                .Include(w => w.Tenants)
-                .Include(w => w.PermissionProfiles);
+                .Include(w => w.Tenants);
 
             return query.Apply(data); // none materialize query
         }
@@ -106,7 +105,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
-            db.UpdateEntity(workspace, ["Categories", "Classes", "Objects", "Tenants", "PermissionProfiles"]);
+            db.UpdateEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
 
             // persist changes
             db.SaveChanges();
@@ -126,7 +125,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
-            db.RemoveEntity(workspace, ["Categories", "Classes", "Objects", "Tenants", "PermissionProfiles"]);
+            db.RemoveEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
 
             // persist changes
             db.SaveChanges();

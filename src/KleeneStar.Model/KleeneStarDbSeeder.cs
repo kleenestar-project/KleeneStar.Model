@@ -50,12 +50,6 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
-            if (!db.PermissionProfiles.Any())
-            {
-                SeedPermissionProfiles(db);
-                await db.SaveChangesAsync();
-            }
-
             if (!db.Classes.Any())
             {
                 SeedClasses(db);

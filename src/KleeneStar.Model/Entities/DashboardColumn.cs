@@ -29,7 +29,7 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the optional size of the dashboard column (e.g. "small", "medium", "large").
+        /// Gets or sets the optional size of the dashboard column (e.g., "small", "medium", "large").
         /// </summary>
         public string Size { get; set; }
 

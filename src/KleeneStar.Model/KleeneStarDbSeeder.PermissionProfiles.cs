@@ -45,14 +45,6 @@ namespace KleeneStar.Model
                 //    ?? db.Policies.First(p => p.Name == policyName);
                 var workspace = db.Workspaces.Local.FirstOrDefault(w => w.Name == workspaceName)
                     ?? db.Workspaces.First(w => w.Name == workspaceName);
-
-                db.PermissionProfiles.Add(new PermissionProfile
-                {
-                    Id = Guid.Parse(id),
-                    GroupId = group.Id,
-                    //PolicyId = policy.Id,
-                    WorkspaceId = workspace.Id
-                });
             }
 
             // admin group gets admin policy in cmdb and service desk workspaces
