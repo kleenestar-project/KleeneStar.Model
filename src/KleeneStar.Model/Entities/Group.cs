@@ -35,9 +35,14 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the navigation property for persisted policy assignments.
+        /// Navigation property for persisted policy assignments.
         /// </summary>
         public List<GroupPolicy> GroupPolicies { get; set; } = [];
+
+        /// <summary>
+        /// Navigation property for identity memberships (m:n).
+        /// </summary>
+        public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];
 
         /// <summary>
         /// Gets the collection of policy names associated with the identity group.

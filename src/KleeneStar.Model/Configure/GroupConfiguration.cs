@@ -44,12 +44,17 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // 1:n relation to IdentityGroupMembership (m:n join)
+            builder.HasMany(x => x.GroupMemberships)
+                .WithOne(x => x.Group)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Ignore interface property (derived, not persisted)
             builder.Ignore(x => ((IIdentityGroup)x).Policies);
 
             builder.HasIndex(x => x.Name)
                 .IsUnique();
-
         }
     }
 }

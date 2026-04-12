@@ -62,6 +62,23 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Identity",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Identity", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StatusCategory",
                 columns: table => new
                 {
@@ -192,6 +209,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_GroupPolicy_Group_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Group",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdentityGroupMembership",
+                columns: table => new
+                {
+                    IdentityId = table.Column<int>(type: "INTEGER", nullable: false),
+                    GroupId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityGroupMembership", x => new { x.IdentityId, x.GroupId });
+                    table.ForeignKey(
+                        name: "FK_IdentityGroupMembership_Group_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Group",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_IdentityGroupMembership_Identity_IdentityId",
+                        column: x => x.IdentityId,
+                        principalTable: "Identity",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -631,6 +672,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IdentityGroupMembership_GroupId",
+                table: "IdentityGroupMembership",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Object_Class",
                 table: "Object",
                 column: "Class");
@@ -750,6 +796,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "GroupPolicy");
 
             migrationBuilder.DropTable(
+                name: "IdentityGroupMembership");
+
+            migrationBuilder.DropTable(
                 name: "Object");
 
             migrationBuilder.DropTable(
@@ -769,6 +818,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Group");
+
+            migrationBuilder.DropTable(
+                name: "Identity");
 
             migrationBuilder.DropTable(
                 name: "Status");
