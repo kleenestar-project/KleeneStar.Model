@@ -44,6 +44,12 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (!db.Identities.Any())
+            {
+                SeedIdentities(db);
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Workspaces.Any())
             {
                 SeedWorkspaces(db);
