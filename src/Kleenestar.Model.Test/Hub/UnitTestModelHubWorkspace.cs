@@ -106,7 +106,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddNullWorkspaceThrows()
         {
             // act & validation
-            Assert.Throws<ArgumentNullException>(() => ModelHub.Add(null));
+            Assert.Throws<ArgumentNullException>(() => ModelHub.Add((Workspace)null));
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateNullWorkspaceThrows()
         {
             // act & validation
-            Assert.Throws<ArgumentNullException>(() => ModelHub.Update(null));
+            Assert.Throws<ArgumentNullException>(() => ModelHub.Update((Workspace)null));
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveNullWorkspaceThrows()
         {
             // act & validation
-            Assert.Throws<ArgumentNullException>(() => ModelHub.Remove(null));
+            Assert.Throws<ArgumentNullException>(() => ModelHub.Remove((Workspace)null));
         }
 
         ///// <summary>
