@@ -10,26 +10,6 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Adds a predefined set of group entities to the specified database context.
-        /// </summary>
-        /// <param name="db">The database context to which the group entities will be added. Cannot be null.</param>
-        private static void SeedGroups(KleeneStarDbContext db)
-        {
-            // helper to add a group with a fixed guid
-            void add(string id, string name, string description) => db.Groups.Add(new Group
-            {
-                Id = Guid.Parse(id),
-                Name = name,
-                Description = description
-            });
-
-            add("C0000001-0000-0000-0000-000000000001", "Admin", "Administrators with full system access.");
-            add("C0000001-0000-0000-0000-000000000002", "Engineering", "Software engineering team members.");
-            add("C0000001-0000-0000-0000-000000000003", "Marketing", "Marketing department members.");
-            add("C0000001-0000-0000-0000-000000000004", "Support", "Customer support team members.");
-        }
-
-        /// <summary>
         /// Adds sample permission profile entities linking groups to policies per workspace.
         /// </summary>
         /// <param name="db">The database context to which the permission profile entities will be added. Cannot be null.</param>
