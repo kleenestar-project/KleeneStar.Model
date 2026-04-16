@@ -45,6 +45,11 @@ namespace KleeneStar.Model.Entities
         public List<GroupPolicy> GroupPolicies { get; set; } = [];
 
         /// <summary>
+        /// Gets or sets the collection of permission profiles assigned to this group.
+        /// </summary>
+        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
+
+        /// <summary>
         /// Navigation property for identity memberships (m:n).
         /// </summary>
         public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];

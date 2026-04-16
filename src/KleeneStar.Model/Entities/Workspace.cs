@@ -101,6 +101,12 @@ namespace KleeneStar.Model.Entities
         public List<Object> Objects { get; set; } = [];
 
         /// <summary>
+        /// Gets or sets the collection of permission profiles within this workspace.
+        /// </summary>
+        [JsonIgnore]
+        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
+
+        /// <summary>
         /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }
