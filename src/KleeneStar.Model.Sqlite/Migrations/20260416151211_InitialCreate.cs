@@ -60,6 +60,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Group", x => x.Id);
+                    table.UniqueConstraint("AK_Group_Guid", x => x.Guid);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,6 +79,32 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Identity", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Permission",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Permission", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Policy",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Policy", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,6 +267,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PolicyPermission",
+                columns: table => new
+                {
+                    PolicyId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PermissionId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PolicyPermission", x => new { x.PolicyId, x.PermissionId });
+                    table.ForeignKey(
+                        name: "FK_PolicyPermission_Permission_PermissionId",
+                        column: x => x.PermissionId,
+                        principalTable: "Permission",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PolicyPermission_Policy_PolicyId",
+                        column: x => x.PolicyId,
+                        principalTable: "Policy",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Class",
                 columns: table => new
                 {
@@ -278,6 +329,38 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     table.ForeignKey(
                         name: "FK_Class_Workspace_Workspace",
                         column: x => x.Workspace,
+                        principalTable: "Workspace",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PermissionProfile",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    GroupId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PolicyId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    WorkspaceId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PermissionProfile", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PermissionProfile_Group_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Group",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PermissionProfile_Policy_PolicyId",
+                        column: x => x.PolicyId,
+                        principalTable: "Policy",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PermissionProfile_Workspace_WorkspaceId",
+                        column: x => x.WorkspaceId,
                         principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
@@ -695,6 +778,39 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Workspace");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Permission_Name",
+                table: "Permission",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionProfile_GroupId",
+                table: "PermissionProfile",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionProfile_PolicyId",
+                table: "PermissionProfile",
+                column: "PolicyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionProfile_WorkspaceId_GroupId",
+                table: "PermissionProfile",
+                columns: new[] { "WorkspaceId", "GroupId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Policy_Name",
+                table: "Policy",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PolicyPermission_PermissionId",
+                table: "PolicyPermission",
+                column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Priority_Class_Name",
                 table: "Priority",
                 columns: new[] { "Class", "Name" },
@@ -804,6 +920,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Object");
 
             migrationBuilder.DropTable(
+                name: "PermissionProfile");
+
+            migrationBuilder.DropTable(
+                name: "PolicyPermission");
+
+            migrationBuilder.DropTable(
                 name: "Priority");
 
             migrationBuilder.DropTable(
@@ -819,10 +941,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "WorkspaceTenant");
 
             migrationBuilder.DropTable(
+                name: "Identity");
+
+            migrationBuilder.DropTable(
                 name: "Group");
 
             migrationBuilder.DropTable(
-                name: "Identity");
+                name: "Permission");
+
+            migrationBuilder.DropTable(
+                name: "Policy");
 
             migrationBuilder.DropTable(
                 name: "Status");
