@@ -24,6 +24,7 @@ public class PermissionProfileConfiguration : IEntityTypeConfiguration<Permissio
         builder.HasOne(pp => pp.Group)
             .WithMany(g => g.PermissionProfiles)
             .HasForeignKey(pp => pp.GroupId)
+            .HasPrincipalKey(g => g.Id)
             .OnDelete(DeleteBehavior.Restrict);
 
         // configure the relationship between permission profile and policy
@@ -36,6 +37,7 @@ public class PermissionProfileConfiguration : IEntityTypeConfiguration<Permissio
         builder.HasOne(pp => pp.Workspace)
             .WithMany(w => w.PermissionProfiles)
             .HasForeignKey(pp => pp.WorkspaceId)
+            .HasPrincipalKey(w => w.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
         // enforce unique constraint: a group may appear at most once per workspace

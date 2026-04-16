@@ -1,3 +1,5 @@
+using System;
+
 namespace KleeneStar.Model.Entities;
 
 /// <summary>

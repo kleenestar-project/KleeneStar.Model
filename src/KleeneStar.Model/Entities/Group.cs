@@ -1,28 +1,82 @@
-namespace KleeneStar.Model.Entities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using WebExpress.WebCore.WebIdentity;
+using WebExpress.WebIndex.WebAttribute;
 
-/// <summary>
-/// Represents a global user group (e.g., "Marketing", "Admin", "Engineering").
-/// Groups are assigned policies within specific workspaces via permission profiles.
-/// </summary>
-public class Group
+namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the group.
+    /// Represents a global user group (e.g., "Marketing", "Admin", "Engineering").
     /// </summary>
-    public Guid Id { get; set; }
+    public class Group : IEntity, IIdentityGroup
+    {
+        /// <summary>
+        /// Gets or sets the database id.
+        /// </summary>
+        [IndexIgnore]
+        [Key]
+        public int RawId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the name of the group.
-    /// </summary>
-    public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// Gets or sets the unique identifier for the group.
+        /// </summary>
+        public Guid Id { get; set; }
 
-    /// <summary>
-    /// Gets or sets the optional description of the group.
-    /// </summary>
-    public string? Description { get; set; }
+        /// <summary>
+        /// Gets or sets the name of the group.
+        /// </summary>
+        public string Name { get; set; }
 
-    /// <summary>
-    /// Gets or sets the collection of permission profiles assigned to this group.
-    /// </summary>
-    public ICollection<PermissionProfile> PermissionProfiles { get; set; } = new List<PermissionProfile>();
+        /// <summary>
+        /// Gets or sets the optional description of the group.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group state (active, disabled, etc.).
+        /// </summary>
+        public GroupState State { get; set; }
+
+        /// <summary>
+        /// Navigation property for persisted policy assignments.
+        /// </summary>
+        public List<GroupPolicy> GroupPolicies { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the collection of permission profiles assigned to this group.
+        /// </summary>
+        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
+
+        /// <summary>
+        /// Navigation property for identity memberships (m:n).
+        /// </summary>
+        public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];
+
+        /// <summary>
+        /// Gets the collection of policy names associated with the identity group.
+        /// </summary>
+        IEnumerable<string> IIdentityGroup.Policies => GroupPolicies.Select(x => x.Policy);
+
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        public Group()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the class with the
+        /// specified unique identifier.
+        /// </summary>
+        /// <param name="id">
+        /// The unique identifier to assign to the group.
+        /// </param>
+        public Group(Guid id)
+        {
+            Id = id;
+        }
+    }
 }

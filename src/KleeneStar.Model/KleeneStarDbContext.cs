@@ -1,57 +1,122 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
+using WebExpress.WebIndex.Queries;
 
-namespace KleeneStar.Model;
-
-/// <summary>
-/// The database context for the KleeneStar domain model.
-/// Provides access to all entity sets and applies entity configurations.
-/// </summary>
-public class KleeneStarDbContext : DbContext
+namespace KleeneStar.Model
 {
     /// <summary>
-    /// Gets or sets the set of permissions.
+    /// Represents the Entity Framework Core database context for the KleeneStar 
+    /// application, providing access to the application's data entities and 
+    /// database operations.
     /// </summary>
-    public DbSet<Permission> Permissions => Set<Permission>();
-
-    /// <summary>
-    /// Gets or sets the set of policies.
-    /// </summary>
-    public DbSet<Policy> Policies => Set<Policy>();
-
-    /// <summary>
-    /// Gets or sets the set of groups.
-    /// </summary>
-    public DbSet<Group> Groups => Set<Group>();
-
-    /// <summary>
-    /// Gets or sets the set of workspaces.
-    /// </summary>
-    public DbSet<Workspace> Workspaces => Set<Workspace>();
-
-    /// <summary>
-    /// Gets or sets the set of permission profiles.
-    /// </summary>
-    public DbSet<PermissionProfile> PermissionProfiles => Set<PermissionProfile>();
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="KleeneStarDbContext"/>.
-    /// </summary>
-    /// <param name="options">The options to configure the context.</param>
-    public KleeneStarDbContext(DbContextOptions<KleeneStarDbContext> options)
-        : base(options)
+    public class KleeneStarDbContext : DbContext, IQueryContext
     {
-    }
+        /// <summary>
+        /// Gets or sets the collection of categories.
+        /// </summary>
+        public DbSet<Category> Categories { get; set; }
 
-    /// <summary>
-    /// Applies all entity type configurations from the current assembly.
-    /// </summary>
-    /// <param name="modelBuilder">The model builder used to construct the model.</param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
+        /// <summary>
+        /// Gets or sets the collection of workspaces.
+        /// </summary>
+        public DbSet<Workspace> Workspaces { get; set; }
 
-        // apply all configurations from this assembly
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(KleeneStarDbContext).Assembly);
+        /// <summary>
+        /// Gets or sets the collection of classes.
+        /// </summary>
+        public DbSet<Class> Classes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of fields.
+        /// </summary>
+        public DbSet<Field> Fields { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of forms.
+        /// </summary>
+        public DbSet<Form> Forms { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of priorities.
+        /// </summary>
+        public DbSet<Priority> Priorities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of workflows.
+        /// </summary>
+        public DbSet<Workflow> Workflows { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of workflow states.
+        /// </summary>
+        public DbSet<Status> Statuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of status categories.
+        /// </summary>
+        public DbSet<StatusCategory> StatusCategories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of workflow transitions.
+        /// </summary>
+        public DbSet<Transition> Transitions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of objects.
+        /// </summary>
+        public DbSet<Object> Objects { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dashboards.
+        /// </summary>
+        public DbSet<Dashboard> Dashboards { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of dashboard columns.
+        /// </summary>
+        public DbSet<DashboardColumn> DashboardColumns { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of widgets.
+        /// </summary>
+        public DbSet<Widget> Widgets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of tenants.
+        /// </summary>
+        public DbSet<Tenant> Tenants { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of identities.
+        /// </summary>
+        public DbSet<Identity> Identities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of groups.
+        /// </summary>
+        public DbSet<Group> Groups { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the class using the specified options.
+        /// </summary>
+        /// <param name="options">
+        /// The options to be used by the DbContext. Must not be null.
+        /// </param>
+        public KleeneStarDbContext(DbContextOptions<KleeneStarDbContext> options)
+            : base(options)
+        {
+        }
+
+        /// <summary>
+        /// Configures the schema needed for the context by using the specified model builder.
+        /// </summary>
+        /// <param name="modelBuilder">
+        /// The builder used to construct the model for the context. Provides configuration 
+        /// of entity types, relationships, and database mappings.
+        /// </param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(KleeneStarDbContext).Assembly);
+        }
     }
 }
