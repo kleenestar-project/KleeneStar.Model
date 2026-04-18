@@ -1,17 +1,15 @@
-﻿using KleeneStar.Model.Entities;
-using Microsoft.EntityFrameworkCore;
+using KleeneStar.Model.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using WebExpress.WebApp.WebRestApi;
 
 namespace KleeneStar.Model.Converters
 {
     /// <summary>
-    /// Provides methods to convert category-related values between their raw representations and strongly typed objects
+    /// Provides methods to convert access modifier values between their raw representations and strongly typed forms
     /// for use in RESTful APIs.
     /// </summary>
-    public class CategoryConverter : IRestValueConverter
+    public class AccessModifierConverter : IRestValueConverter
     {
         /// <summary>
         /// Converts a raw value to the specified target type.
@@ -34,36 +32,30 @@ namespace KleeneStar.Model.Converters
 
             if (rawValue is string s)
             {
-                var names = s.Split(";", StringSplitOptions.RemoveEmptyEntries)
-                             .Select(x => x.Trim())
-                             .Where(x => x.Length > 0)
-                             .ToList();
+                var id = s.Split(";", StringSplitOptions.RemoveEmptyEntries)
+                           .Select(x => x.Trim())
+                           .Where(x => x.Length > 0)
+                           .Select(x => Guid.TryParse(x, out var g) ? (Guid?)g : null)
+                           .Where(g => g.HasValue)
+                           .Select(g => g.Value)
+                           .FirstOrDefault();
 
-                using var db = ModelHub.CreateDbContext();
-
-                var existing = db.Categories
-                    .AsNoTracking()
-                    .Where(c => names.Contains(c.Name))
-                    .ToList();
-
-                var result = new List<Category>(existing);
-
-                foreach (var name in names)
+                if (id == AccessModifier.Public.Id())
                 {
-                    if (!existing.Any(c => c.Name == name))
-                    {
-                        var newCat = new Category
-                        {
-                            Name = name,
-                            Description = "",
-                            Id = Guid.NewGuid()
-                        };
-
-                        result.Add(newCat);
-                    }
+                    return AccessModifier.Public;
                 }
-
-                return result;
+                else if (id == AccessModifier.Protected.Id())
+                {
+                    return AccessModifier.Protected;
+                }
+                else if (id == AccessModifier.Internal.Id())
+                {
+                    return AccessModifier.Internal;
+                }
+                else if (id == AccessModifier.Private.Id())
+                {
+                    return AccessModifier.Private;
+                }
             }
 
             return rawValue;
@@ -73,7 +65,7 @@ namespace KleeneStar.Model.Converters
         /// Converts the specified value to its raw representation based on the provided source type.
         /// </summary>
         /// <param name="value">
-        /// The value to convert to a raw representation. Can be null if the conversion supports 
+        /// The value to convert to a raw representation. Can be null if the conversion supports
         /// null values.</param>
         /// <param name="sourceType">
         /// The type that describes how the value should be interpreted and converted. Cannot be null.
@@ -83,7 +75,13 @@ namespace KleeneStar.Model.Converters
         /// </returns>
         public object ToRaw(object value, Type sourceType)
         {
-            return value;
+            return value switch
+            {
+                AccessModifier.Protected => AccessModifier.Protected.Id(),
+                AccessModifier.Private => AccessModifier.Private.Id(),
+                AccessModifier.Internal => AccessModifier.Internal.Id(),
+                _ => AccessModifier.Public.Id()
+            };
         }
     }
 }

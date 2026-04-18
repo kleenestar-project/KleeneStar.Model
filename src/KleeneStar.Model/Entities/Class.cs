@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -39,6 +40,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the class.
         /// </summary>
+        [RestConverter<ClassStateConverter>]
         public ClassState State { get; set; }
 
         /// <summary>
@@ -92,6 +94,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the access modifier controlling the visibility of this class.
         /// </summary>
+        [RestConverter<AccessModifierConverter>]
         public AccessModifier AccessModifier { get; set; }
 
         /// <summary>

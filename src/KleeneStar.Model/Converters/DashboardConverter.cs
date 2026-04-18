@@ -1,17 +1,14 @@
-﻿using KleeneStar.Model.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using WebExpress.WebApp.WebRestApi;
 
 namespace KleeneStar.Model.Converters
 {
     /// <summary>
-    /// Provides methods to convert category-related values between their raw representations and strongly typed objects
-    /// for use in RESTful APIs.
+    /// Provides methods to convert dashboard-related values between their raw representations and strongly typed
+    /// objects for REST API operations.
     /// </summary>
-    public class CategoryConverter : IRestValueConverter
+    public class DashboardConverter : IRestValueConverter
     {
         /// <summary>
         /// Converts a raw value to the specified target type.
@@ -34,36 +31,17 @@ namespace KleeneStar.Model.Converters
 
             if (rawValue is string s)
             {
-                var names = s.Split(";", StringSplitOptions.RemoveEmptyEntries)
-                             .Select(x => x.Trim())
-                             .Where(x => x.Length > 0)
-                             .ToList();
+                var ids = s.Split(";", StringSplitOptions.RemoveEmptyEntries)
+                           .Select(x => x.Trim())
+                           .Where(x => x.Length > 0)
+                           .Select(x => Guid.TryParse(x, out var g) ? (Guid?)g : null)
+                           .Where(g => g.HasValue)
+                           .Select(g => g.Value);
 
-                using var db = ModelHub.CreateDbContext();
-
-                var existing = db.Categories
-                    .AsNoTracking()
-                    .Where(c => names.Contains(c.Name))
-                    .ToList();
-
-                var result = new List<Category>(existing);
-
-                foreach (var name in names)
-                {
-                    if (!existing.Any(c => c.Name == name))
-                    {
-                        var newCat = new Category
-                        {
-                            Name = name,
-                            Description = "",
-                            Id = Guid.NewGuid()
-                        };
-
-                        result.Add(newCat);
-                    }
-                }
-
-                return result;
+                //return ids
+                //    .Select(id => CoreHub.DashboardManager?.GetDashboard(id))
+                //    .Where(entity => entity is not null)
+                //    .ToList();
             }
 
             return rawValue;
@@ -73,7 +51,7 @@ namespace KleeneStar.Model.Converters
         /// Converts the specified value to its raw representation based on the provided source type.
         /// </summary>
         /// <param name="value">
-        /// The value to convert to a raw representation. Can be null if the conversion supports 
+        /// The value to convert to a raw representation. Can be null if the conversion supports
         /// null values.</param>
         /// <param name="sourceType">
         /// The type that describes how the value should be interpreted and converted. Cannot be null.
