@@ -47,6 +47,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the workspace.
         /// </summary>
+        [RestConverter<WorkspaceStateConverter>]
         public WorkspaceState State { get; set; }
 
         /// <summary>
@@ -80,6 +81,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the access modifier controlling the visibility and accessibility of this workspace.
         /// </summary>
+        [RestConverter<AccessModifierConverter>]
         public WorkspaceAccessModifier AccessModifier { get; set; }
 
         /// <summary>

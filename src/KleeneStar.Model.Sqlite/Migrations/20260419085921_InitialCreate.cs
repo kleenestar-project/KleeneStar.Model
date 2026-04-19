@@ -476,7 +476,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    FieldType = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    FieldType = table.Column<int>(type: "INTEGER", maxLength: 128, nullable: false),
                     Cardinality = table.Column<int>(type: "INTEGER", nullable: false),
                     ValidationRules = table.Column<string>(type: "TEXT", nullable: true),
                     DefaultSpec = table.Column<string>(type: "TEXT", nullable: true),

@@ -268,9 +268,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Description");
 
-                    b.Property<string>("FieldType")
+                    b.Property<int>("FieldType")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("FieldType");
 
                     b.Property<string>("HelpText")

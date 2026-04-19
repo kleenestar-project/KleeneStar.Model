@@ -1,5 +1,7 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.ComponentModel.DataAnnotations;
+using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
@@ -35,6 +37,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the priority.
         /// </summary>
+        [RestConverter<PriorityStateConverter>]
         public PriorityState State { get; set; }
 
         /// <summary>

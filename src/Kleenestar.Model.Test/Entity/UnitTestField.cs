@@ -66,7 +66,6 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Null(field.Description);
             Assert.Null(field.HelpText);
             Assert.Null(field.Placeholder);
-            Assert.Null(field.FieldType);
             Assert.Null(field.DefaultSpec);
             Assert.Equal(FieldState.Active, field.State);
             Assert.Equal(FieldCardinality.Single, field.Cardinality);
@@ -184,10 +183,10 @@ namespace Kleenestar.Model.Test.Entity
             var field = new Field();
 
             // act
-            field.FieldType = "Number";
+            field.FieldType = FieldType.Number;
 
             // validation
-            Assert.Equal("Number", field.FieldType);
+            Assert.Equal(FieldType.Number, field.FieldType);
         }
 
         /// <summary>
@@ -310,7 +309,7 @@ namespace Kleenestar.Model.Test.Entity
                 HelpText = "Help for test field",
                 Placeholder = "Enter value",
                 State = FieldState.Active,
-                FieldType = "Text",
+                FieldType = FieldType.Text,
                 Cardinality = FieldCardinality.Multiple,
                 ValidationRules = new System.Collections.Generic.List<string> { "required", "min:1" },
                 DefaultSpec = "default-val",
@@ -333,7 +332,7 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Equal("Help for test field", retrieved.HelpText);
             Assert.Equal("Enter value", retrieved.Placeholder);
             Assert.Equal(FieldState.Active, retrieved.State);
-            Assert.Equal("Text", retrieved.FieldType);
+            Assert.Equal(FieldType.Text, retrieved.FieldType);
             Assert.Equal(FieldCardinality.Multiple, retrieved.Cardinality);
             Assert.Equal("default-val", retrieved.DefaultSpec);
             Assert.True(retrieved.Required);
@@ -369,7 +368,6 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Null(retrieved.Description);
             Assert.Null(retrieved.HelpText);
             Assert.Null(retrieved.Placeholder);
-            Assert.Null(retrieved.FieldType);
             Assert.Null(retrieved.DefaultSpec);
             Assert.False(retrieved.Required);
             Assert.False(retrieved.Unique);

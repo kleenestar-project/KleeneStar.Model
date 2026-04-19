@@ -1,6 +1,8 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
@@ -46,6 +48,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the field.
         /// </summary>
+        [RestConverter<FieldStateConverter>]
         public FieldState State { get; set; }
 
         /// <summary>
@@ -76,11 +79,13 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the type reference for the field (e.g., Text, Number, Date).
         /// </summary>
-        public string FieldType { get; set; }
+        [RestConverter<FieldTypeConverter>]
+        public FieldType FieldType { get; set; }
 
         /// <summary>
         /// Gets or sets the cardinality of the field.
         /// </summary>
+        [RestConverter<FieldCardinalityConverter>]
         public FieldCardinality Cardinality { get; set; }
 
         /// <summary>
@@ -111,6 +116,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the access modifier controlling the visibility of this field.
         /// </summary>
+        [RestConverter<AccessModifierConverter>]
         public AccessModifier AccessModifier { get; set; }
 
         /// <summary>

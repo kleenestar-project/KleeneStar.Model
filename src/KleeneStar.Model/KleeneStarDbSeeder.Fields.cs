@@ -43,7 +43,7 @@ namespace KleeneStar.Model
                         State = FieldState.Active,
                         Icon = ImageIcon.FromString(template.Icon),
                         ClassId = cls.Id,
-                        FieldType = "Text",
+                        FieldType = FieldType.Text,
                         Cardinality = FieldCardinality.Single,
                         ValidationRules = new List<string>(),
                         DefaultSpec = null,

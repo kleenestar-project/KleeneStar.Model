@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the identity state (active, locked, disabled, etc.).
         /// </summary>
+        [RestConverter<IdentityStateConverter>]
         public IdentityState State { get; set; }
 
         /// <summary>
