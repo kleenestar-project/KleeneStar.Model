@@ -1,6 +1,7 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using WebExpress.WebUI.WebIcon;
@@ -94,6 +95,44 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.DefaultSpec)
                 .HasColumnName("DefaultSpec");
+
+            builder.Property(x => x.CardinalityMin)
+                .HasColumnName("CardinalityMin");
+
+            builder.Property(x => x.CardinalityMax)
+                .HasColumnName("CardinalityMax");
+
+            builder.Property(x => x.CardinalityUnlimited)
+                .HasColumnName("CardinalityUnlimited");
+
+            builder.Property(x => x.RegexPattern)
+                .HasColumnName("RegexPattern");
+
+            builder.Property(x => x.Options)
+                .HasColumnName("Options")
+                .HasConversion
+                (
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => string.IsNullOrEmpty(v)
+                        ? new List<string>()
+                        : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)
+                );
+
+            builder.Property(x => x.WorkflowId)
+                .HasColumnName("WorkflowId");
+
+            builder.Property(x => x.DefaultPriorityId)
+                .HasColumnName("DefaultPriorityId");
+
+            builder.Property(x => x.SelectedPriorityIds)
+                .HasColumnName("SelectedPriorityIds")
+                .HasConversion
+                (
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => string.IsNullOrEmpty(v)
+                        ? new List<Guid>()
+                        : JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions)null)
+                );
 
             builder.Property(x => x.Required)
                 .HasColumnName("Required");

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260419085921_InitialCreate")]
+    [Migration("20260420190137_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -251,6 +251,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Cardinality");
 
+                    b.Property<int>("CardinalityMax")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CardinalityMax");
+
+                    b.Property<int>("CardinalityMin")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CardinalityMin");
+
+                    b.Property<bool>("CardinalityUnlimited")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CardinalityUnlimited");
+
                     b.Property<Guid>("ClassId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Class");
@@ -258,6 +270,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
+
+                    b.Property<Guid?>("DefaultPriorityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DefaultPriorityId");
 
                     b.Property<string>("DefaultSpec")
                         .HasColumnType("TEXT")
@@ -296,14 +312,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<string>("Options")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Options");
+
                     b.Property<string>("Placeholder")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT")
                         .HasColumnName("Placeholder");
 
+                    b.Property<string>("RegexPattern")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RegexPattern");
+
                     b.Property<bool>("Required")
                         .HasColumnType("INTEGER")
                         .HasColumnName("Required");
+
+                    b.Property<string>("SelectedPriorityIds")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("SelectedPriorityIds");
 
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
@@ -320,6 +348,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<string>("ValidationRules")
                         .HasColumnType("TEXT")
                         .HasColumnName("ValidationRules");
+
+                    b.Property<Guid?>("WorkflowId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("WorkflowId");
 
                     b.HasKey("RawId");
 
