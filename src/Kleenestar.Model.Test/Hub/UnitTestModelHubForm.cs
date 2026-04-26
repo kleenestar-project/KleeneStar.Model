@@ -198,7 +198,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             using var db = ModelHub.CreateDbContext();
-            var form = new Form { Id = id, Name = "A", FormType = FormType.Additional };
+            var form = new Form { Id = id, Name = "A", FormType = FormType.Default };
             db.Forms.Add(form);
             db.SaveChanges();
 
@@ -227,7 +227,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             // act
-            ModelHub.Remove(new Form { RawId = 1, Id = id, FormType = FormType.Additional });
+            ModelHub.Remove(new Form { RawId = 1, Id = id, FormType = FormType.Default });
 
             // validation
             using var db = ModelHub.CreateDbContext();
@@ -277,7 +277,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             using var db = ModelHub.CreateDbContext();
-            var form = new Form { Id = id, Name = "Standard", FormType = FormType.Standard };
+            var form = new Form { Id = id, Name = "Standard", FormType = FormType.Create };
             db.Forms.Add(form);
             db.SaveChanges();
 
@@ -305,7 +305,7 @@ namespace Kleenestar.Model.Test.Hub
             var id = Guid.NewGuid();
 
             using var db = ModelHub.CreateDbContext();
-            var form = new Form { Id = id, Name = "Custom", FormType = FormType.Additional };
+            var form = new Form { Id = id, Name = "Custom", FormType = FormType.Default };
             db.Forms.Add(form);
             db.SaveChanges();
 

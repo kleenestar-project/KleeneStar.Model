@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebExpress.WebIndex.Queries;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model
 {
@@ -88,19 +89,44 @@ namespace KleeneStar.Model
             db.AddEntity(classEntry);
 
             // automatically create a standard form for the new class
-            var standardForm = new Form
+            db.AddEntity(new Form
             {
                 Id = Guid.NewGuid(),
-                Name = "Standard",
+                Name = "Create",
                 Description = "Standard form for the class.",
-                FormType = FormType.Standard,
+                FormType = FormType.Create,
                 State = FormState.Active,
+                Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/create.svg"),
                 ClassId = classEntry.Id,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow
-            };
+            });
 
-            db.AddEntity(standardForm);
+            db.AddEntity(new Form
+            {
+                Id = Guid.NewGuid(),
+                Name = "Edit",
+                Description = "Standard form for the class.",
+                FormType = FormType.Edit,
+                State = FormState.Active,
+                Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/edit.svg"),
+                ClassId = classEntry.Id,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            });
+
+            db.AddEntity(new Form
+            {
+                Id = Guid.NewGuid(),
+                Name = "View",
+                Description = "Standard form for the class.",
+                FormType = FormType.View,
+                State = FormState.Active,
+                Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/view.svg"),
+                ClassId = classEntry.Id,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            });
 
             // persist changes
             db.SaveChanges();

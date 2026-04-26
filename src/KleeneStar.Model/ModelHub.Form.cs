@@ -126,7 +126,7 @@ namespace KleeneStar.Model
 
             // verify the form in the database is not a standard form
             var existing = db.Forms.FirstOrDefault(f => f.Id == formEntry.Id);
-            if (existing != null && existing.FormType == FormType.Standard)
+            if (existing != null && existing.FormType != FormType.Default)
             {
                 throw new InvalidOperationException("A standard form cannot be deleted.");
             }

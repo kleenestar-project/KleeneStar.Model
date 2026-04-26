@@ -35,11 +35,37 @@ namespace KleeneStar.Model
                 db.Forms.Add(new Form
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Standard",
+                    Name = "Create",
                     Description = "Standard form for the class.",
-                    FormType = FormType.Standard,
+                    FormType = FormType.Create,
                     State = FormState.Active,
-                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/default.svg"),
+                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/create.svg"),
+                    ClassId = cls.Id,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
+                });
+
+                db.Forms.Add(new Form
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Edit",
+                    Description = "Standard form for the class.",
+                    FormType = FormType.Edit,
+                    State = FormState.Active,
+                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/edit.svg"),
+                    ClassId = cls.Id,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
+                });
+
+                db.Forms.Add(new Form
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "View",
+                    Description = "Standard form for the class.",
+                    FormType = FormType.View,
+                    State = FormState.Active,
+                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/view.svg"),
                     ClassId = cls.Id,
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
@@ -56,7 +82,7 @@ namespace KleeneStar.Model
                         Id = Guid.NewGuid(),
                         Name = template.Name,
                         Description = template.Description,
-                        FormType = FormType.Additional,
+                        FormType = FormType.Default,
                         State = FormState.Active,
                         Icon = ImageIcon.FromString(template.Icon),
                         ClassId = cls.Id,
@@ -77,9 +103,21 @@ namespace KleeneStar.Model
             // use shared default forms for all classes to keep seed data maintainable
             var defaults = new List<(string Name, string Description, string Icon)>
             {
-                ("Default Form", "Standard view for the entry.", "/kleenestar/assets/icons/form/default.svg"),
-                ("Create Form", "Form used when creating a new entry.", "/kleenestar/assets/icons/form/create.svg"),
-                ("Edit Form", "Form used when modifying an existing entry.", "/kleenestar/assets/icons/form/edit.svg")
+                (
+                    "Workflow Overview",
+                    "General overview form showing key workflow information, status and metadata.",
+                    "/kleenestar/assets/icons/form/workflow-overview.svg"
+                ),
+                (
+                    "Transition Form",
+                    "Form used when performing a workflow transition, including required fields and actions.",
+                    "/kleenestar/assets/icons/form/workflow-transition.svg"
+                ),
+                (
+                    "Decision Form",
+                    "Form for decision points within the workflow, such as approvals or branching steps.",
+                    "/kleenestar/assets/icons/form/workflow-decision.svg"
+                )
             };
 
             switch (className)
