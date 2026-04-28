@@ -107,6 +107,84 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns a form together with its complete structural tree (tabs, groups, and
+        /// field references) populated.
+        /// </summary>
+        /// <remarks>
+        /// Loads the structure with three queries: the form (with class), the tabs of that
+        /// form, and all elements belonging to those tabs. The element hierarchy is then
+        /// assembled in memory because EF Core does not support recursive
+        /// <c>Include</c> over self-referencing entities.
+        /// </remarks>
+        /// <param name="formId">The unique identifier of the form to load.</param>
+        /// <param name="context">
+        /// Optional shared <see cref="KleeneStarDbContext"/>. When <c>null</c>, a fresh
+        /// context is created and disposed by this method.
+        /// </param>
+        /// <returns>The fully populated form, or <c>null</c> if no such form exists.</returns>
+        public static Form GetFormWithStructure(Guid formId, KleeneStarDbContext context = null)
+        {
+            var ownsContext = context is null;
+            var db = context ?? CreateDbContext();
+            try
+            {
+                var form = db.Forms
+                    .AsNoTracking()
+                    .Include(f => f.Class)
+                    .FirstOrDefault(f => f.Id == formId);
+
+                if (form is null)
+                {
+                    return null;
+                }
+
+                var tabs = db.FormTabs
+                    .AsNoTracking()
+                    .Where(t => t.FormId == formId)
+                    .OrderBy(t => t.Position)
+                    .ToList();
+
+                var tabIds = tabs.Select(t => t.Id).ToHashSet();
+                var elements = db.FormElements
+                    .AsNoTracking()
+                    .Where(e => tabIds.Contains(e.FormTabId))
+                    .OrderBy(e => e.FormTabId)
+                    .ThenBy(e => e.Position)
+                    .ToList();
+
+                var byParent = elements
+                    .Where(e => e.ParentElementId.HasValue)
+                    .GroupBy(e => e.ParentElementId.Value)
+                    .ToDictionary(g => g.Key, g => g.OrderBy(x => x.Position).ToList());
+
+                foreach (var el in elements)
+                {
+                    el.Children = byParent.TryGetValue(el.Id, out var kids)
+                        ? kids
+                        : [];
+                }
+
+                foreach (var tab in tabs)
+                {
+                    tab.Elements = elements
+                        .Where(e => e.FormTabId == tab.Id && e.ParentElementId == null)
+                        .OrderBy(e => e.Position)
+                        .ToList();
+                }
+
+                form.Tabs = tabs;
+                return form;
+            }
+            finally
+            {
+                if (ownsContext)
+                {
+                    db.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
         /// Removes the specified form from the data store if it exists.
         /// </summary>
         /// <remarks>

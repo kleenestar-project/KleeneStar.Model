@@ -37,6 +37,16 @@ namespace KleeneStar.Model
         public DbSet<Form> Forms { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of form tabs.
+        /// </summary>
+        public DbSet<FormTab> FormTabs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of form structural elements (groups and field references).
+        /// </summary>
+        public DbSet<FormElement> FormElements { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of priorities.
         /// </summary>
         public DbSet<Priority> Priorities { get; set; }

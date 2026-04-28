@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model.Converters;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
@@ -69,6 +70,19 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the class associated with the current form.
         /// </summary>
         public Class Class { get; set; }
+
+        /// <summary>
+        /// Gets or sets the structural tabs of the form.
+        /// </summary>
+        [IndexIgnore]
+        public List<FormTab> Tabs { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the structural revision counter used as an optimistic-concurrency
+        /// token for editor saves. Incremented on every successful structure update.
+        /// </summary>
+        [IndexIgnore]
+        public int Version { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.

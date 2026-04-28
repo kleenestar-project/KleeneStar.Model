@@ -405,12 +405,90 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
 
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Version");
+
                     b.HasKey("RawId");
 
                     b.HasIndex("ClassId", "Name")
                         .IsUnique();
 
                     b.ToTable("Form", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormElement", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("FormTabId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Tab");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ParentElementId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Parent");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ParentElementId");
+
+                    b.HasIndex("FormTabId", "Position");
+
+                    b.ToTable("FormElement", (string)null);
+
+                    b.HasDiscriminator<int>("Kind");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormTab", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("FormId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Form");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("FormId", "Position");
+
+                    b.ToTable("FormTab", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Group", b =>
@@ -1130,6 +1208,35 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("WorkspaceTenant");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormFieldRefElement", b =>
+                {
+                    b.HasBaseType("KleeneStar.Model.Entities.FormElement");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Field");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormGroupElement", b =>
+                {
+                    b.HasBaseType("KleeneStar.Model.Entities.FormElement");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Label");
+
+                    b.Property<int>("Layout")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Layout");
+
+                    b.HasDiscriminator().HasValue(0);
+                });
+
             modelBuilder.Entity("ClassAllowedChild", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Class", null)
@@ -1222,6 +1329,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormElement", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.FormTab", null)
+                        .WithMany("Elements")
+                        .HasForeignKey("FormTabId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.FormElement", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentElementId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormTab", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Form", "Form")
+                        .WithMany("Tabs")
+                        .HasForeignKey("FormId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Form");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.GroupPolicy", b =>
@@ -1451,6 +1588,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormFieldRefElement", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Field", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>
                 {
                     b.Navigation("Columns");
@@ -1459,6 +1608,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
             modelBuilder.Entity("KleeneStar.Model.Entities.DashboardColumn", b =>
                 {
                     b.Navigation("Widgets");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Form", b =>
+                {
+                    b.Navigation("Tabs");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormElement", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FormTab", b =>
+                {
+                    b.Navigation("Elements");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Group", b =>

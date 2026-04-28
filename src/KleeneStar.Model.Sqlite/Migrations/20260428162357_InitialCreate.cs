@@ -496,6 +496,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Field", x => x.Id);
+                    table.UniqueConstraint("AK_Field_Guid", x => x.Guid);
                     table.ForeignKey(
                         name: "FK_Field_Class_Class",
                         column: x => x.Class,
@@ -518,11 +519,13 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Class = table.Column<Guid>(type: "TEXT", nullable: false)
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Version = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Form", x => x.Id);
+                    table.UniqueConstraint("AK_Form_Guid", x => x.Guid);
                     table.ForeignKey(
                         name: "FK_Form_Class_Class",
                         column: x => x.Class,
@@ -619,6 +622,29 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FormTab",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Form = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormTab", x => x.Id);
+                    table.UniqueConstraint("AK_FormTab_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_FormTab_Form_Form",
+                        column: x => x.Form,
+                        principalTable: "Form",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Status",
                 columns: table => new
                 {
@@ -656,6 +682,45 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         column: x => x.WorkflowRawId,
                         principalTable: "Workflow",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FormElement",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Tab = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Kind = table.Column<int>(type: "INTEGER", nullable: false),
+                    Field = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Label = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Layout = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FormElement", x => x.Id);
+                    table.UniqueConstraint("AK_FormElement_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_FormElement_Field_Field",
+                        column: x => x.Field,
+                        principalTable: "Field",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_FormElement_FormElement_Parent",
+                        column: x => x.Parent,
+                        principalTable: "FormElement",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_FormElement_FormTab_Tab",
+                        column: x => x.Tab,
+                        principalTable: "FormTab",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -752,6 +817,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "Form",
                 columns: new[] { "Class", "Name" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FormElement_Field",
+                table: "FormElement",
+                column: "Field");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FormElement_Parent",
+                table: "FormElement",
+                column: "Parent");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FormElement_Tab_Position",
+                table: "FormElement",
+                columns: new[] { "Tab", "Position" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FormTab_Form_Position",
+                table: "FormTab",
+                columns: new[] { "Form", "Position" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Group_Name",
@@ -913,10 +998,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "DashboardCategory");
 
             migrationBuilder.DropTable(
-                name: "Field");
-
-            migrationBuilder.DropTable(
-                name: "Form");
+                name: "FormElement");
 
             migrationBuilder.DropTable(
                 name: "GroupPolicy");
@@ -949,6 +1031,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "WorkspaceTenant");
 
             migrationBuilder.DropTable(
+                name: "Field");
+
+            migrationBuilder.DropTable(
+                name: "FormTab");
+
+            migrationBuilder.DropTable(
                 name: "Identity");
 
             migrationBuilder.DropTable(
@@ -971,6 +1059,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tenant");
+
+            migrationBuilder.DropTable(
+                name: "Form");
 
             migrationBuilder.DropTable(
                 name: "StatusCategory");

@@ -64,10 +64,21 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Class")
                 .IsRequired();
 
+            builder.Property(x => x.Version)
+                .HasColumnName("Version")
+                .IsRequired()
+                .IsConcurrencyToken();
+
             builder.HasOne(x => x.Class)
                 .WithMany()
                 .HasForeignKey(x => x.ClassId)
                 .HasPrincipalKey(w => w.Id);
+
+            builder.HasMany(x => x.Tabs)
+                .WithOne(t => t.Form)
+                .HasForeignKey(t => t.FormId)
+                .HasPrincipalKey(f => f.Id)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => new { x.ClassId, x.Name })
                 .IsUnique();
