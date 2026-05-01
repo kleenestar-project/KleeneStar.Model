@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260428162357_InitialCreate")]
+    [Migration("20260501200350_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1011,6 +1011,48 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Transition", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Value", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Data");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Field");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("ObjectId", "FieldId")
+                        .IsUnique();
+
+                    b.ToTable("Value", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Widget", b =>
                 {
                     b.Property<int>("RawId")
@@ -1509,6 +1551,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Target");
 
                     b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Value", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Field", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Object")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+
+                    b.Navigation("Object");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Widget", b =>

@@ -131,6 +131,21 @@ namespace KleeneStar.Model
                 }
             }
 
+            if (!db.Values.Any())
+            {
+                try
+                {
+                    SeedValues(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // log the exception or handle it as needed
+                    Console.WriteLine($"Error seeding values: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             if (!db.Dashboards.Any())
             {
                 try

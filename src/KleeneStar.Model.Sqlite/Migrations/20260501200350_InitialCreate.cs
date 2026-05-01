@@ -554,6 +554,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Object", x => x.Id);
+                    table.UniqueConstraint("AK_Object_Guid", x => x.Guid);
                     table.ForeignKey(
                         name: "FK_Object_Class_Class",
                         column: x => x.Class,
@@ -640,6 +641,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_FormTab_Form_Form",
                         column: x => x.Form,
                         principalTable: "Form",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Value",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Field = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Data = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Value", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Value_Field_Field",
+                        column: x => x.Field,
+                        principalTable: "Field",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Value_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -949,6 +980,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Value_Field",
+                table: "Value",
+                column: "Field");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Value_Object_Field",
+                table: "Value",
+                columns: new[] { "Object", "Field" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Widget_Column_Name",
                 table: "Widget",
                 columns: new[] { "Column", "Name" },
@@ -1007,9 +1049,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IdentityGroupMembership");
 
             migrationBuilder.DropTable(
-                name: "Object");
-
-            migrationBuilder.DropTable(
                 name: "PermissionProfile");
 
             migrationBuilder.DropTable(
@@ -1022,6 +1061,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Transition");
 
             migrationBuilder.DropTable(
+                name: "Value");
+
+            migrationBuilder.DropTable(
                 name: "Widget");
 
             migrationBuilder.DropTable(
@@ -1029,9 +1071,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkspaceTenant");
-
-            migrationBuilder.DropTable(
-                name: "Field");
 
             migrationBuilder.DropTable(
                 name: "FormTab");
@@ -1050,6 +1089,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Status");
+
+            migrationBuilder.DropTable(
+                name: "Field");
+
+            migrationBuilder.DropTable(
+                name: "Object");
 
             migrationBuilder.DropTable(
                 name: "DashboardColumn");

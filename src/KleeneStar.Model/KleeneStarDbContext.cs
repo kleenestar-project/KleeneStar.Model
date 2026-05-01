@@ -77,6 +77,11 @@ namespace KleeneStar.Model
         public DbSet<Object> Objects { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of field values associated with objects.
+        /// </summary>
+        public DbSet<Value> Values { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of dashboards.
         /// </summary>
         public DbSet<Dashboard> Dashboards { get; set; }

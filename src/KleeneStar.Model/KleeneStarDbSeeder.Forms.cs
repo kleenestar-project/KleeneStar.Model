@@ -1,4 +1,4 @@
-﻿using KleeneStar.Model.Entities;
+using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,10 +16,14 @@ namespace KleeneStar.Model
         /// Adds a predefined set of form entities to the specified database context.
         /// </summary>
         /// <remarks>
-        /// This method is intended to seed the database with a standard set of forms. 
-        /// The first form created for each class is the standard form; all additional
-        /// forms are marked as additional forms.
-        /// It does not save changes to the database; callers must call SaveChanges on the 
+        /// This method is intended to seed the database with a standard set of forms.
+        /// Each class receives the three standard forms (Create, Edit, View). Every standard
+        /// form is given a default tab "General" containing field references to all active
+        /// fields previously seeded for that class, so the dynamic form rendering pipeline
+        /// has structure to display from the moment the database is first provisioned.
+        /// All additional forms beyond the three standard ones are created as empty
+        /// templates that can be configured later via the form editor.
+        /// It does not save changes to the database; callers must call SaveChanges on the
         /// context to persist the additions.
         /// </remarks>
         /// <param name="db">The database context to which the form entities will be added. Cannot be null.</param>
@@ -29,54 +33,31 @@ namespace KleeneStar.Model
                 .AsNoTracking()
                 .ToList();
 
+            // group fields by class id once so we can attach field references to the tab
+            // of every standard form without re-querying inside the loop.
+            var fieldsByClass = db.Fields
+                .AsNoTracking()
+                .Where(f => f.State == FieldState.Active && !f.Deprecated)
+                .ToList()
+                .GroupBy(f => f.ClassId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(f => f.Name).ToList());
+
             foreach (var cls in classes)
             {
-                // create the standard form for this class
-                db.Forms.Add(new Form
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Create",
-                    Description = "Standard form for the class.",
-                    FormType = FormType.Create,
-                    State = FormState.Active,
-                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/create.svg"),
-                    ClassId = cls.Id,
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow
-                });
+                fieldsByClass.TryGetValue(cls.Id, out var fields);
+                fields ??= [];
 
-                db.Forms.Add(new Form
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Edit",
-                    Description = "Standard form for the class.",
-                    FormType = FormType.Edit,
-                    State = FormState.Active,
-                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/edit.svg"),
-                    ClassId = cls.Id,
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow
-                });
-
-                db.Forms.Add(new Form
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "View",
-                    Description = "Standard form for the class.",
-                    FormType = FormType.View,
-                    State = FormState.Active,
-                    Icon = ImageIcon.FromString("/kleenestar/assets/icons/form/view.svg"),
-                    ClassId = cls.Id,
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow
-                });
+                AddStandardForm(db, cls, "Create", FormType.Create, "/kleenestar/assets/icons/form/create.svg", fields);
+                AddStandardForm(db, cls, "Edit", FormType.Edit, "/kleenestar/assets/icons/form/edit.svg", fields);
+                AddStandardForm(db, cls, "View", FormType.View, "/kleenestar/assets/icons/form/view.svg", fields);
 
                 // retrieve the additional form templates for the current class
                 var templates = GetFormsTemplatesForClass(cls.Name);
 
                 foreach (var template in templates)
                 {
-                    // add the instantiated form entity as an additional form
+                    // additional forms are created without a tab structure; they are
+                    // intended to be configured in the form designer by an administrator.
                     db.Forms.Add(new Form
                     {
                         Id = Guid.NewGuid(),
@@ -90,6 +71,64 @@ namespace KleeneStar.Model
                         Updated = DateTime.UtcNow
                     });
                 }
+            }
+        }
+
+        /// <summary>
+        /// Adds a single standard form (Create, Edit, or View) for the given class together
+        /// with its initial structure: one tab labelled "General" that contains a
+        /// <see cref="FormFieldRefElement"/> per active field of the class.
+        /// </summary>
+        /// <param name="db">The database context to mutate.</param>
+        /// <param name="cls">The class the form belongs to.</param>
+        /// <param name="name">The display name of the form (also used as a unique key per class).</param>
+        /// <param name="formType">The form type (<see cref="FormType.Create"/>, <see cref="FormType.Edit"/>, <see cref="FormType.View"/>).</param>
+        /// <param name="iconUri">Relative URI of the form icon.</param>
+        /// <param name="fields">Active fields of the class to be referenced from the tab, in render order.</param>
+        private static void AddStandardForm
+        (
+            KleeneStarDbContext db,
+            Class cls,
+            string name,
+            FormType formType,
+            string iconUri,
+            IReadOnlyList<Field> fields
+        )
+        {
+            var formId = Guid.NewGuid();
+            var tabId = Guid.NewGuid();
+
+            db.Forms.Add(new Form
+            {
+                Id = formId,
+                Name = name,
+                Description = "Standard form for the class.",
+                FormType = formType,
+                State = FormState.Active,
+                Icon = ImageIcon.FromString(iconUri),
+                ClassId = cls.Id,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            });
+
+            db.FormTabs.Add(new FormTab
+            {
+                Id = tabId,
+                FormId = formId,
+                Name = "General",
+                Position = 0
+            });
+
+            for (var i = 0; i < fields.Count; i++)
+            {
+                db.FormElements.Add(new FormFieldRefElement
+                {
+                    Id = Guid.NewGuid(),
+                    FormTabId = tabId,
+                    ParentElementId = null,
+                    Position = i,
+                    FieldId = fields[i].Id
+                });
             }
         }
 
