@@ -596,6 +596,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Template",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Presets = table.Column<string>(type: "TEXT", nullable: true),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Template", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Template_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Workflow",
                 columns: table => new
                 {
@@ -958,6 +986,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "WorkflowRawId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Template_Class_Name",
+                table: "Template",
+                columns: new[] { "Class", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tenant_Name",
                 table: "Tenant",
                 column: "Name",
@@ -1056,6 +1090,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Priority");
+
+            migrationBuilder.DropTable(
+                name: "Template");
 
             migrationBuilder.DropTable(
                 name: "Transition");

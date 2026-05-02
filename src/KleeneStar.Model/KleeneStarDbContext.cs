@@ -32,6 +32,11 @@ namespace KleeneStar.Model
         public DbSet<Field> Fields { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of templates.
+        /// </summary>
+        public DbSet<Template> Templates { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of forms.
         /// </summary>
         public DbSet<Form> Forms { get; set; }
