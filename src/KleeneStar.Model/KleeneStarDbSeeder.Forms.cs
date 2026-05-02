@@ -18,9 +18,11 @@ namespace KleeneStar.Model
         /// <remarks>
         /// This method is intended to seed the database with a standard set of forms.
         /// Each class receives the three standard forms (Create, Edit, View). Every standard
-        /// form is given a default tab "General" containing field references to all active
-        /// fields previously seeded for that class, so the dynamic form rendering pipeline
-        /// has structure to display from the moment the database is first provisioned.
+        /// form is given two tabs — "General" (primary fields such as Title, Description,
+        /// Status, Priority, Owner, Tags) and "Details" (the remaining class fields,
+        /// including timestamps and domain-specific fields) — so the dynamic form rendering
+        /// pipeline has a multi-tab structure to display from the moment the database is
+        /// first provisioned.
         /// All additional forms beyond the three standard ones are created as empty
         /// templates that can be configured later via the form editor.
         /// It does not save changes to the database; callers must call SaveChanges on the
@@ -75,16 +77,33 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Names of fields that belong on the primary "General" tab. Anything not in this
+        /// set is placed on the secondary "Details" tab so every standard form ships with
+        /// at least two tabs even when the class only has the default field set.
+        /// </summary>
+        private static readonly HashSet<string> GeneralTabFieldNames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Title",
+            "Description",
+            "Status",
+            "Priority",
+            "Owner",
+            "Tags"
+        };
+
+        /// <summary>
         /// Adds a single standard form (Create, Edit, or View) for the given class together
-        /// with its initial structure: one tab labelled "General" that contains a
-        /// <see cref="FormFieldRefElement"/> per active field of the class.
+        /// with its initial structure: a "General" tab holding the primary fields and a
+        /// "Details" tab holding the remaining fields. If a class has only fields of one
+        /// kind, the empty tab is still created so every standard form has at least two
+        /// tabs out of the box.
         /// </summary>
         /// <param name="db">The database context to mutate.</param>
         /// <param name="cls">The class the form belongs to.</param>
         /// <param name="name">The display name of the form (also used as a unique key per class).</param>
         /// <param name="formType">The form type (<see cref="FormType.Create"/>, <see cref="FormType.Edit"/>, <see cref="FormType.View"/>).</param>
         /// <param name="iconUri">Relative URI of the form icon.</param>
-        /// <param name="fields">Active fields of the class to be referenced from the tab, in render order.</param>
+        /// <param name="fields">Active fields of the class to be referenced from the tabs, in render order.</param>
         private static void AddStandardForm
         (
             KleeneStarDbContext db,
@@ -96,7 +115,6 @@ namespace KleeneStar.Model
         )
         {
             var formId = Guid.NewGuid();
-            var tabId = Guid.NewGuid();
 
             db.Forms.Add(new Form
             {
@@ -111,12 +129,39 @@ namespace KleeneStar.Model
                 Updated = DateTime.UtcNow
             });
 
+            var generalFields = fields.Where(f => GeneralTabFieldNames.Contains(f.Name)).ToList();
+            var detailFields = fields.Where(f => !GeneralTabFieldNames.Contains(f.Name)).ToList();
+
+            AddFormTab(db, formId, "General", 0, generalFields);
+            AddFormTab(db, formId, "Details", 1, detailFields);
+        }
+
+        /// <summary>
+        /// Creates a single tab on the given form and attaches a
+        /// <see cref="FormFieldRefElement"/> for each supplied field, preserving order.
+        /// </summary>
+        /// <param name="db">The database context to mutate.</param>
+        /// <param name="formId">The id of the form the tab belongs to.</param>
+        /// <param name="name">The display name of the tab.</param>
+        /// <param name="position">The zero-based ordering position of the tab inside its form.</param>
+        /// <param name="fields">The fields to add to this tab as field references, in render order.</param>
+        private static void AddFormTab
+        (
+            KleeneStarDbContext db,
+            Guid formId,
+            string name,
+            int position,
+            IReadOnlyList<Field> fields
+        )
+        {
+            var tabId = Guid.NewGuid();
+
             db.FormTabs.Add(new FormTab
             {
                 Id = tabId,
                 FormId = formId,
-                Name = "General",
-                Position = 0
+                Name = name,
+                Position = position
             });
 
             for (var i = 0; i < fields.Count; i++)
