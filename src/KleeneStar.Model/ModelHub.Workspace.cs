@@ -51,7 +51,7 @@ namespace KleeneStar.Model
         /// </returns>
         public static IEnumerable<Workspace> GetWorkspaces(IQuery<Workspace> query, KleeneStarDbContext context)
         {
-            var data = context.Workspaces
+            var data = context?.Workspaces
                 .AsNoTracking()
                 .Include(w => w.Categories)
                 .Include(w => w.Classes)
