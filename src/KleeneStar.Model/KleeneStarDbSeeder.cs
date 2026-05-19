@@ -160,6 +160,20 @@ namespace KleeneStar.Model
                     throw;
                 }
             }
+
+            if (!db.ObjectViews.Any())
+            {
+                try
+                {
+                    SeedObjectViews(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding object views: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
         }
     }
 }

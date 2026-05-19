@@ -335,6 +335,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectView",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    ViewType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Configuration = table.Column<string>(type: "TEXT", nullable: true),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectView", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectView_Workspace_Workspace",
+                        column: x => x.Workspace,
+                        principalTable: "Workspace",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PermissionProfile",
                 columns: table => new
                 {
@@ -930,6 +958,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Workspace");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ObjectView_Workspace_Name",
+                table: "ObjectView",
+                columns: new[] { "Workspace", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Permission_Name",
                 table: "Permission",
                 column: "Name",
@@ -1081,6 +1115,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "IdentityGroupMembership");
+
+            migrationBuilder.DropTable(
+                name: "ObjectView");
 
             migrationBuilder.DropTable(
                 name: "PermissionProfile");

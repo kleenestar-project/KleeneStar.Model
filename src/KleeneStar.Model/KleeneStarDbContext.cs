@@ -82,6 +82,11 @@ namespace KleeneStar.Model
         public DbSet<Object> Objects { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of persisted object views (workspace tabs).
+        /// </summary>
+        public DbSet<ObjectView> ObjectViews { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of field values associated with objects.
         /// </summary>
         public DbSet<Value> Values { get; set; }
