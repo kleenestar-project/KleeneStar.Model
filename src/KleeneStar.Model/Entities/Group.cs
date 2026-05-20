@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebIndex.WebAttribute;
 
@@ -42,16 +43,19 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Navigation property for persisted policy assignments.
         /// </summary>
+        [JsonIgnore]
         public List<GroupPolicy> GroupPolicies { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the collection of permission profiles assigned to this group.
         /// </summary>
+        [JsonIgnore]
         public List<PermissionProfile> PermissionProfiles { get; set; } = [];
 
         /// <summary>
         /// Navigation property for identity memberships (m:n).
         /// </summary>
+        [JsonIgnore]
         public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];
 
         /// <summary>

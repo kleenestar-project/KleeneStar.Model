@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebCore.WebIdentity;
@@ -53,6 +54,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the navigation property for group memberships (m:n).
         /// </summary>
+        [JsonIgnore]
         public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];
 
         /// <summary>
@@ -63,6 +65,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the hashed representation of the user's password.
         /// </summary>
+        [JsonIgnore]
         public string PasswordHash { get; set; }
 
         /// <summary>

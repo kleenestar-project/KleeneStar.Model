@@ -59,7 +59,7 @@ namespace KleeneStar.Model
                 .Include(w => w.Inherited)
                 .Include(w => w.Tenants);
 
-            return query.Apply(data); // none materialize query
+            return data is not null ? query.Apply(data) : []; // none materialize query
         }
 
         /// <summary>
