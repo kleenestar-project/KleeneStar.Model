@@ -36,25 +36,27 @@ namespace Kleenestar.Model.Test.Entity
         /// Verifies that scalar properties can be set and round-tripped.
         /// </summary>
         [Theory]
-        [InlineData("Incident · P1", "24/7 coverage", SlaPolicyState.Active, SlaPriority.Critical, SlaCalendar.TwentyFourSeven)]
-        [InlineData("Incident · P3", null, SlaPolicyState.Draft, SlaPriority.Low, SlaCalendar.BusinessHours)]
-        [InlineData("Legacy",          "Migrated",     SlaPolicyState.Inactive, SlaPriority.Medium, SlaCalendar.Custom)]
-        public void SetScalarProperties(string name, string description, SlaPolicyState state, SlaPriority priority, SlaCalendar calendar)
+        [InlineData("Incident · P1", "24/7 coverage", SlaPolicyState.Active,   SlaPriority.Critical)]
+        [InlineData("Incident · P3", null,            SlaPolicyState.Draft,    SlaPriority.Low)]
+        [InlineData("Legacy",        "Migrated",      SlaPolicyState.Inactive, SlaPriority.Medium)]
+        public void SetScalarProperties(string name, string description, SlaPolicyState state, SlaPriority priority)
         {
+            var calendarId = Guid.NewGuid();
+
             var policy = new SlaPolicy
             {
                 Name = name,
                 Description = description,
                 State = state,
                 Priority = priority,
-                Calendar = calendar
+                CalendarId = calendarId
             };
 
             Assert.Equal(name, policy.Name);
             Assert.Equal(description, policy.Description);
             Assert.Equal(state, policy.State);
             Assert.Equal(priority, policy.Priority);
-            Assert.Equal(calendar, policy.Calendar);
+            Assert.Equal(calendarId, policy.CalendarId);
         }
 
         /// <summary>

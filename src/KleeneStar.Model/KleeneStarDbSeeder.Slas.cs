@@ -12,18 +12,23 @@ namespace KleeneStar.Model
     /// </summary>
     public static partial class KleeneStarDbSeeder
     {
-        /// <summary>
-        /// Identity used as fallback owner when no specific identity is available.
-        /// </summary>
+        // Identities used as fallback owners.
         private static readonly Guid SeedAdminIdentityId = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD");
         private static readonly Guid SeedAliceIdentityId = Guid.Parse("BBF45E5D-AA35-4382-9B84-6055193CE544");
         private static readonly Guid SeedSupportIdentityId = Guid.Parse("D1C5AED2-78D3-45F7-BB19-E87B8F134301");
 
+        // Calendar names available in the seeded catalogue. Used by the SLA seeder to
+        // resolve the per-class calendar by name without hard-coding GUIDs.
+        private const string StandardCalendarName = "Standard · Europe/Berlin";
+        private const string AlwaysOnCalendarName = "24 / 7 · Always on";
+        private const string NightShiftCalendarName = "Night shift · 22-06";
+
         /// <summary>
         /// Adds a class-specific catalogue of SLA policies to the database, including targets,
-        /// scope rules, and escalation levels. One or more policies are generated for every
-        /// existing class, with extra variety (multiple priorities, VIP, draft, inactive)
-        /// for support-desk style classes such as Incident, Problem, Change and Request.
+        /// scope rules, and escalation levels. Service-desk style classes get a rich catalogue
+        /// (Incident P1-P3, VIP, Problem, Change, Request, plus a draft and an inactive legacy
+        /// policy); all other classes receive a single sensible default so the SLA management
+        /// page is never empty. Each policy is linked to the class's matching seeded calendar.
         /// </summary>
         /// <param name="db">The database context to which the policies will be added.</param>
         private static void SeedSlas(KleeneStarDbContext db)
@@ -33,9 +38,20 @@ namespace KleeneStar.Model
                 .AsNoTracking()
                 .ToList();
 
+            // Pre-load all seeded calendars grouped by class so we can resolve them by
+            // (classId, name) without firing a query per policy.
+            var calendarsByClassAndName = db.Calendars
+                .AsNoTracking()
+                .ToDictionary(c => (c.ClassId, c.Name), c => c.Id);
+
+            Guid? ResolveCalendar(Guid classId, string name)
+            {
+                return calendarsByClassAndName.TryGetValue((classId, name), out var id) ? id : null;
+            }
+
             foreach (var cls in classes)
             {
-                var templates = GetSlaTemplatesForClass(cls.Name, cls.Workspace?.Key);
+                var templates = GetSlaTemplatesForClass(cls.Name);
 
                 foreach (var template in templates)
                 {
@@ -46,7 +62,7 @@ namespace KleeneStar.Model
                         Description = template.Description,
                         State = template.State,
                         Priority = template.Priority,
-                        Calendar = template.Calendar,
+                        CalendarId = ResolveCalendar(cls.Id, template.CalendarName),
                         Notifications = template.Notifications,
                         PauseOn = template.PauseOn,
                         Icon = ImageIcon.FromString("/kleenestar/assets/icons/sla.svg"),
@@ -105,7 +121,7 @@ namespace KleeneStar.Model
             string Description,
             SlaPolicyState State,
             SlaPriority Priority,
-            SlaCalendar Calendar,
+            string CalendarName,
             SlaNotificationChannels Notifications,
             string PauseOn,
             Guid? OwnerId,
@@ -127,15 +143,15 @@ namespace KleeneStar.Model
         private sealed record SlaEscalationTemplate(int AfterValue, SlaTargetUnit Unit, string Notify);
 
         /// <summary>
-        /// Returns the SLA template catalogue for a class within a workspace.
+        /// Returns the SLA template catalogue for a class.
         /// </summary>
         /// <remarks>
-        /// Support-desk style classes (Incident, Problem, Change, ServiceRequest) get a rich
-        /// catalogue mirroring the design prototype (P1 Enterprise, P2 Standard, P3 Basic,
-        /// VIP, plus drafts and an inactive legacy policy). All other classes receive a
-        /// single sensible default so the SLA management page is never empty.
+        /// Support-desk style classes (Incident, Problem, Change, ServiceRequest, etc.) get a
+        /// rich catalogue mirroring the design prototype (P1 Enterprise, P2 Standard, P3 Basic,
+        /// VIP, plus drafts and an inactive legacy policy). All other classes receive a single
+        /// sensible default so the SLA management page is never empty.
         /// </remarks>
-        private static IReadOnlyList<SlaTemplate> GetSlaTemplatesForClass(string className, string workspaceKey)
+        private static IReadOnlyList<SlaTemplate> GetSlaTemplatesForClass(string className)
         {
             switch (className)
             {
@@ -194,24 +210,24 @@ namespace KleeneStar.Model
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A001-000000000001"),
             Name: "Incident · Priority 1 · Enterprise",
-            Description: "24/7-Abdeckung für unternehmenskritische Vorfälle bei Enterprise-Verträgen.",
+            Description: "24/7 coverage for business-critical incidents on enterprise contracts.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Critical,
-            Calendar: SlaCalendar.TwentyFourSeven,
+            CalendarName: AlwaysOnCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer, Scheduled maintenance",
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion",   SlaTargetKind.Response,   30, SlaTargetUnit.Minutes),
-                new SlaTargetTemplate("Lösung",         SlaTargetKind.Resolution,  4, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Update-Pflicht", SlaTargetKind.Update,      2, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,   30, SlaTargetUnit.Minutes),
+                new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution,  4, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Status update",  SlaTargetKind.Update,      2, SlaTargetUnit.Hours),
             ],
             Scope:
             [
                 new SlaScopeTemplate(SlaScopeRuleType.Priority, "High"),
                 new SlaScopeTemplate(SlaScopeRuleType.Contract, "Enterprise"),
-                new SlaScopeTemplate(SlaScopeRuleType.System,   "Produktiv"),
+                new SlaScopeTemplate(SlaScopeRuleType.System,   "Production"),
             ],
             Escalations:
             [
@@ -225,18 +241,18 @@ namespace KleeneStar.Model
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A001-000000000002"),
             Name: "Incident · Priority 2 · Standard",
-            Description: "Geschäftszeiten-SLA für Standard-Verträge.",
+            Description: "Business-hours SLA for standard contracts.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer",
             OwnerId: SeedSupportIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion",   SlaTargetKind.Response,    2, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Lösung",         SlaTargetKind.Resolution,  1, SlaTargetUnit.Days),
-                new SlaTargetTemplate("Update-Pflicht", SlaTargetKind.Update,      4, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,    2, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution,  1, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Status update",  SlaTargetKind.Update,      4, SlaTargetUnit.Hours),
             ],
             Scope:
             [
@@ -254,17 +270,17 @@ namespace KleeneStar.Model
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A001-000000000003"),
             Name: "Incident · Priority 3 · Basic",
-            Description: "Best-effort-SLA für niedrigpriorisierte Tickets.",
+            Description: "Best-effort SLA for low-priority tickets.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Low,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer, Waiting for 3rd-party",
             OwnerId: SeedSupportIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion", SlaTargetKind.Response,   1, SlaTargetUnit.Days),
-                new SlaTargetTemplate("Lösung",       SlaTargetKind.Resolution, 5, SlaTargetUnit.Days),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,   1, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution, 5, SlaTargetUnit.Days),
             ],
             Scope:
             [
@@ -279,19 +295,19 @@ namespace KleeneStar.Model
         private static SlaTemplate IncidentVipPremium() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A001-000000000004"),
-            Name: "Incident · VIP-User · Premium",
-            Description: "Verschärfte Reaktionszeiten für VIP-User (C-Level, Vorstand).",
+            Name: "Incident · VIP user · Premium",
+            Description: "Tightened response targets for VIP users (C-level, board).",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Critical,
-            Calendar: SlaCalendar.TwentyFourSeven,
+            CalendarName: AlwaysOnCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion",   SlaTargetKind.Response,    5, SlaTargetUnit.Minutes),
-                new SlaTargetTemplate("Lösung",         SlaTargetKind.Resolution,  1, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Update-Pflicht", SlaTargetKind.Update,     30, SlaTargetUnit.Minutes),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,    5, SlaTargetUnit.Minutes),
+                new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution,  1, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Status update",  SlaTargetKind.Update,     30, SlaTargetUnit.Minutes),
             ],
             Scope:
             [
@@ -308,22 +324,22 @@ namespace KleeneStar.Model
         private static SlaTemplate BatchJobDraft() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A001-000000000005"),
-            Name: "Batch-Job · Nightly-Recovery",
-            Description: "Entwurf für automatisierte Recovery-SLAs (Pilotphase).",
+            Name: "Batch job · Nightly recovery",
+            Description: "Draft policy for automated nightly recovery (pilot).",
             State: SlaPolicyState.Draft,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.NightShift,
+            CalendarName: NightShiftCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAliceIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion", SlaTargetKind.Response,  10, SlaTargetUnit.Minutes),
-                new SlaTargetTemplate("Recovery",     SlaTargetKind.Resolution, 2, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,  10, SlaTargetUnit.Minutes),
+                new SlaTargetTemplate("Recovery",       SlaTargetKind.Resolution, 2, SlaTargetUnit.Hours),
             ],
             Scope:
             [
-                new SlaScopeTemplate(SlaScopeRuleType.Category, "Batch-Job-Fehler"),
+                new SlaScopeTemplate(SlaScopeRuleType.Category, "Batch job failure"),
             ],
             Escalations:
             [
@@ -334,22 +350,22 @@ namespace KleeneStar.Model
         private static SlaTemplate LegacyInactive() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A001-000000000006"),
-            Name: "Legacy · Old Service Desk Tickets",
-            Description: "Alte SLA für migrierte Tickets aus dem ServiceNow-Bestand. Nicht mehr verwendet.",
+            Name: "Legacy · Old service desk tickets",
+            Description: "Legacy SLA for tickets migrated from the ServiceNow installation. No longer in use.",
             State: SlaPolicyState.Inactive,
             Priority: SlaPriority.Low,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.None,
             PauseOn: null,
             OwnerId: SeedSupportIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion", SlaTargetKind.Response,   8, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Lösung",       SlaTargetKind.Resolution, 5, SlaTargetUnit.Days),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,   8, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution, 5, SlaTargetUnit.Days),
             ],
             Scope:
             [
-                new SlaScopeTemplate(SlaScopeRuleType.Source, "ServiceNow-Migration"),
+                new SlaScopeTemplate(SlaScopeRuleType.Source, "ServiceNow migration"),
             ],
             Escalations: []
         );
@@ -357,18 +373,18 @@ namespace KleeneStar.Model
         private static SlaTemplate ProblemRootCause() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A002-000000000001"),
-            Name: "Problem · Root-Cause-Analyse",
-            Description: "Mittelfristige SLA für Root-Cause-Analyse nach kritischen Incidents.",
+            Name: "Problem · Root-cause analysis",
+            Description: "Mid-term SLA for root-cause analysis following critical incidents.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for 3rd-party, Waiting for vendor",
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Reaktion",   SlaTargetKind.Response,    1, SlaTargetUnit.Days),
-                new SlaTargetTemplate("RCA fertig", SlaTargetKind.Resolution, 10, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Response", SlaTargetKind.Response,    1, SlaTargetUnit.Days),
+                new SlaTargetTemplate("RCA done", SlaTargetKind.Resolution, 10, SlaTargetUnit.Days),
             ],
             Scope:
             [
@@ -384,18 +400,18 @@ namespace KleeneStar.Model
         private static SlaTemplate ChangeStandard() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A003-000000000001"),
-            Name: "Change · Standard-Change",
-            Description: "Approval- und Implementierungs-Fristen für Standard-Changes.",
+            Name: "Change · Standard change",
+            Description: "Approval and implementation deadlines for standard changes.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "CAB approval pending",
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("CAB-Approval",    SlaTargetKind.Approval,       3, SlaTargetUnit.Days),
-                new SlaTargetTemplate("Implementierung", SlaTargetKind.Implementation, 7, SlaTargetUnit.Days),
+                new SlaTargetTemplate("CAB approval",   SlaTargetKind.Approval,       3, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Implementation", SlaTargetKind.Implementation, 7, SlaTargetUnit.Days),
             ],
             Scope:
             [
@@ -410,18 +426,18 @@ namespace KleeneStar.Model
         private static SlaTemplate ChangeEmergency() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A003-000000000002"),
-            Name: "Change · Emergency-Change",
-            Description: "Verkürzte Fristen für Emergency-Changes mit hoher Dringlichkeit.",
+            Name: "Change · Emergency change",
+            Description: "Tightened deadlines for emergency changes with high urgency.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Critical,
-            Calendar: SlaCalendar.TwentyFourSeven,
+            CalendarName: AlwaysOnCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("CAB-Approval",    SlaTargetKind.Approval,       2, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Implementierung", SlaTargetKind.Implementation, 8, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("CAB approval",   SlaTargetKind.Approval,       2, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Implementation", SlaTargetKind.Implementation, 8, SlaTargetUnit.Hours),
             ],
             Scope:
             [
@@ -437,11 +453,11 @@ namespace KleeneStar.Model
         private static SlaTemplate ServiceRequestOnboarding() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A004-000000000001"),
-            Name: "Request · Onboarding-Hardware",
-            Description: "Service-Request für neues Onboarding inkl. Laptop, Konten, Berechtigungen.",
+            Name: "Request · Hardware onboarding",
+            Description: "Service request for new-hire onboarding including laptop, accounts, and permissions.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for HR approval, Waiting for delivery",
             OwnerId: SeedSupportIdentityId,
@@ -451,7 +467,7 @@ namespace KleeneStar.Model
             ],
             Scope:
             [
-                new SlaScopeTemplate(SlaScopeRuleType.Catalog, "Hardware-Onboarding"),
+                new SlaScopeTemplate(SlaScopeRuleType.Catalog, "Hardware onboarding"),
             ],
             Escalations:
             [
@@ -462,18 +478,18 @@ namespace KleeneStar.Model
         private static SlaTemplate ServiceRequestStandard() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A004-000000000002"),
-            Name: "Request · Standard-Service",
+            Name: "Request · Standard service",
             Description: "Standard service request fulfilment SLA.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Low,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer",
             OwnerId: SeedSupportIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion", SlaTargetKind.Response,    4, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Fulfillment",  SlaTargetKind.Fulfillment, 3, SlaTargetUnit.BusinessDays),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,    4, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Fulfillment",    SlaTargetKind.Fulfillment, 3, SlaTargetUnit.BusinessDays),
             ],
             Scope:
             [
@@ -489,17 +505,17 @@ namespace KleeneStar.Model
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A005-000000000001"),
             Name: "Ticket · Default",
-            Description: "Allgemeine SLA für unklassifizierte Service-Desk-Tickets.",
+            Description: "Catch-all SLA for unclassified service-desk tickets.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer",
             OwnerId: SeedSupportIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Erstreaktion", SlaTargetKind.Response,    4, SlaTargetUnit.Hours),
-                new SlaTargetTemplate("Lösung",       SlaTargetKind.Resolution,  2, SlaTargetUnit.BusinessDays),
+                new SlaTargetTemplate("First response", SlaTargetKind.Response,    4, SlaTargetUnit.Hours),
+                new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution,  2, SlaTargetUnit.BusinessDays),
             ],
             Scope: [],
             Escalations:
@@ -511,17 +527,17 @@ namespace KleeneStar.Model
         private static SlaTemplate KnowledgeReview() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-A006-000000000001"),
-            Name: "Knowledge · Review-Pflicht",
-            Description: "Knowledge-Artikel werden regelmäßig auf Aktualität geprüft.",
+            Name: "Knowledge · Review cadence",
+            Description: "Knowledge articles must be reviewed for accuracy on a recurring cadence.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Low,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAliceIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Review",  SlaTargetKind.Custom,     90, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Review", SlaTargetKind.Custom, 90, SlaTargetUnit.Days),
             ],
             Scope: [],
             Escalations:
@@ -535,18 +551,18 @@ namespace KleeneStar.Model
         private static SlaTemplate BugTriage() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-B001-000000000001"),
-            Name: "Bug · Triage & Fix",
-            Description: "SLA für die Triage und Behebung von Bugs.",
+            Name: "Bug · Triage & fix",
+            Description: "SLA for triaging and fixing bugs.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for reporter",
             OwnerId: SeedAliceIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Triage",         SlaTargetKind.Response,    1, SlaTargetUnit.BusinessDays),
-                new SlaTargetTemplate("Fix verfügbar",  SlaTargetKind.Resolution, 14, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Triage",        SlaTargetKind.Response,    1, SlaTargetUnit.BusinessDays),
+                new SlaTargetTemplate("Fix available", SlaTargetKind.Resolution, 14, SlaTargetUnit.Days),
             ],
             Scope:
             [
@@ -562,11 +578,11 @@ namespace KleeneStar.Model
         private static SlaTemplate FeatureDelivery() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-B002-000000000001"),
-            Name: "Feature · Delivery-Commitment",
-            Description: "Tracking der zugesagten Feature-Liefertermine.",
+            Name: "Feature · Delivery commitment",
+            Description: "Tracks the committed delivery date for features.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAliceIdentityId,
@@ -590,18 +606,18 @@ namespace KleeneStar.Model
         private static SlaTemplate InvoiceApproval() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-C001-000000000001"),
-            Name: "Invoice · Approval-Cycle",
-            Description: "Genehmigungs- und Zahlungsfristen für eingehende Rechnungen.",
+            Name: "Invoice · Approval cycle",
+            Description: "Approval and payment deadlines for incoming invoices.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for supplier",
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
                 new SlaTargetTemplate("Approval", SlaTargetKind.Approval,    5,  SlaTargetUnit.BusinessDays),
-                new SlaTargetTemplate("Zahlung",  SlaTargetKind.Fulfillment, 30, SlaTargetUnit.Days),
+                new SlaTargetTemplate("Payment",  SlaTargetKind.Fulfillment, 30, SlaTargetUnit.Days),
             ],
             Scope:
             [
@@ -616,11 +632,11 @@ namespace KleeneStar.Model
         private static SlaTemplate ApprovalStandard() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-C002-000000000001"),
-            Name: "Approval · Standard-Cycle",
-            Description: "Standard-SLA für Approval-Workflows.",
+            Name: "Approval · Standard cycle",
+            Description: "Standard SLA for approval workflows.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAdminIdentityId,
@@ -639,16 +655,16 @@ namespace KleeneStar.Model
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-C003-000000000001"),
             Name: "PurchaseOrder · Processing",
-            Description: "Bearbeitungs-SLA für eingehende Bestellungen.",
+            Description: "Processing SLA for incoming purchase orders.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Medium,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for budget approval",
             OwnerId: SeedAdminIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Order Approval", SlaTargetKind.Approval,    2, SlaTargetUnit.BusinessDays),
+                new SlaTargetTemplate("Order approval", SlaTargetKind.Approval,     2, SlaTargetUnit.BusinessDays),
                 new SlaTargetTemplate("Delivery",       SlaTargetKind.Fulfillment, 10, SlaTargetUnit.BusinessDays),
             ],
             Scope: [],
@@ -663,18 +679,18 @@ namespace KleeneStar.Model
         private static SlaTemplate OnboardingFulfillment() => new
         (
             Id: Guid.Parse("A1B2C3D4-E5F6-4711-D001-000000000001"),
-            Name: "Onboarding · Day-1-Ready",
-            Description: "Vollständige Bereitstellung neuer Mitarbeiter zum ersten Arbeitstag.",
+            Name: "Onboarding · Day-1 ready",
+            Description: "Complete provisioning of new hires by their first working day.",
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
-            Calendar: SlaCalendar.BusinessHours,
+            CalendarName: StandardCalendarName,
             Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for IT, Waiting for HR",
             OwnerId: SeedSupportIdentityId,
             Targets:
             [
-                new SlaTargetTemplate("Vertrag versandt", SlaTargetKind.Response,    5, SlaTargetUnit.BusinessDays),
-                new SlaTargetTemplate("Day-1-Ready",      SlaTargetKind.Fulfillment, 1, SlaTargetUnit.BusinessDays),
+                new SlaTargetTemplate("Contract sent", SlaTargetKind.Response,    5, SlaTargetUnit.BusinessDays),
+                new SlaTargetTemplate("Day-1 ready",   SlaTargetKind.Fulfillment, 1, SlaTargetUnit.BusinessDays),
             ],
             Scope: [],
             Escalations:
@@ -690,18 +706,18 @@ namespace KleeneStar.Model
             return new SlaTemplate
             (
                 Id: Guid.NewGuid(),
-                Name: $"{className} · Default-SLA",
-                Description: $"Standard-SLA für die Klasse {className}.",
+                Name: $"{className} · Default SLA",
+                Description: $"Standard SLA for class {className}.",
                 State: SlaPolicyState.Active,
                 Priority: SlaPriority.Medium,
-                Calendar: SlaCalendar.BusinessHours,
+                CalendarName: StandardCalendarName,
                 Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
                 PauseOn: null,
                 OwnerId: SeedAdminIdentityId,
                 Targets:
                 [
-                    new SlaTargetTemplate("Erstreaktion", SlaTargetKind.Response,   1, SlaTargetUnit.BusinessDays),
-                    new SlaTargetTemplate("Lösung",       SlaTargetKind.Resolution, 5, SlaTargetUnit.BusinessDays),
+                    new SlaTargetTemplate("First response", SlaTargetKind.Response,   1, SlaTargetUnit.BusinessDays),
+                    new SlaTargetTemplate("Resolution",     SlaTargetKind.Resolution, 5, SlaTargetUnit.BusinessDays),
                 ],
                 Scope: [],
                 Escalations:

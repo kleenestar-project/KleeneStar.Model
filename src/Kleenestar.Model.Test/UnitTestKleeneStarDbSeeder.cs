@@ -95,6 +95,9 @@ namespace KleeneStar.Model.Test
             var slaTargets = db.SlaTargets.Count();
             var slaScope = db.SlaScopeRules.Count();
             var slaEscalations = db.SlaEscalationLevels.Count();
+            var calendars = db.Calendars.Count();
+            var businessHours = db.BusinessHourSlots.Count();
+            var holidays = db.Holidays.Count();
 
             await KleeneStarDbSeeder.SeedAsync(db);
 
@@ -121,6 +124,57 @@ namespace KleeneStar.Model.Test
             Assert.Equal(slaTargets, db.SlaTargets.Count());
             Assert.Equal(slaScope, db.SlaScopeRules.Count());
             Assert.Equal(slaEscalations, db.SlaEscalationLevels.Count());
+            Assert.Equal(calendars, db.Calendars.Count());
+            Assert.Equal(businessHours, db.BusinessHourSlots.Count());
+            Assert.Equal(holidays, db.Holidays.Count());
+        }
+
+        /// <summary>
+        /// Verifies that the calendar seeder produces at least one calendar per class,
+        /// that each business-hours calendar has seven weekly slots, and that service-desk
+        /// style classes additionally get a night-shift calendar.
+        /// </summary>
+        [Fact]
+        public async Task SeedCalendars()
+        {
+            // arrange
+            var connectionString = $"SeedCalendars_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.True(db.Calendars.Any(), "expected at least one calendar");
+            Assert.True(db.BusinessHourSlots.Any(), "expected at least one business-hour slot");
+
+            // every class should have at least one calendar
+            var classes = db.Classes.ToList();
+            foreach (var cls in classes)
+            {
+                Assert.True
+                (
+                    db.Calendars.Any(c => c.ClassId == cls.Id),
+                    $"expected at least one calendar for class {cls.Name}"
+                );
+            }
+
+            // Incident gets three calendars (Standard, 24/7, Night-shift)
+            var incident = db.Classes.Single(c => c.Name == "Incident");
+            var incidentCalendars = db.Calendars.Where(c => c.ClassId == incident.Id).ToList();
+            Assert.Equal(3, incidentCalendars.Count);
+            Assert.Contains(incidentCalendars, c => c.Name.Contains("Standard"));
+            Assert.Contains(incidentCalendars, c => c.Name.Contains("24 / 7"));
+            Assert.Contains(incidentCalendars, c => c.Name.Contains("Night shift"));
+
+            // a Standard calendar should have 7 weekly slots and German holidays
+            var standard = db.Calendars
+                .Where(c => c.Name == "Standard · Europe/Berlin")
+                .Select(c => c.Id)
+                .First();
+            Assert.Equal(7, db.BusinessHourSlots.Count(b => b.CalendarId == standard));
+            Assert.Contains(db.Holidays.Where(h => h.CalendarId == standard).ToList(), h => h.Name == "New Year's Day");
         }
 
         /// <summary>
@@ -160,6 +214,14 @@ namespace KleeneStar.Model.Test
             Assert.Contains(incidentPolicies, p => p.State == Entities.SlaPolicyState.Draft);
             Assert.Contains(incidentPolicies, p => p.State == Entities.SlaPolicyState.Inactive);
             Assert.Contains(incidentPolicies, p => p.State == Entities.SlaPolicyState.Active);
+
+            // every Active/Inactive policy should be linked to a Calendar of its class
+            var classCalendarIds = db.Calendars.ToDictionary(c => c.Id, c => c.ClassId);
+            foreach (var policy in incidentPolicies)
+            {
+                Assert.True(policy.CalendarId.HasValue, $"policy {policy.Name} expected to reference a calendar");
+                Assert.Equal(incident.Id, classCalendarIds[policy.CalendarId.Value]);
+            }
         }
     }
 }

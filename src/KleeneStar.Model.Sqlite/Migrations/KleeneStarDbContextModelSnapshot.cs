@@ -47,6 +47,111 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("DashboardCategory");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.BusinessHourSlot", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("CalendarId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Calendar");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("DayOfWeek");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Enabled");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("EndTime");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("StartTime");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("CalendarId", "DayOfWeek")
+                        .IsUnique();
+
+                    b.ToTable("BusinessHourSlot", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Calendar", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsDefault");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Region");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<string>("TimeZone")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TimeZone");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ClassId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Calendar", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Category", b =>
                 {
                     b.Property<int>("RawId")
@@ -554,6 +659,48 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("GroupPolicy", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Holiday", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("CalendarId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Calendar");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Date");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Enabled");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Region");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("CalendarId", "Date");
+
+                    b.ToTable("Holiday", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Identity", b =>
                 {
                     b.Property<int>("RawId")
@@ -912,8 +1059,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
-                    b.Property<int>("Calendar")
-                        .HasColumnType("INTEGER")
+                    b.Property<Guid?>("CalendarId")
+                        .HasColumnType("TEXT")
                         .HasColumnName("Calendar");
 
                     b.Property<Guid>("ClassId")
@@ -969,6 +1116,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Updated");
 
                     b.HasKey("RawId");
+
+                    b.HasIndex("CalendarId");
 
                     b.HasIndex("OwnerId");
 
@@ -1623,6 +1772,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.BusinessHourSlot", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Calendar", "Calendar")
+                        .WithMany("BusinessHours")
+                        .HasForeignKey("CalendarId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Calendar");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Calendar", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Class", "Inherited")
@@ -1726,6 +1899,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Holiday", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Calendar", "Calendar")
+                        .WithMany("Holidays")
+                        .HasForeignKey("CalendarId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Calendar");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.IdentityGroupMembership", b =>
@@ -1835,6 +2020,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.SlaPolicy", b =>
                 {
+                    b.HasOne("KleeneStar.Model.Entities.Calendar", "Calendar")
+                        .WithMany()
+                        .HasForeignKey("CalendarId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("KleeneStar.Model.Entities.Class", "Class")
                         .WithMany()
                         .HasForeignKey("ClassId")
@@ -1847,6 +2038,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasForeignKey("OwnerId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Calendar");
 
                     b.Navigation("Class");
 
@@ -2055,6 +2248,13 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Calendar", b =>
+                {
+                    b.Navigation("BusinessHours");
+
+                    b.Navigation("Holidays");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>

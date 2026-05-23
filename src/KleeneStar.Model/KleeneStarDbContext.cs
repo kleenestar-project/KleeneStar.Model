@@ -142,6 +142,21 @@ namespace KleeneStar.Model
         public DbSet<SlaEscalationLevel> SlaEscalationLevels { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of calendars.
+        /// </summary>
+        public DbSet<Calendar> Calendars { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of weekly business-hour slots attached to calendars.
+        /// </summary>
+        public DbSet<BusinessHourSlot> BusinessHourSlots { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of holidays attached to calendars.
+        /// </summary>
+        public DbSet<Holiday> Holidays { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

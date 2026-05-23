@@ -17,6 +17,7 @@ namespace KleeneStar.Model
         [
             nameof(SlaPolicy.Class),
             nameof(SlaPolicy.Owner),
+            nameof(SlaPolicy.Calendar),
             nameof(SlaPolicy.Targets),
             nameof(SlaPolicy.Scope),
             nameof(SlaPolicy.Escalations)
@@ -45,6 +46,7 @@ namespace KleeneStar.Model
             var data = context.SlaPolicies
                 .Include(x => x.Class)
                 .Include(x => x.Owner)
+                .Include(x => x.Calendar)
                 .Include(x => x.Targets)
                 .Include(x => x.Scope)
                 .Include(x => x.Escalations)
@@ -145,7 +147,7 @@ namespace KleeneStar.Model
             existing.Description = policyEntry.Description;
             existing.State = policyEntry.State;
             existing.Priority = policyEntry.Priority;
-            existing.Calendar = policyEntry.Calendar;
+            existing.CalendarId = policyEntry.CalendarId;
             existing.Notifications = policyEntry.Notifications;
             existing.PauseOn = policyEntry.PauseOn;
             existing.Icon = policyEntry.Icon;

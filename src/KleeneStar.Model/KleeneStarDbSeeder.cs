@@ -175,6 +175,22 @@ namespace KleeneStar.Model
                 }
             }
 
+            // Calendars must be seeded BEFORE SLA policies — SeedSlas resolves the
+            // per-class calendar by name to populate SlaPolicy.CalendarId.
+            if (!db.Calendars.Any())
+            {
+                try
+                {
+                    SeedCalendars(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding calendars: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             if (!db.SlaPolicies.Any())
             {
                 try

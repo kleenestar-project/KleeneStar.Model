@@ -54,9 +54,17 @@ namespace KleeneStar.Model.Entities
         public SlaPriority Priority { get; set; }
 
         /// <summary>
-        /// Gets or sets the calendar that controls when the policy clock runs.
+        /// Gets or sets the unique identifier of the working-hours <see cref="Calendar"/>
+        /// that controls when the policy clock runs. When <c>null</c> the policy runs against
+        /// the class default calendar.
         /// </summary>
-        public SlaCalendar Calendar { get; set; }
+        public Guid? CalendarId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the working-hours calendar that controls when the policy clock runs.
+        /// </summary>
+        [JsonIgnore]
+        public Calendar Calendar { get; set; }
 
         /// <summary>
         /// Gets or sets the channels through which breach notifications are dispatched.

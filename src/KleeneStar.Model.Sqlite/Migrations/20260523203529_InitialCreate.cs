@@ -466,6 +466,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Calendar",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    TimeZone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Region = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsDefault = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Calendar", x => x.Id);
+                    table.UniqueConstraint("AK_Calendar_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Calendar_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClassAllowedChild",
                 columns: table => new
                 {
@@ -625,44 +655,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SlaPolicy",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
-                    Calendar = table.Column<int>(type: "INTEGER", nullable: false),
-                    Notifications = table.Column<int>(type: "INTEGER", nullable: false),
-                    PauseOn = table.Column<string>(type: "TEXT", nullable: true),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Owner = table.Column<Guid>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SlaPolicy", x => x.Id);
-                    table.UniqueConstraint("AK_SlaPolicy_Guid", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_SlaPolicy_Class_Class",
-                        column: x => x.Class,
-                        principalTable: "Class",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SlaPolicy_Identity_Owner",
-                        column: x => x.Owner,
-                        principalTable: "Identity",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Template",
                 columns: table => new
                 {
@@ -718,6 +710,98 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BusinessHourSlot",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    DayOfWeek = table.Column<int>(type: "INTEGER", nullable: false),
+                    Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                    Calendar = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusinessHourSlot", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BusinessHourSlot_Calendar_Calendar",
+                        column: x => x.Calendar,
+                        principalTable: "Calendar",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Holiday",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Region = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                    Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Calendar = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Holiday", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Holiday_Calendar_Calendar",
+                        column: x => x.Calendar,
+                        principalTable: "Calendar",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SlaPolicy",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
+                    Calendar = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Notifications = table.Column<int>(type: "INTEGER", nullable: false),
+                    PauseOn = table.Column<string>(type: "TEXT", nullable: true),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SlaPolicy", x => x.Id);
+                    table.UniqueConstraint("AK_SlaPolicy_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_SlaPolicy_Calendar_Calendar",
+                        column: x => x.Calendar,
+                        principalTable: "Calendar",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_SlaPolicy_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SlaPolicy_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FormTab",
                 columns: table => new
                 {
@@ -768,6 +852,46 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Status",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<Guid>(type: "TEXT", nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    WorkflowRawId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Status", x => x.Id);
+                    table.UniqueConstraint("AK_Status_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Status_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Status_StatusCategory_Category",
+                        column: x => x.Category,
+                        principalTable: "StatusCategory",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Status_Workflow_WorkflowRawId",
+                        column: x => x.WorkflowRawId,
+                        principalTable: "Workflow",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -840,46 +964,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "SlaPolicy",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Status",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Category = table.Column<Guid>(type: "TEXT", nullable: false),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    WorkflowRawId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Status", x => x.Id);
-                    table.UniqueConstraint("AK_Status_Guid", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_Status_Class_Class",
-                        column: x => x.Class,
-                        principalTable: "Class",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Status_StatusCategory_Category",
-                        column: x => x.Category,
-                        principalTable: "StatusCategory",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Status_Workflow_WorkflowRawId",
-                        column: x => x.WorkflowRawId,
-                        principalTable: "Workflow",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -959,6 +1043,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusinessHourSlot_Calendar_DayOfWeek",
+                table: "BusinessHourSlot",
+                columns: new[] { "Calendar", "DayOfWeek" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Calendar_Class_Name",
+                table: "Calendar",
+                columns: new[] { "Class", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Category_Name",
@@ -1048,6 +1144,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Holiday_Calendar_Date",
+                table: "Holiday",
+                columns: new[] { "Calendar", "Date" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IdentityGroupMembership_GroupId",
                 table: "IdentityGroupMembership",
                 column: "GroupId");
@@ -1118,6 +1219,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "SlaEscalationLevel",
                 columns: new[] { "Policy", "Level" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SlaPolicy_Calendar",
+                table: "SlaPolicy",
+                column: "Calendar");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SlaPolicy_Class_Name",
@@ -1240,6 +1346,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BusinessHourSlot");
+
+            migrationBuilder.DropTable(
                 name: "ClassAllowedChild");
 
             migrationBuilder.DropTable(
@@ -1250,6 +1359,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "GroupPolicy");
+
+            migrationBuilder.DropTable(
+                name: "Holiday");
 
             migrationBuilder.DropTable(
                 name: "IdentityGroupMembership");
@@ -1328,6 +1440,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Form");
+
+            migrationBuilder.DropTable(
+                name: "Calendar");
 
             migrationBuilder.DropTable(
                 name: "Identity");

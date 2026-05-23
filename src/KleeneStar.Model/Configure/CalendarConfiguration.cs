@@ -6,17 +6,17 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Configure
 {
     /// <summary>
-    /// Provides the Entity Framework Core configuration for the <see cref="SlaPolicy"/> entity.
+    /// Entity Framework Core configuration for <see cref="Calendar"/>.
     /// </summary>
-    internal class SlaPolicyConfiguration : IEntityTypeConfiguration<SlaPolicy>
+    internal class CalendarConfiguration : IEntityTypeConfiguration<Calendar>
     {
         /// <summary>
-        /// Configures the policy entity.
+        /// Configures the entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<SlaPolicy> builder)
+        public void Configure(EntityTypeBuilder<Calendar> builder)
         {
-            builder.ToTable("SlaPolicy");
+            builder.ToTable("Calendar");
 
             builder.HasKey(x => x.RawId);
 
@@ -37,26 +37,19 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
 
+            builder.Property(x => x.TimeZone)
+                .HasColumnName("TimeZone")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.Region)
+                .HasColumnName("Region")
+                .HasMaxLength(16);
+
             builder.Property(x => x.State)
                 .HasColumnName("State");
 
-            builder.Property(x => x.Priority)
-                .HasColumnName("Priority");
-
-            builder.Property(x => x.CalendarId)
-                .HasColumnName("Calendar");
-
-            builder.HasOne(x => x.Calendar)
-                .WithMany()
-                .HasForeignKey(x => x.CalendarId)
-                .HasPrincipalKey(c => c.Id)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder.Property(x => x.Notifications)
-                .HasColumnName("Notifications");
-
-            builder.Property(x => x.PauseOn)
-                .HasColumnName("PauseOn");
+            builder.Property(x => x.IsDefault)
+                .HasColumnName("IsDefault");
 
             builder.Property(x => x.Icon)
                 .HasColumnName("Icon")
@@ -85,31 +78,16 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(c => c.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(x => x.OwnerId)
-                .HasColumnName("Owner");
-
-            builder.HasOne(x => x.Owner)
-                .WithMany()
-                .HasForeignKey(x => x.OwnerId)
-                .HasPrincipalKey(i => i.Id)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder.HasMany(x => x.Targets)
-                .WithOne(t => t.Policy)
-                .HasForeignKey(t => t.PolicyId)
-                .HasPrincipalKey(p => p.Id)
+            builder.HasMany(x => x.BusinessHours)
+                .WithOne(s => s.Calendar)
+                .HasForeignKey(s => s.CalendarId)
+                .HasPrincipalKey(c => c.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(x => x.Scope)
-                .WithOne(s => s.Policy)
-                .HasForeignKey(s => s.PolicyId)
-                .HasPrincipalKey(p => p.Id)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(x => x.Escalations)
-                .WithOne(e => e.Policy)
-                .HasForeignKey(e => e.PolicyId)
-                .HasPrincipalKey(p => p.Id)
+            builder.HasMany(x => x.Holidays)
+                .WithOne(h => h.Calendar)
+                .HasForeignKey(h => h.CalendarId)
+                .HasPrincipalKey(c => c.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => new { x.ClassId, x.Name })

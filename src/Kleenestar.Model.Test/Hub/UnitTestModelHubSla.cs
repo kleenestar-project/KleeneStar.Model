@@ -95,7 +95,7 @@ namespace Kleenestar.Model.Test.Hub
                 ClassId = ClassId,
                 State = SlaPolicyState.Active,
                 Priority = SlaPriority.Critical,
-                Calendar = SlaCalendar.TwentyFourSeven,
+                CalendarId = null,
                 Notifications = SlaNotificationChannels.Email | SlaNotificationChannels.Slack,
                 Targets =
                 {
