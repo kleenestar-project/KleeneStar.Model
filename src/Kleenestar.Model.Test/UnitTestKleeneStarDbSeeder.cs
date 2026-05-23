@@ -91,6 +91,10 @@ namespace KleeneStar.Model.Test
             var workflows = db.Workflows.Count();
             var objects = db.Objects.Count();
             var dashboards = db.Dashboards.Count();
+            var slaPolicies = db.SlaPolicies.Count();
+            var slaTargets = db.SlaTargets.Count();
+            var slaScope = db.SlaScopeRules.Count();
+            var slaEscalations = db.SlaEscalationLevels.Count();
 
             await KleeneStarDbSeeder.SeedAsync(db);
 
@@ -113,6 +117,49 @@ namespace KleeneStar.Model.Test
             Assert.Equal(workflows, db.Workflows.Count());
             Assert.Equal(objects, db.Objects.Count());
             Assert.Equal(dashboards, db.Dashboards.Count());
+            Assert.Equal(slaPolicies, db.SlaPolicies.Count());
+            Assert.Equal(slaTargets, db.SlaTargets.Count());
+            Assert.Equal(slaScope, db.SlaScopeRules.Count());
+            Assert.Equal(slaEscalations, db.SlaEscalationLevels.Count());
+        }
+
+        /// <summary>
+        /// Verifies that the SLA seeder produces a class-specific policy catalogue and that
+        /// the support-desk style classes get multiple policies (P1, P2, P3, VIP, draft, inactive).
+        /// </summary>
+        [Fact]
+        public async Task SeedSlaPolicies()
+        {
+            // arrange
+            var connectionString = $"SeedSlaPolicies_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.True(db.SlaPolicies.Any(), "expected at least one SLA policy");
+            Assert.True(db.SlaTargets.Any(),  "expected at least one SLA target");
+
+            // each seeded class should have at least one policy
+            var classes = db.Classes.ToList();
+            foreach (var cls in classes)
+            {
+                Assert.True
+                (
+                    db.SlaPolicies.Any(p => p.ClassId == cls.Id),
+                    $"expected at least one policy for class {cls.Name}"
+                );
+            }
+
+            // Incident class gets the richer catalogue (6 policies including draft + inactive)
+            var incident = db.Classes.Single(c => c.Name == "Incident");
+            var incidentPolicies = db.SlaPolicies.Where(p => p.ClassId == incident.Id).ToList();
+            Assert.Equal(6, incidentPolicies.Count);
+            Assert.Contains(incidentPolicies, p => p.State == Entities.SlaPolicyState.Draft);
+            Assert.Contains(incidentPolicies, p => p.State == Entities.SlaPolicyState.Inactive);
+            Assert.Contains(incidentPolicies, p => p.State == Entities.SlaPolicyState.Active);
         }
     }
 }

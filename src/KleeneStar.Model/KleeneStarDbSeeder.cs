@@ -174,6 +174,20 @@ namespace KleeneStar.Model
                     throw;
                 }
             }
+
+            if (!db.SlaPolicies.Any())
+            {
+                try
+                {
+                    SeedSlas(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding SLA policies: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
         }
     }
 }

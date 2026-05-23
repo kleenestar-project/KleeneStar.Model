@@ -122,6 +122,26 @@ namespace KleeneStar.Model
         public DbSet<Group> Groups { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of SLA policies.
+        /// </summary>
+        public DbSet<SlaPolicy> SlaPolicies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of SLA targets attached to policies.
+        /// </summary>
+        public DbSet<SlaTarget> SlaTargets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of SLA scope rules attached to policies.
+        /// </summary>
+        public DbSet<SlaScopeRule> SlaScopeRules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of SLA escalation levels attached to policies.
+        /// </summary>
+        public DbSet<SlaEscalationLevel> SlaEscalationLevels { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

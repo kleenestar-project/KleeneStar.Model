@@ -79,6 +79,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Identity", x => x.Id);
+                    table.UniqueConstraint("AK_Identity_Guid", x => x.Guid);
                 });
 
             migrationBuilder.CreateTable(
@@ -624,6 +625,44 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SlaPolicy",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
+                    Calendar = table.Column<int>(type: "INTEGER", nullable: false),
+                    Notifications = table.Column<int>(type: "INTEGER", nullable: false),
+                    PauseOn = table.Column<string>(type: "TEXT", nullable: true),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SlaPolicy", x => x.Id);
+                    table.UniqueConstraint("AK_SlaPolicy_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_SlaPolicy_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SlaPolicy_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Template",
                 columns: table => new
                 {
@@ -727,6 +766,78 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_Value_Object_Object",
                         column: x => x.Object,
                         principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SlaEscalationLevel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Level = table.Column<int>(type: "INTEGER", nullable: false),
+                    AfterValue = table.Column<int>(type: "INTEGER", nullable: false),
+                    Unit = table.Column<int>(type: "INTEGER", nullable: false),
+                    Notify = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    Policy = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SlaEscalationLevel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SlaEscalationLevel_SlaPolicy_Policy",
+                        column: x => x.Policy,
+                        principalTable: "SlaPolicy",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SlaScopeRule",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    RuleType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Value = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Policy = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SlaScopeRule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SlaScopeRule_SlaPolicy_Policy",
+                        column: x => x.Policy,
+                        principalTable: "SlaPolicy",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SlaTarget",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Kind = table.Column<int>(type: "INTEGER", nullable: false),
+                    TargetValue = table.Column<int>(type: "INTEGER", nullable: false),
+                    Unit = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Policy = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SlaTarget", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SlaTarget_SlaPolicy_Policy",
+                        column: x => x.Policy,
+                        principalTable: "SlaPolicy",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1003,6 +1114,33 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_SlaEscalationLevel_Policy_Level",
+                table: "SlaEscalationLevel",
+                columns: new[] { "Policy", "Level" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SlaPolicy_Class_Name",
+                table: "SlaPolicy",
+                columns: new[] { "Class", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SlaPolicy_Owner",
+                table: "SlaPolicy",
+                column: "Owner");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SlaScopeRule_Policy",
+                table: "SlaScopeRule",
+                column: "Policy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SlaTarget_Policy_Kind",
+                table: "SlaTarget",
+                columns: new[] { "Policy", "Kind" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Status_Category_Name_Class",
                 table: "Status",
                 columns: new[] { "Category", "Name", "Class" },
@@ -1129,6 +1267,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Priority");
 
             migrationBuilder.DropTable(
+                name: "SlaEscalationLevel");
+
+            migrationBuilder.DropTable(
+                name: "SlaScopeRule");
+
+            migrationBuilder.DropTable(
+                name: "SlaTarget");
+
+            migrationBuilder.DropTable(
                 name: "Template");
 
             migrationBuilder.DropTable(
@@ -1150,9 +1297,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "FormTab");
 
             migrationBuilder.DropTable(
-                name: "Identity");
-
-            migrationBuilder.DropTable(
                 name: "Group");
 
             migrationBuilder.DropTable(
@@ -1160,6 +1304,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Policy");
+
+            migrationBuilder.DropTable(
+                name: "SlaPolicy");
 
             migrationBuilder.DropTable(
                 name: "Status");
@@ -1181,6 +1328,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Form");
+
+            migrationBuilder.DropTable(
+                name: "Identity");
 
             migrationBuilder.DropTable(
                 name: "StatusCategory");

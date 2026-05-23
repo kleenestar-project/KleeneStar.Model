@@ -864,6 +864,202 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Priority", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("AfterValue")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AfterValue");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Level");
+
+                    b.Property<string>("Notify")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Notify");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Policy");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Unit");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("PolicyId", "Level")
+                        .IsUnique();
+
+                    b.ToTable("SlaEscalationLevel", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaPolicy", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("Calendar")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Calendar");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Notifications")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Notifications");
+
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<string>("PauseOn")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PauseOn");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Priority");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ClassId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("SlaPolicy", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaScopeRule", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Policy");
+
+                    b.Property<int>("RuleType")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RuleType");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Value");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("PolicyId");
+
+                    b.ToTable("SlaScopeRule", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaTarget", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Kind");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Policy");
+
+                    b.Property<int>("TargetValue")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("TargetValue");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Unit");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("PolicyId", "Kind");
+
+                    b.ToTable("SlaTarget", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Status", b =>
                 {
                     b.Property<int>("RawId")
@@ -1625,6 +1821,62 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Class");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.SlaPolicy", "Policy")
+                        .WithMany("Escalations")
+                        .HasForeignKey("PolicyId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaPolicy", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaScopeRule", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.SlaPolicy", "Policy")
+                        .WithMany("Scope")
+                        .HasForeignKey("PolicyId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaTarget", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.SlaPolicy", "Policy")
+                        .WithMany("Targets")
+                        .HasForeignKey("PolicyId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Policy");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Status", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.StatusCategory", "Category")
@@ -1847,6 +2099,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
             modelBuilder.Entity("KleeneStar.Model.Entities.Policy", b =>
                 {
                     b.Navigation("PermissionProfiles");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SlaPolicy", b =>
+                {
+                    b.Navigation("Escalations");
+
+                    b.Navigation("Scope");
+
+                    b.Navigation("Targets");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workflow", b =>
