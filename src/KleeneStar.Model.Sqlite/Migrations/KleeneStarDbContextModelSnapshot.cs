@@ -256,6 +256,142 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Class", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Comment", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Author");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Content");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DeletedAt");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<bool>("IsPinned")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsPinned");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ParentComment");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("ObjectId", "Created");
+
+                    b.ToTable("Comment", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.CommentLike", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Author");
+
+                    b.Property<Guid>("CommentId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Comment");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CommentId", "AuthorId")
+                        .IsUnique();
+
+                    b.ToTable("CommentLike", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.CommentReaction", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Author");
+
+                    b.Property<Guid>("CommentId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Comment");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Emoji")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Emoji");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CommentId", "AuthorId", "Emoji")
+                        .IsUnique();
+
+                    b.ToTable("CommentReaction", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>
                 {
                     b.Property<int>("RawId")
@@ -1824,6 +1960,77 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Workspace");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Comment", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Object")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Object");
+
+                    b.Navigation("ParentComment");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.CommentLike", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Comment", "Comment")
+                        .WithMany("Likes")
+                        .HasForeignKey("CommentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Comment");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.CommentReaction", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Comment", "Comment")
+                        .WithMany("Reactions")
+                        .HasForeignKey("CommentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Comment");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.DashboardColumn", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Dashboard", "Dashboard")
@@ -2255,6 +2462,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("BusinessHours");
 
                     b.Navigation("Holidays");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Comment", b =>
+                {
+                    b.Navigation("Likes");
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>

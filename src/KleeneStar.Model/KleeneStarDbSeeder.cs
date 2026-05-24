@@ -204,6 +204,22 @@ namespace KleeneStar.Model
                     throw;
                 }
             }
+
+            // Comments must be seeded AFTER Objects + Identities — SeedComments
+            // resolves authors by e-mail and attaches each thread to an existing object.
+            if (!db.Comments.Any())
+            {
+                try
+                {
+                    SeedComments(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding comments: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
         }
     }
 }

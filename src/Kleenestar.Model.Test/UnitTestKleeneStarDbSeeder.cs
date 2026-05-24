@@ -98,6 +98,9 @@ namespace KleeneStar.Model.Test
             var calendars = db.Calendars.Count();
             var businessHours = db.BusinessHourSlots.Count();
             var holidays = db.Holidays.Count();
+            var comments = db.Comments.Count();
+            var commentLikes = db.CommentLikes.Count();
+            var commentReactions = db.CommentReactions.Count();
 
             await KleeneStarDbSeeder.SeedAsync(db);
 
@@ -127,6 +130,9 @@ namespace KleeneStar.Model.Test
             Assert.Equal(calendars, db.Calendars.Count());
             Assert.Equal(businessHours, db.BusinessHourSlots.Count());
             Assert.Equal(holidays, db.Holidays.Count());
+            Assert.Equal(comments, db.Comments.Count());
+            Assert.Equal(commentLikes, db.CommentLikes.Count());
+            Assert.Equal(commentReactions, db.CommentReactions.Count());
         }
 
         /// <summary>
@@ -222,6 +228,59 @@ namespace KleeneStar.Model.Test
                 Assert.True(policy.CalendarId.HasValue, $"policy {policy.Name} expected to reference a calendar");
                 Assert.Equal(incident.Id, classCalendarIds[policy.CalendarId.Value]);
             }
+        }
+
+        /// <summary>
+        /// Verifies that comments are seeded for every object and that the threads are
+        /// class-flavoured (Incident gets the network/triage thread, Bug gets the
+        /// triage-and-fix thread, etc.). Also asserts that at least one thread carries a
+        /// reply so the parent/reply rendering path has live data in the seeded DB.
+        /// </summary>
+        [Fact]
+        public async Task SeedComments()
+        {
+            // arrange
+            var connectionString = $"SeedComments_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.True(db.Comments.Any(), "expected at least one seeded comment");
+
+            // every seeded object should have at least one top-level comment
+            var objects = db.Objects.ToList();
+            foreach (var obj in objects)
+            {
+                Assert.True
+                (
+                    db.Comments.Any(c => c.ObjectId == obj.Id && c.ParentCommentId == null),
+                    $"expected at least one top-level comment for object {obj.Key}"
+                );
+            }
+
+            // at least one comment should carry a reply (exercises the parent FK path)
+            Assert.True(db.Comments.Any(c => c.ParentCommentId.HasValue), "expected at least one nested reply across all seed threads");
+
+            // at least one comment should be pinned (exercises the IsPinned path)
+            Assert.True(db.Comments.Any(c => c.IsPinned), "expected at least one pinned comment");
+
+            // at least one like and one reaction should be seeded (exercises the
+            // CommentLike + CommentReaction tables)
+            Assert.True(db.CommentLikes.Any(), "expected at least one seeded comment like");
+            Assert.True(db.CommentReactions.Any(), "expected at least one seeded comment reaction");
+
+            // the threads are class-flavoured: an Incident object should carry the
+            // network-team narrative produced by GetCommentTemplatesForClass("Incident").
+            var incidentClass = db.Classes.Single(c => c.Name == "Incident");
+            var incidentObject = db.Objects.First(o => o.ClassId == incidentClass.Id);
+            var threads = db.Comments
+                .Where(c => c.ObjectId == incidentObject.Id && c.ParentCommentId == null)
+                .Select(c => c.Content)
+                .ToList();
+            Assert.Contains(threads, t => t.Contains("VPN", StringComparison.OrdinalIgnoreCase) || t.Contains("workaround", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

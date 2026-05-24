@@ -157,6 +157,21 @@ namespace KleeneStar.Model
         public DbSet<Holiday> Holidays { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of comments posted on objects.
+        /// </summary>
+        public DbSet<Comment> Comments { get; set; }
+
+        /// <summary>
+        /// Gets or sets the likes attached to comments.
+        /// </summary>
+        public DbSet<CommentLike> CommentLikes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the emoji reactions attached to comments.
+        /// </summary>
+        public DbSet<CommentReaction> CommentReactions { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">
