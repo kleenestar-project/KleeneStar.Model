@@ -34,6 +34,8 @@ namespace KleeneStar.Model
                 // get the specific priority templates for the current class and workspace
                 var templates = GetPriorityTemplatesForClassAndWorkspace(cls.Name, cls.Workspace.Key);
 
+                var order = 0;
+
                 foreach (var template in templates)
                 {
                     // add the new priority entity to the context
@@ -45,6 +47,7 @@ namespace KleeneStar.Model
                         State = PriorityState.Active,
                         Icon = ImageIcon.FromString(template.Icon),
                         ClassId = cls.Id,
+                        Order = order++,
                         Created = DateTime.UtcNow,
                         Updated = DateTime.UtcNow
                     });

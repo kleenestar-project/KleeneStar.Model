@@ -41,6 +41,12 @@ namespace KleeneStar.Model.Entities
         public PriorityState State { get; set; }
 
         /// <summary>
+        /// Gets or sets the display order of the priority within its class.
+        /// Lower values appear first; values are dense but not required to be contiguous.
+        /// </summary>
+        public int Order { get; set; }
+
+        /// <summary>
         /// Gets or sets the icon associated with this priority.
         /// </summary>
         public ImageIcon Icon { get; set; }
