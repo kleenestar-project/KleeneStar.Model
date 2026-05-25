@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260524174006_InitialCreate")]
+    [Migration("20260525055658_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -936,6 +936,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Key");
 
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Parent");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
@@ -961,9 +965,55 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
+                    b.HasIndex("ParentId");
+
                     b.HasIndex("WorkspaceId");
 
                     b.ToTable("Object", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectLink", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("RelationType")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RelationType");
+
+                    b.Property<Guid>("SourceObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Source");
+
+                    b.Property<Guid>("TargetObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Target");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("SourceObjectId");
+
+                    b.HasIndex("TargetObjectId");
+
+                    b.HasIndex("SourceObjectId", "TargetObjectId", "RelationType")
+                        .IsUnique();
+
+                    b.ToTable("ObjectLink", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectView", b =>
@@ -2151,6 +2201,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
                         .WithMany("Objects")
                         .HasForeignKey("WorkspaceId")
@@ -2160,7 +2216,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.Navigation("Class");
 
+                    b.Navigation("Parent");
+
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectLink", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Object", "SourceObject")
+                        .WithMany()
+                        .HasForeignKey("SourceObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Object", "TargetObject")
+                        .WithMany()
+                        .HasForeignKey("TargetObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SourceObject");
+
+                    b.Navigation("TargetObject");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectView", b =>

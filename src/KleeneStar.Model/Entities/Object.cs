@@ -82,6 +82,18 @@ namespace KleeneStar.Model.Entities
         public Class Class { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the parent object, if any. The parent
+        /// expresses a containment relationship inside the same workspace (e.g. an
+        /// "Epic" object owning child "Story" objects).
+        /// </summary>
+        public Guid? ParentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent object.
+        /// </summary>
+        public Object Parent { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Object()

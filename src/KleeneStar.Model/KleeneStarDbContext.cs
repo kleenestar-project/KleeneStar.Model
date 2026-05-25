@@ -92,6 +92,11 @@ namespace KleeneStar.Model
         public DbSet<Value> Values { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of typed directional links between objects.
+        /// </summary>
+        public DbSet<ObjectLink> ObjectLinks { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of dashboards.
         /// </summary>
         public DbSet<Dashboard> Dashboards { get; set; }
