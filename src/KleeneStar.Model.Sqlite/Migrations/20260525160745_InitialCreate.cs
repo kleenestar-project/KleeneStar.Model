@@ -268,6 +268,31 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserSession",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Scope = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSession", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserSession_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PolicyPermission",
                 columns: table => new
                 {
@@ -1486,6 +1511,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserSession_Owner_Scope_Key",
+                table: "UserSession",
+                columns: new[] { "Owner", "Scope", "Key" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Value_Field",
                 table: "Value",
                 column: "Field");
@@ -1595,6 +1626,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Transition");
+
+            migrationBuilder.DropTable(
+                name: "UserSession");
 
             migrationBuilder.DropTable(
                 name: "Value");

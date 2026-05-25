@@ -177,6 +177,11 @@ namespace KleeneStar.Model
         public DbSet<CommentReaction> CommentReactions { get; set; }
 
         /// <summary>
+        /// Gets or sets the per-identity generic session/preference entries.
+        /// </summary>
+        public DbSet<UserSession> UserSessions { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

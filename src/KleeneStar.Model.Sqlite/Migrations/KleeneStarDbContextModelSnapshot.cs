@@ -1661,6 +1661,54 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Transition", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.UserSession", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Scope");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Value");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("OwnerId", "Scope", "Key")
+                        .IsUnique();
+
+                    b.ToTable("UserSession", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Value", b =>
                 {
                     b.Property<int>("RawId")
@@ -2425,6 +2473,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Target");
 
                     b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.UserSession", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Value", b =>
