@@ -1071,6 +1071,40 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("ObjectView", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectWatcher", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("IdentityId");
+
+                    b.HasIndex("ObjectId", "IdentityId")
+                        .IsUnique();
+
+                    b.ToTable("ObjectWatcher", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2301,6 +2335,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectWatcher", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Identity")
+                        .WithMany()
+                        .HasForeignKey("IdentityId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Object")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Identity");
+
+                    b.Navigation("Object");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.PermissionProfile", b =>

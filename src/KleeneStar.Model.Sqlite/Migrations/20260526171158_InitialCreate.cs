@@ -929,6 +929,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectWatcher",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Identity = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectWatcher", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectWatcher_Identity_Identity",
+                        column: x => x.Identity,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ObjectWatcher_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Value",
                 columns: table => new
                 {
@@ -1395,6 +1423,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ObjectWatcher_Identity",
+                table: "ObjectWatcher",
+                column: "Identity");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectWatcher_Object_Identity",
+                table: "ObjectWatcher",
+                columns: new[] { "Object", "Identity" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Permission_Name",
                 table: "Permission",
                 column: "Name",
@@ -1602,6 +1641,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "ObjectView");
+
+            migrationBuilder.DropTable(
+                name: "ObjectWatcher");
 
             migrationBuilder.DropTable(
                 name: "PermissionProfile");

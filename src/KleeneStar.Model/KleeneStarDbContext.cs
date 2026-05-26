@@ -97,6 +97,11 @@ namespace KleeneStar.Model
         public DbSet<ObjectLink> ObjectLinks { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of per-identity watch relationships on objects.
+        /// </summary>
+        public DbSet<ObjectWatcher> ObjectWatchers { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of dashboards.
         /// </summary>
         public DbSet<Dashboard> Dashboards { get; set; }
