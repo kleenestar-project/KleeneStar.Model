@@ -102,6 +102,11 @@ namespace KleeneStar.Model
         public DbSet<ObjectWatcher> ObjectWatchers { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of tags (labels) attached to objects.
+        /// </summary>
+        public DbSet<ObjectTag> ObjectTags { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of dashboards.
         /// </summary>
         public DbSet<Dashboard> Dashboards { get; set; }

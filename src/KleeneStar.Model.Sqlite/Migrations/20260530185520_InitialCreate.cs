@@ -634,7 +634,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
                     Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Parent = table.Column<Guid>(type: "TEXT", nullable: true)
+                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Creator = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -646,6 +648,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Class",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Object_Identity_Assignee",
+                        column: x => x.Assignee,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Object_Identity_Creator",
+                        column: x => x.Creator,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Object_Object_Parent",
                         column: x => x.Parent,
@@ -926,6 +940,29 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ObjectTag",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectTag", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectTag_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1380,9 +1417,19 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Object_Assignee",
+                table: "Object",
+                column: "Assignee");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Object_Class",
                 table: "Object",
                 column: "Class");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Object_Creator",
+                table: "Object",
+                column: "Creator");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Object_Key",
@@ -1415,6 +1462,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_ObjectLink_Target",
                 table: "ObjectLink",
                 column: "Target");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectTag_Object_Name",
+                table: "ObjectTag",
+                columns: new[] { "Object", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ObjectView_Workspace_Name",
@@ -1640,6 +1693,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "ObjectLink");
 
             migrationBuilder.DropTable(
+                name: "ObjectTag");
+
+            migrationBuilder.DropTable(
                 name: "ObjectView");
 
             migrationBuilder.DropTable(
@@ -1727,9 +1783,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Calendar");
 
             migrationBuilder.DropTable(
-                name: "Identity");
-
-            migrationBuilder.DropTable(
                 name: "StatusCategory");
 
             migrationBuilder.DropTable(
@@ -1737,6 +1790,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Dashboard");
+
+            migrationBuilder.DropTable(
+                name: "Identity");
 
             migrationBuilder.DropTable(
                 name: "Class");

@@ -105,7 +105,9 @@ namespace KleeneStar.Model
                     return entity.Updated.ToString("o", CultureInfo.InvariantCulture);
 
                 case "Status":
-                    return PickRoundRobin(["Open", "In Progress", "Resolved", "Closed"], sequence);
+                    // Mirror the seeded workflow status names so the workflow status card can
+                    // resolve the value to a real status.
+                    return PickRoundRobin(["New", "In Progress", "Resolved", "Closed"], sequence);
 
                 case "Priority":
                     return PickRoundRobin(["Low", "Medium", "High", "Critical"], sequence);

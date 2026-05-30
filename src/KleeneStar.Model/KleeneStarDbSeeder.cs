@@ -146,6 +146,21 @@ namespace KleeneStar.Model
                 }
             }
 
+            // Tags must be seeded AFTER Objects — SeedTags attaches labels to existing objects.
+            if (!db.ObjectTags.Any())
+            {
+                try
+                {
+                    SeedTags(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding tags: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             if (!db.Dashboards.Any())
             {
                 try

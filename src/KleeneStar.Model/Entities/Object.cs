@@ -94,6 +94,28 @@ namespace KleeneStar.Model.Entities
         public Object Parent { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the identity that created the object,
+        /// if known.
+        /// </summary>
+        public Guid? CreatorId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity that created the object.
+        /// </summary>
+        public Identity Creator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the identity the object is currently
+        /// assigned to, or <c>null</c> when the object is unassigned.
+        /// </summary>
+        public Guid? AssigneeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity the object is currently assigned to.
+        /// </summary>
+        public Identity Assignee { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Object()

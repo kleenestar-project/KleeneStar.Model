@@ -282,5 +282,109 @@ namespace KleeneStar.Model.Test
                 .ToList();
             Assert.Contains(threads, t => t.Contains("VPN", StringComparison.OrdinalIgnoreCase) || t.Contains("workaround", StringComparison.OrdinalIgnoreCase));
         }
+
+        /// <summary>
+        /// Verifies that the seeded fields span every <see cref="Entities.FieldType"/> rather
+        /// than being all-string, so the forms rendered from seed data show a variety of types.
+        /// </summary>
+        [Fact]
+        public async Task SeedFieldsCoverAllFieldTypes()
+        {
+            // arrange
+            var connectionString = $"SeedFieldTypes_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var seededTypes = db.Fields.Select(f => f.FieldType).Distinct().ToHashSet();
+
+            foreach (var type in Enum.GetValues<Entities.FieldType>())
+            {
+                Assert.Contains(type, seededTypes);
+            }
+        }
+
+        /// <summary>
+        /// Verifies that the seeded workflow-typed field is linked to a workflow of its class,
+        /// i.e. its <see cref="Entities.Field.WorkflowId"/> is populated and references an
+        /// existing workflow.
+        /// </summary>
+        [Fact]
+        public async Task SeedWorkflowFieldIsLinkedToWorkflow()
+        {
+            // arrange
+            var connectionString = $"SeedWorkflowField_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var incident = db.Classes.Single(c => c.Name == "Incident");
+            var workflowFields = db.Fields
+                .Where(f => f.ClassId == incident.Id && f.FieldType == Entities.FieldType.Workflow)
+                .ToList();
+
+            Assert.NotEmpty(workflowFields);
+
+            var workflowIds = db.Workflows
+                .Where(w => w.ClassId == incident.Id)
+                .Select(w => w.Id)
+                .ToHashSet();
+
+            Assert.All(workflowFields, f =>
+            {
+                Assert.True(f.WorkflowId.HasValue, $"workflow field {f.Name} expected a WorkflowId");
+                Assert.Contains(f.WorkflowId.Value, workflowIds);
+            });
+        }
+
+        /// <summary>
+        /// Verifies that the standard View form of a class references at least one field of
+        /// every <see cref="Entities.FieldType"/>, i.e. the form contains the full type variety.
+        /// </summary>
+        [Fact]
+        public async Task SeedViewFormCoversAllFieldTypes()
+        {
+            // arrange
+            var connectionString = $"SeedViewFormTypes_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var incident = db.Classes.Single(c => c.Name == "Incident");
+            var viewForm = db.Forms.Single(f => f.ClassId == incident.Id && f.FormType == Entities.FormType.View);
+
+            var tabIds = db.FormTabs
+                .Where(t => t.FormId == viewForm.Id)
+                .Select(t => t.Id)
+                .ToHashSet();
+
+            var fieldIdsInForm = db.FormElements
+                .ToList()
+                .OfType<Entities.FormFieldRefElement>()
+                .Where(e => tabIds.Contains(e.FormTabId))
+                .Select(e => e.FieldId)
+                .ToHashSet();
+
+            var typesInForm = db.Fields
+                .ToList()
+                .Where(f => fieldIdsInForm.Contains(f.Id))
+                .Select(f => f.FieldType)
+                .Distinct()
+                .ToHashSet();
+
+            foreach (var type in Enum.GetValues<Entities.FieldType>())
+            {
+                Assert.Contains(type, typesInForm);
+            }
+        }
     }
 }

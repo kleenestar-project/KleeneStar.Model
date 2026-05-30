@@ -195,6 +195,15 @@ namespace KleeneStar.Model
 
                 db.Workflows.Add(workflow);
 
+                // Link the class's workflow-typed field (the seeded "Status" field) to this
+                // workflow so the workflow status field resolves to a real workflow instead of
+                // dangling without a WorkflowId.
+                var workflowField = db.Fields.FirstOrDefault(f => f.ClassId == cls.Id && f.FieldType == FieldType.Workflow);
+                if (workflowField is not null)
+                {
+                    workflowField.WorkflowId = workflow.Id;
+                }
+
                 var stateNew = db.Statuses.FirstOrDefault(s => s.ClassId == cls.Id && s.Name == "New");
                 var stateInProgress = db.Statuses.FirstOrDefault(s => s.ClassId == cls.Id && s.Name == "In Progress");
                 var stateResolved = db.Statuses.FirstOrDefault(s => s.ClassId == cls.Id && s.Name == "Resolved");
