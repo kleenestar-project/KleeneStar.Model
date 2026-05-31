@@ -18,8 +18,9 @@ namespace KleeneStar.Model
         /// <remarks>
         /// This method is intended to seed the database with a standard set of fields. The
         /// default field set deliberately spans every <see cref="FieldType"/> (text, number,
-        /// date, boolean, selection, reference, workflow, attachment, user, tag) so the forms
-        /// rendered from the seed data contain at least one field of each type out of the box.
+        /// date, boolean, selection, reference, workflow, attachment, user, tag, priority) so
+        /// the forms rendered from the seed data contain at least one field of each type out
+        /// of the box.
         /// It does not save changes to the database; callers must call SaveChanges on the
         /// context to persist the additions.
         /// </remarks>
@@ -78,7 +79,8 @@ namespace KleeneStar.Model
                 ("Title",          "Short human-readable title of the entry.",  "/kleenestar/assets/icons/field/title.svg",       FieldType.Text,       null),
                 ("Description",    "Detailed description of the entry.",         "/kleenestar/assets/icons/field/description.svg", FieldType.Text,       null),
                 ("Status",         "Lifecycle status of the entry.",            "/kleenestar/assets/icons/field/status.svg",      FieldType.Workflow,   null),
-                ("Priority",       "Priority or urgency classification.",       "/kleenestar/assets/icons/field/priority.svg",    FieldType.Selection,  ["Low", "Medium", "High", "Critical"]),
+                ("Priority",       "Priority or urgency classification.",       "/kleenestar/assets/icons/field/priority.svg",    FieldType.Priority,   null),
+                ("Category",       "Categorization of the entry.",              "/kleenestar/assets/icons/field/category.svg",    FieldType.Selection,  ["Hardware", "Software", "Network", "Other"]),
                 ("Owner",          "Responsible person or team.",               "/kleenestar/assets/icons/field/owner.svg",       FieldType.User,       null),
                 ("Tags",           "Keywords used for filtering and grouping.", "/kleenestar/assets/icons/field/tags.svg",        FieldType.Tag,        null),
                 ("CreatedAt",      "Timestamp when the entry was created.",     "/kleenestar/assets/icons/field/created.svg",     FieldType.Date,       null),

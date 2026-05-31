@@ -56,7 +56,12 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Indicates a tag field for free-form categorization.
         /// </summary>
-        Tag
+        Tag,
+
+        /// <summary>
+        /// Indicates a field that holds a predefined priority level.
+        /// </summary>
+        Priority
     }
 
     /// <summary>
@@ -84,6 +89,7 @@ namespace KleeneStar.Model.Entities
                 FieldType.Attachment => Guid.Parse("8A3C6E1B-F4D9-4207-B5A8-C2E3D7F16B94"),
                 FieldType.User       => Guid.Parse("2F5A8C4E-B1D7-4390-E6F9-A4C2B8D51E03"),
                 FieldType.Tag        => Guid.Parse("7B1E4A9C-D2F6-4850-B3A7-E9C1D4F28B06"),
+                FieldType.Priority   => Guid.Parse("2BC90EA1-B284-40D9-8688-A176CEDCA719"),
                 _                    => Guid.Empty
             };
         }
@@ -107,6 +113,7 @@ namespace KleeneStar.Model.Entities
                 FieldType.Attachment => "kleenestar.core:fieldtype.attachment.label",
                 FieldType.User       => "kleenestar.core:fieldtype.user.label",
                 FieldType.Tag        => "kleenestar.core:fieldtype.tag.label",
+                FieldType.Priority   => "kleenestar.core:fieldtype.priority.label",
                 _                    => null
             };
         }

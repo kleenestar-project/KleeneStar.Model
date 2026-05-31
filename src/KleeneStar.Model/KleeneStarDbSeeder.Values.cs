@@ -37,6 +37,15 @@ namespace KleeneStar.Model
                 .GroupBy(f => f.ClassId)
                 .ToDictionary(g => g.Key, g => g.OrderBy(f => f.Name).ToList());
 
+            // names of the priorities defined for each class (in display order) so that a
+            // priority-typed field is seeded with one of its class's real priorities rather
+            // than a generic placeholder.
+            var priorityNamesByClass = db.Priorities
+                .AsNoTracking()
+                .ToList()
+                .GroupBy(p => p.ClassId)
+                .ToDictionary(g => g.Key, g => (IReadOnlyList<string>)g.OrderBy(p => p.Order).Select(p => p.Name).ToList());
+
             // sequence number per (object, field) lets us generate distinct values for
             // each row when the same field type recurs across objects of the same class.
             var indexByClass = new Dictionary<Guid, int>();
@@ -48,6 +57,11 @@ namespace KleeneStar.Model
                     continue;
                 }
 
+                if (!priorityNamesByClass.TryGetValue(entity.ClassId, out var priorityNames))
+                {
+                    priorityNames = [];
+                }
+
                 if (!indexByClass.TryGetValue(entity.ClassId, out var sequence))
                 {
                     sequence = 0;
@@ -55,7 +69,7 @@ namespace KleeneStar.Model
 
                 foreach (var field in fields)
                 {
-                    var data = GenerateSampleData(field, entity, sequence);
+                    var data = GenerateSampleData(field, entity, sequence, priorityNames);
 
                     if (data is null)
                     {
@@ -85,8 +99,9 @@ namespace KleeneStar.Model
         /// <param name="field">The class field for which a value should be produced.</param>
         /// <param name="entity">The object the value is being seeded for.</param>
         /// <param name="sequence">A per-class sequence index used to vary string contents.</param>
+        /// <param name="priorityNames">The names of the priorities defined for the object's class, in display order, used to seed priority-typed fields.</param>
         /// <returns>The string payload to store in <see cref="Value.Data"/>, or <c>null</c> when the field should be left blank.</returns>
-        private static string GenerateSampleData(Field field, Entities.Object entity, int sequence)
+        private static string GenerateSampleData(Field field, Entities.Object entity, int sequence, IReadOnlyList<string> priorityNames)
         {
             // a few field names appear across many classes; treat them up-front so the
             // seeded data lines up with what the user would expect to see for that field.
@@ -110,7 +125,12 @@ namespace KleeneStar.Model
                     return PickRoundRobin(["New", "In Progress", "Resolved", "Closed"], sequence);
 
                 case "Priority":
-                    return PickRoundRobin(["Low", "Medium", "High", "Critical"], sequence);
+                    return priorityNames.Count > 0
+                        ? PickRoundRobin(priorityNames, sequence)
+                        : PickRoundRobin(["Low", "Medium", "High", "Critical"], sequence);
+
+                case "Category":
+                    return PickRoundRobin(["Hardware", "Software", "Network", "Other"], sequence);
 
                 case "Owner":
                     return PickRoundRobin(["Max Power", "Erika Mustermann", "John Doe", "Jane Smith"], sequence);
@@ -178,7 +198,7 @@ namespace KleeneStar.Model
 
             // fall back to a value derived purely from the field type so unknown custom
             // fields still get a sensible seed.
-            return GenerateFromType(field, entity, sequence);
+            return GenerateFromType(field, entity, sequence, priorityNames);
         }
 
         /// <summary>
@@ -187,7 +207,12 @@ namespace KleeneStar.Model
         /// max greater than one) are encoded as a comma-separated list to keep the seed
         /// readable; the API layer is free to interpret the data however it likes.
         /// </summary>
-        private static string GenerateFromType(Field field, Entities.Object entity, int sequence)
+        /// <param name="field">The class field for which a value should be produced.</param>
+        /// <param name="entity">The object the value is being seeded for.</param>
+        /// <param name="sequence">A per-class sequence index used to vary string contents.</param>
+        /// <param name="priorityNames">The names of the priorities defined for the object's class, in display order, used to seed priority-typed fields.</param>
+        /// <returns>The string payload to store in <see cref="Value.Data"/>.</returns>
+        private static string GenerateFromType(Field field, Entities.Object entity, int sequence, IReadOnlyList<string> priorityNames)
         {
             var multi = field.CardinalityUnlimited || field.CardinalityMax > 1;
 
@@ -219,6 +244,11 @@ namespace KleeneStar.Model
 
                 case FieldType.Workflow:
                     return PickRoundRobin(["new", "in_progress", "done"], sequence);
+
+                case FieldType.Priority:
+                    return priorityNames.Count > 0
+                        ? PickRoundRobin(priorityNames, sequence)
+                        : PickRoundRobin(["Low", "Medium", "High", "Critical"], sequence);
 
                 case FieldType.User:
                     return PickRoundRobin(["max.power", "erika.mustermann", "john.doe"], sequence);
