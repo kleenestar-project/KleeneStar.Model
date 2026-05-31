@@ -172,6 +172,11 @@ namespace KleeneStar.Model
         public DbSet<Holiday> Holidays { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of files attached to objects.
+        /// </summary>
+        public DbSet<Attachment> Attachments { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of comments posted on objects.
         /// </summary>
         public DbSet<Comment> Comments { get; set; }

@@ -107,6 +107,15 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(i => i.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(x => x.UpdaterId)
+                .HasColumnName("Updater");
+
+            builder.HasOne(x => x.Updater)
+                .WithMany()
+                .HasForeignKey(x => x.UpdaterId)
+                .HasPrincipalKey(i => i.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(x => x.Key)
                 .IsUnique();
         }

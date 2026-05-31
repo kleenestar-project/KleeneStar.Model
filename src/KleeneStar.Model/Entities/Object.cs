@@ -116,6 +116,17 @@ namespace KleeneStar.Model.Entities
         public Identity Assignee { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the identity that last updated the
+        /// object, or <c>null</c> when the updater is unknown.
+        /// </summary>
+        public Guid? UpdaterId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity that last updated the object.
+        /// </summary>
+        public Identity Updater { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Object()

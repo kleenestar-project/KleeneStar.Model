@@ -45,6 +45,7 @@ namespace KleeneStar.Model
                         ClassId = cls.Id,
                         CreatorId = creatorId,
                         AssigneeId = i % 4 == 0 ? creatorId : null,
+                        UpdaterId = creatorId,
                         Created = DateTime.UtcNow,
                         Updated = DateTime.UtcNow
                     };

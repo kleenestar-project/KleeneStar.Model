@@ -636,7 +636,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Class = table.Column<Guid>(type: "TEXT", nullable: false),
                     Parent = table.Column<Guid>(type: "TEXT", nullable: true),
                     Creator = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true)
+                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Updater = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -657,6 +658,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     table.ForeignKey(
                         name: "FK_Object_Identity_Creator",
                         column: x => x.Creator,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Object_Identity_Updater",
+                        column: x => x.Updater,
                         principalTable: "Identity",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
@@ -867,6 +874,42 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_FormTab_Form_Form",
                         column: x => x.Form,
                         principalTable: "Form",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Attachment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    FileName = table.Column<string>(type: "TEXT", nullable: false),
+                    ContentType = table.Column<string>(type: "TEXT", nullable: true),
+                    Size = table.Column<long>(type: "INTEGER", nullable: false),
+                    StoragePath = table.Column<string>(type: "TEXT", nullable: true),
+                    Content = table.Column<byte[]>(type: "BLOB", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Uploader = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attachment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Attachment_Identity_Uploader",
+                        column: x => x.Uploader,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Attachment_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1271,6 +1314,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Attachment_Object_Created",
+                table: "Attachment",
+                columns: new[] { "Object", "Created" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Attachment_Uploader",
+                table: "Attachment",
+                column: "Uploader");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BusinessHourSlot_Calendar_DayOfWeek",
                 table: "BusinessHourSlot",
                 columns: new[] { "Calendar", "DayOfWeek" },
@@ -1441,6 +1494,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_Object_Parent",
                 table: "Object",
                 column: "Parent");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Object_Updater",
+                table: "Object",
+                column: "Updater");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Object_Workspace",
@@ -1662,6 +1720,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Attachment");
+
             migrationBuilder.DropTable(
                 name: "BusinessHourSlot");
 

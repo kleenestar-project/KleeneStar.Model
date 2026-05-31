@@ -235,6 +235,22 @@ namespace KleeneStar.Model
                     throw;
                 }
             }
+
+            // Attachments must be seeded AFTER Objects + Identities — SeedAttachments
+            // resolves uploaders by e-mail and attaches each file to an existing object.
+            if (!db.Attachments.Any())
+            {
+                try
+                {
+                    SeedAttachments(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding attachments: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
         }
     }
 }
