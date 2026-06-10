@@ -85,6 +85,13 @@ namespace KleeneStar.Model.Entities
         public int Version { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the form is offered as a template in
+        /// the customer portal. Portal templates appear in the portal's template picker
+        /// for the request type backed by the owning class.
+        /// </summary>
+        public bool PortalTemplate { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Form()

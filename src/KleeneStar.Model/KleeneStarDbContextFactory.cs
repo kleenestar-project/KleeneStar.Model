@@ -1,17 +1,27 @@
 ﻿using KleeneStar.Model.Config;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 
 namespace KleeneStar.Model
 {
     /// <summary>
-    /// Provides factory methods for creating instances of KleeneStarDbContext using 
+    /// Provides factory methods for creating instances of KleeneStarDbContext using
     /// specified database configuration or provider information.
     /// </summary>
     public static class KleeneStarDbContextFactory
     {
+        /// <summary>
+        /// Caches the resolved provider factory method per (assembly, type) so the
+        /// reflection scan (<see cref="Assembly.GetTypes"/> plus the static-method lookup)
+        /// runs only once per provider rather than on every <c>Create</c> call. The factory
+        /// is invoked on essentially every database access, so memoizing the lookup avoids
+        /// repeating the expensive type enumeration for the lifetime of the process.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, MethodInfo> _factoryMethodCache = new();
+
         /// <summary>
         /// Creates a new instance of the KleeneStarDbContext using the specified 
         /// database configuration.
@@ -69,7 +79,9 @@ namespace KleeneStar.Model
         /// <remarks>
         /// If typeName is not provided, the method searches for the first type in the assembly
         /// that defines a public static method named 'Create'. This method is intended for scenarios where factory
-        /// methods are conventionally named 'Create'.
+        /// methods are conventionally named 'Create'. The resolved method is cached per
+        /// (assembly, type), so the reflection scan happens only on the first request for a
+        /// given provider.
         /// </remarks>
         /// <param name="assemblyName">
         /// The name of the assembly to load. Must not be null or empty.
@@ -88,6 +100,31 @@ namespace KleeneStar.Model
         /// on the type.
         /// </exception>
         private static MethodInfo LoadFactoryMethod(string assemblyName, string typeName = null)
+        {
+            // reuse the previously resolved factory method when the same provider is
+            // requested again — the reflection scan below is otherwise repeated on every
+            // database access.
+            var cacheKey = $"{assemblyName}|{typeName}";
+
+            return _factoryMethodCache.GetOrAdd(cacheKey, _ => ResolveFactoryMethod(assemblyName, typeName));
+        }
+
+        /// <summary>
+        /// Performs the actual reflection lookup of the static 'Create' method. Separated
+        /// from <see cref="LoadFactoryMethod"/> so the result can be memoized.
+        /// </summary>
+        /// <param name="assemblyName">The name of the assembly to load.</param>
+        /// <param name="typeName">
+        /// The name of the type to search for within the assembly, or <c>null</c> to
+        /// auto-discover the first type exposing a static 'Create' method.
+        /// </param>
+        /// <returns>The resolved 'Create' method.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the assembly cannot be loaded, the specified type is not found, no
+        /// suitable factory type with a static 'Create' method exists, or the 'Create'
+        /// method is not found on the type.
+        /// </exception>
+        private static MethodInfo ResolveFactoryMethod(string assemblyName, string typeName)
         {
             // load the specified assembly
             var assembly = Assembly.Load(assemblyName)

@@ -102,6 +102,11 @@ namespace KleeneStar.Model
         public DbSet<ObjectWatcher> ObjectWatchers { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of per-identity share relationships on objects.
+        /// </summary>
+        public DbSet<ObjectShare> ObjectShares { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of tags (labels) attached to objects.
         /// </summary>
         public DbSet<ObjectTag> ObjectTags { get; set; }

@@ -386,5 +386,52 @@ namespace KleeneStar.Model.Test
                 Assert.Contains(type, typesInForm);
             }
         }
+
+        /// <summary>
+        /// Verifies that the customer-portal projection flags are seeded: the service-desk
+        /// request types (Ticket, Incident, ServiceRequest) are portal-visible while
+        /// internal classes are not, and exactly the "Self-Service Form" of each portal
+        /// class is offered as a portal template.
+        /// </summary>
+        [Fact]
+        public async Task SeedPortalFlags()
+        {
+            // arrange
+            var connectionString = $"SeedPortalFlags_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation — class flags
+            var portalClassNames = db.Classes
+                .Where(c => c.PortalVisible)
+                .Select(c => c.Name)
+                .OrderBy(n => n)
+                .ToList();
+
+            Assert.Equal(["Incident", "ServiceRequest", "Ticket"], portalClassNames);
+
+            // validation — template flags: every portal-template form is the
+            // "Self-Service Form" and belongs to a service-desk-capable class.
+            var portalTemplates = db.Forms
+                .Where(f => f.PortalTemplate)
+                .ToList();
+
+            Assert.NotEmpty(portalTemplates);
+            Assert.All(portalTemplates, f => Assert.Equal("Self-Service Form", f.Name));
+
+            var portalVisibleClassIds = db.Classes
+                .Where(c => c.PortalVisible)
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            // the portal-visible classes each carry exactly one portal template
+            foreach (var classId in portalVisibleClassIds)
+            {
+                Assert.Single(portalTemplates, f => f.ClassId == classId);
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace KleeneStar.Model
         /// <param name="db">The database context.</param>
         private static void SeedClasses(KleeneStarDbContext db)
         {
-            void add(string id, string name, string description, string icon, string workspaceId, bool isAbstract = false, bool isSealed = false, AccessModifier accessModifier = AccessModifier.Public)
+            void add(string id, string name, string description, string icon, string workspaceId, bool isAbstract = false, bool isSealed = false, AccessModifier accessModifier = AccessModifier.Public, bool portalVisible = false)
                 => db.Classes.Add(new Class
                 {
                     Id = Guid.Parse(id),
@@ -26,6 +26,7 @@ namespace KleeneStar.Model
                     IsAbstract = isAbstract,
                     Sealed = isSealed,
                     AccessModifier = accessModifier,
+                    PortalVisible = portalVisible,
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
                 });
@@ -81,12 +82,14 @@ namespace KleeneStar.Model
             add("E8E3A5FD-BD60-40AC-8590-4C24C0E5A7ED", "Delivery", "Delivery and logistics tracking.", "/kleenestar/assets/icons/delivery.svg", "D35FDCD6-5B11-4043-98D6-215DF414D99C");
 
             // workspace: IT Service Desk (SD)
-            add("02A1933C-3209-4E17-B228-3468A18543E8", "Ticket", "Service desk tickets.", "/kleenestar/assets/icons/ticket.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
-            add("D16D1B15-C83F-4489-9B1F-CCC46855D619", "Incident", "Incident management.", "/kleenestar/assets/icons/incident.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
+            // Ticket, Incident, and ServiceRequest are exposed in the customer portal as
+            // request types; their objects surface as portal issues.
+            add("02A1933C-3209-4E17-B228-3468A18543E8", "Ticket", "Service desk tickets.", "/kleenestar/assets/icons/ticket.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", portalVisible: true);
+            add("D16D1B15-C83F-4489-9B1F-CCC46855D619", "Incident", "Incident management.", "/kleenestar/assets/icons/incident.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", portalVisible: true);
             add("14CF0195-8E7E-443A-A9CB-469C4C3C3DCC", "Problem", "Problem management.", "/kleenestar/assets/icons/problem.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
             add("481C4914-EA75-4B6B-96DC-6B594A1A7F3A", "Change", "Change management.", "/kleenestar/assets/icons/change.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
             add("4F80098A-C986-415A-9288-1C85232C27C9", "Knowledge", "Knowledge base articles.", "/kleenestar/assets/icons/knowledge.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
-            add("52A740B7-1978-454E-9A46-DF2D20888E2E", "ServiceRequest", "Service request items.", "/kleenestar/assets/icons/servicerequest.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
+            add("52A740B7-1978-454E-9A46-DF2D20888E2E", "ServiceRequest", "Service request items.", "/kleenestar/assets/icons/servicerequest.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", portalVisible: true);
         }
     }
 }

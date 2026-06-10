@@ -69,6 +69,7 @@ namespace KleeneStar.Model
                         State = FormState.Active,
                         Icon = ImageIcon.FromString(template.Icon),
                         ClassId = cls.Id,
+                        PortalTemplate = template.PortalTemplate,
                         Created = DateTime.UtcNow,
                         Updated = DateTime.UtcNow
                     });
@@ -178,29 +179,34 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Returns form templates based on the given class name.
+        /// Returns form templates based on the given class name. Templates flagged
+        /// <c>PortalTemplate</c> appear in the customer portal's template picker for
+        /// the request type backed by the owning class.
         /// </summary>
         /// <param name="className">The name of the class.</param>
         /// <returns>A list of form templates.</returns>
-        private static IReadOnlyList<(string Name, string Description, string Icon)> GetFormsTemplatesForClass(string className)
+        private static IReadOnlyList<(string Name, string Description, string Icon, bool PortalTemplate)> GetFormsTemplatesForClass(string className)
         {
             // use shared default forms for all classes to keep seed data maintainable
-            var defaults = new List<(string Name, string Description, string Icon)>
+            var defaults = new List<(string Name, string Description, string Icon, bool PortalTemplate)>
             {
                 (
                     "Workflow Overview",
                     "General overview form showing key workflow information, status and metadata.",
-                    "/kleenestar/assets/icons/form/workflow-overview.svg"
+                    "/kleenestar/assets/icons/form/workflow-overview.svg",
+                    false
                 ),
                 (
                     "Transition Form",
                     "Form used when performing a workflow transition, including required fields and actions.",
-                    "/kleenestar/assets/icons/form/workflow-transition.svg"
+                    "/kleenestar/assets/icons/form/workflow-transition.svg",
+                    false
                 ),
                 (
                     "Decision Form",
                     "Form for decision points within the workflow, such as approvals or branching steps.",
-                    "/kleenestar/assets/icons/form/workflow-decision.svg"
+                    "/kleenestar/assets/icons/form/workflow-decision.svg",
+                    false
                 )
             };
 
@@ -214,8 +220,8 @@ namespace KleeneStar.Model
                         return
                         [
                             .. defaults,
-                        ("Self-Service Form", "Simplified form for end users.", "/kleenestar/assets/icons/form/selfservice.svg"),
-                        ("Resolver Form", "Detailed form for support agents.", "/kleenestar/assets/icons/form/resolver.svg")
+                        ("Self-Service Form", "Simplified form for end users.", "/kleenestar/assets/icons/form/selfservice.svg", true),
+                        ("Resolver Form", "Detailed form for support agents.", "/kleenestar/assets/icons/form/resolver.svg", false)
                         ];
                     }
 
@@ -225,7 +231,7 @@ namespace KleeneStar.Model
                         return
                         [
                             .. defaults,
-                        ("Approval Form", "Form displaying details required for approval.", "/kleenestar/assets/icons/form/approval.svg")
+                        ("Approval Form", "Form displaying details required for approval.", "/kleenestar/assets/icons/form/approval.svg", false)
                         ];
                     }
 
@@ -234,7 +240,7 @@ namespace KleeneStar.Model
                         return
                         [
                             .. defaults,
-                        ("Onboarding Form", "Form for new employee registration.", "/kleenestar/assets/icons/form/onboarding.svg")
+                        ("Onboarding Form", "Form for new employee registration.", "/kleenestar/assets/icons/form/onboarding.svg", false)
                         ];
                     }
 

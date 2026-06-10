@@ -69,6 +69,10 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .IsConcurrencyToken();
 
+            builder.Property(x => x.PortalTemplate)
+                .HasColumnName("PortalTemplate")
+                .HasDefaultValue(false);
+
             builder.HasOne(x => x.Class)
                 .WithMany()
                 .HasForeignKey(x => x.ClassId)

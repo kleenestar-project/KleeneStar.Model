@@ -98,6 +98,13 @@ namespace KleeneStar.Model.Entities
         public AccessModifier AccessModifier { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the class is exposed in the customer
+        /// portal as a request type. Portal-visible classes appear in the portal's
+        /// request-type catalog; their objects surface as portal issues.
+        /// </summary>
+        public bool PortalVisible { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of classes allowed as children of this class.
         /// </summary>
         [JsonIgnore]

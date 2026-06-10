@@ -431,19 +431,6 @@ namespace KleeneStar.Model
             var keyProperty = primaryKey?.Properties.FirstOrDefault() ?? throw new InvalidOperationException("No PK found.");
             var keyValue = keyProperty.PropertyInfo.GetValue(incomingEntity);
 
-            // prepare query with includes
-            var query = context.Set<TEntity>().AsQueryable();
-
-            foreach (var relation in includeRelations)
-            {
-                var navigation = entityType.FindNavigation(relation);
-
-                if (navigation != null)
-                {
-                    query = query.Include(relation);
-                }
-            }
-
             // load existing entity via server-side PK lookup
             var existingEntity = context.Find<TEntity>(keyValue);
 
