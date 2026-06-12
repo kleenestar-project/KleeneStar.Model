@@ -954,7 +954,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
 
+                    b.Property<Guid?>("TenantId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Tenant");
+
                     b.HasKey("RawId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Identity", (string)null);
                 });
@@ -2443,6 +2450,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Calendar");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Identity", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.IdentityGroupMembership", b =>

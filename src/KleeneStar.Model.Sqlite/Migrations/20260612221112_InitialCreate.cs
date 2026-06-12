@@ -64,25 +64,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Identity",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Identity", x => x.Id);
-                    table.UniqueConstraint("AK_Identity_Guid", x => x.Guid);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Permission",
                 columns: table => new
                 {
@@ -143,6 +124,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tenant", x => x.Id);
+                    table.UniqueConstraint("AK_Tenant_Guid", x => x.Guid);
                 });
 
             migrationBuilder.CreateTable(
@@ -244,55 +226,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityGroupMembership",
-                columns: table => new
-                {
-                    IdentityId = table.Column<int>(type: "INTEGER", nullable: false),
-                    GroupId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityGroupMembership", x => new { x.IdentityId, x.GroupId });
-                    table.ForeignKey(
-                        name: "FK_IdentityGroupMembership_Group_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Group",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_IdentityGroupMembership_Identity_IdentityId",
-                        column: x => x.IdentityId,
-                        principalTable: "Identity",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserSession",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Scope = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    Key = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserSession", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserSession_Identity_Owner",
-                        column: x => x.Owner,
-                        principalTable: "Identity",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PolicyPermission",
                 columns: table => new
                 {
@@ -317,6 +250,32 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Identity",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Tenant = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                    PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Identity", x => x.Id);
+                    table.UniqueConstraint("AK_Identity_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Identity_Tenant_Tenant",
+                        column: x => x.Tenant,
+                        principalTable: "Tenant",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Class",
                 columns: table => new
                 {
@@ -334,6 +293,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Sealed = table.Column<bool>(type: "INTEGER", nullable: false),
                     Parent = table.Column<Guid>(type: "TEXT", nullable: true),
                     AccessModifier = table.Column<int>(type: "INTEGER", nullable: false),
+                    PortalVisible = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     Workspace = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -491,6 +451,55 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdentityGroupMembership",
+                columns: table => new
+                {
+                    IdentityId = table.Column<int>(type: "INTEGER", nullable: false),
+                    GroupId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityGroupMembership", x => new { x.IdentityId, x.GroupId });
+                    table.ForeignKey(
+                        name: "FK_IdentityGroupMembership_Group_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Group",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_IdentityGroupMembership_Identity_IdentityId",
+                        column: x => x.IdentityId,
+                        principalTable: "Identity",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserSession",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Scope = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSession", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserSession_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Calendar",
                 columns: table => new
                 {
@@ -604,7 +613,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Version = table.Column<int>(type: "INTEGER", nullable: false)
+                    Version = table.Column<int>(type: "INTEGER", nullable: false),
+                    PortalTemplate = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -983,6 +993,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ObjectShare",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Identity = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectShare", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectShare_Identity_Identity",
+                        column: x => x.Identity,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ObjectShare_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1465,6 +1503,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 columns: new[] { "Calendar", "Date" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Identity_Tenant",
+                table: "Identity",
+                column: "Tenant");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IdentityGroupMembership_GroupId",
                 table: "IdentityGroupMembership",
                 column: "GroupId");
@@ -1520,6 +1563,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_ObjectLink_Target",
                 table: "ObjectLink",
                 column: "Target");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectShare_Identity",
+                table: "ObjectShare",
+                column: "Identity");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectShare_Object_Identity",
+                table: "ObjectShare",
+                columns: new[] { "Object", "Identity" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ObjectTag_Object_Name",
@@ -1754,6 +1808,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "ObjectLink");
 
             migrationBuilder.DropTable(
+                name: "ObjectShare");
+
+            migrationBuilder.DropTable(
                 name: "ObjectTag");
 
             migrationBuilder.DropTable(
@@ -1832,9 +1889,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Tenant");
-
-            migrationBuilder.DropTable(
                 name: "Object");
 
             migrationBuilder.DropTable(
@@ -1857,6 +1911,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Class");
+
+            migrationBuilder.DropTable(
+                name: "Tenant");
 
             migrationBuilder.DropTable(
                 name: "Workspace");

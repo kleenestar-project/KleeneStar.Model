@@ -52,6 +52,23 @@ namespace KleeneStar.Model.Entities
         public IdentityState State { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the tenant the identity belongs to.
+        /// <see langword="null"/> for operator-side accounts that are not members of
+        /// any tenant (the fallback admin identity, integration users). Portal-side
+        /// user accounts always carry a tenant id so the
+        /// <see cref="KleeneStar.Portal.WebManager.PortalManager"/> can scope
+        /// <c>IssueScope.Organization</c> queries to the identity's tenant.
+        /// </summary>
+        public Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the navigation property for the tenant the identity belongs
+        /// to. <see langword="null"/> for operator-side accounts.
+        /// </summary>
+        [JsonIgnore]
+        public Tenant Tenant { get; set; }
+
+        /// <summary>
         /// Gets or sets the navigation property for group memberships (m:n).
         /// </summary>
         [JsonIgnore]

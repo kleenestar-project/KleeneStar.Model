@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260531081029_InitialCreate")]
+    [Migration("20260612221112_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -296,6 +296,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Parent");
+
+                    b.Property<bool>("PortalVisible")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasColumnName("PortalVisible");
 
                     b.Property<bool>("Sealed")
                         .HasColumnType("INTEGER")
@@ -707,6 +713,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<bool>("PortalTemplate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasColumnName("PortalTemplate");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
@@ -945,7 +957,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
 
+                    b.Property<Guid?>("TenantId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Tenant");
+
                     b.HasKey("RawId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Identity", (string)null);
                 });
@@ -1098,6 +1117,40 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("ObjectLink", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectShare", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("IdentityId");
+
+                    b.HasIndex("ObjectId", "IdentityId")
+                        .IsUnique();
+
+                    b.ToTable("ObjectShare", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectTag", b =>
@@ -2402,6 +2455,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Calendar");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Identity", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.IdentityGroupMembership", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Group", "Group")
@@ -2493,6 +2557,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("SourceObject");
 
                     b.Navigation("TargetObject");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectShare", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Identity")
+                        .WithMany()
+                        .HasForeignKey("IdentityId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Object")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Identity");
+
+                    b.Navigation("Object");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectTag", b =>

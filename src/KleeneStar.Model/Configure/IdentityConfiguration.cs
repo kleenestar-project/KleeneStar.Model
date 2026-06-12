@@ -60,6 +60,22 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(512);
 
+            // nullable FK: portal-side accounts carry the tenant they belong to;
+            // operator-side accounts (the seeded admin, integration users) stay
+            // tenant-less and are simply excluded from IssueScope.Organization
+            // queries by the portal.
+            builder.Property(x => x.TenantId)
+                .HasColumnName("Tenant")
+                .HasMaxLength(36);
+
+            builder.HasOne(x => x.Tenant)
+                .WithMany()
+                .HasForeignKey(x => x.TenantId)
+                .HasPrincipalKey(t => t.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.TenantId);
+
             // m:n relation via IdentityGroupMembership
             builder.HasMany(x => x.GroupMemberships)
                 .WithOne(x => x.Identity)
