@@ -190,6 +190,38 @@ namespace KleeneStar.Model
                 }
             }
 
+            // SavedSearches must be seeded AFTER Identities — each saved search is owned
+            // by the seeded admin identity (SavedSearch.OwnerId references Identity.Id).
+            if (!db.SavedSearches.Any())
+            {
+                try
+                {
+                    SeedSavedSearches(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding saved searches: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // WorkspaceBookmarks must be seeded AFTER Identities + Workspaces — each bookmark
+            // references both the seeded admin identity and an existing workspace.
+            if (!db.WorkspaceBookmarks.Any())
+            {
+                try
+                {
+                    SeedWorkspaceBookmarks(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding workspace bookmarks: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             // Calendars must be seeded BEFORE SLA policies — SeedSlas resolves the
             // per-class calendar by name to populate SlaPolicy.CalendarId.
             if (!db.Calendars.Any())

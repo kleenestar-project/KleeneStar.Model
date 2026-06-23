@@ -202,6 +202,21 @@ namespace KleeneStar.Model
         public DbSet<UserSession> UserSessions { get; set; }
 
         /// <summary>
+        /// Gets or sets the per-identity saved searches over the object model.
+        /// </summary>
+        public DbSet<SavedSearch> SavedSearches { get; set; }
+
+        /// <summary>
+        /// Gets or sets the per-identity workspace bookmarks (favorites and recent visits).
+        /// </summary>
+        public DbSet<WorkspaceBookmark> WorkspaceBookmarks { get; set; }
+
+        /// <summary>
+        /// Gets or sets the per-identity object visits (recently opened objects).
+        /// </summary>
+        public DbSet<ObjectVisit> ObjectVisits { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

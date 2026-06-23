@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260612221112_InitialCreate")]
+    [Migration("20260623192846_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
             modelBuilder.Entity("ClassAllowedChild", b =>
                 {
@@ -1250,6 +1250,48 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("ObjectView", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectVisit", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<DateTime>("LastVisited")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastVisited");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ObjectId");
+
+                    b.HasIndex("OwnerId", "ObjectId")
+                        .IsUnique();
+
+                    b.ToTable("ObjectVisit", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectWatcher", b =>
                 {
                     b.Property<int>("RawId")
@@ -1412,6 +1454,52 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Priority", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SavedSearch", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastUsed")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("OwnerRawId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Query")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Starred")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("OwnerRawId");
+
+                    b.ToTable("SavedSearches");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
@@ -2119,6 +2207,52 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Workspace", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.WorkspaceBookmark", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<bool>("Favorite")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Favorite");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<DateTime>("LastVisited")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastVisited");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.HasIndex("OwnerId", "WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("WorkspaceBookmark", (string)null);
+                });
+
             modelBuilder.Entity("PolicyPermission", b =>
                 {
                     b.Property<Guid>("PolicyId")
@@ -2604,6 +2738,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Workspace");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectVisit", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Object")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Object");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectWatcher", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Identity", "Identity")
@@ -2664,6 +2819,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SavedSearch", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerRawId");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
@@ -2863,6 +3027,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Inherited");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.WorkspaceBookmark", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("PolicyPermission", b =>

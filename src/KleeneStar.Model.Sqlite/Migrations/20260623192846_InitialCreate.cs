@@ -475,6 +475,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SavedSearches",
+                columns: table => new
+                {
+                    RawId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Query = table.Column<string>(type: "TEXT", nullable: true),
+                    OwnerId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    OwnerRawId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Starred = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LastUsed = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SavedSearches", x => x.RawId);
+                    table.ForeignKey(
+                        name: "FK_SavedSearches_Identity_OwnerRawId",
+                        column: x => x.OwnerRawId,
+                        principalTable: "Identity",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserSession",
                 columns: table => new
                 {
@@ -495,6 +523,37 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_UserSession_Identity_Owner",
                         column: x => x.Owner,
                         principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkspaceBookmark",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Favorite = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LastVisited = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkspaceBookmark", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkspaceBookmark_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_WorkspaceBookmark_Workspace_Workspace",
+                        column: x => x.Workspace,
+                        principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1047,6 +1106,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectVisit",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    LastVisited = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectVisit", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectVisit_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ObjectVisit_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ObjectWatcher",
                 columns: table => new
                 {
@@ -1588,6 +1677,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ObjectVisit_Object",
+                table: "ObjectVisit",
+                column: "Object");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectVisit_Owner_Object",
+                table: "ObjectVisit",
+                columns: new[] { "Owner", "Object" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ObjectWatcher_Identity",
                 table: "ObjectWatcher",
                 column: "Identity");
@@ -1636,6 +1736,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "Priority",
                 columns: new[] { "Class", "Name" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SavedSearches_OwnerRawId",
+                table: "SavedSearches",
+                column: "OwnerRawId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SlaEscalationLevel_Policy_Level",
@@ -1761,6 +1866,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_WorkspaceBookmark_Owner_Workspace",
+                table: "WorkspaceBookmark",
+                columns: new[] { "Owner", "Workspace" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkspaceBookmark_Workspace",
+                table: "WorkspaceBookmark",
+                column: "Workspace");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WorkspaceCategory_WorkspaceId",
                 table: "WorkspaceCategory",
                 column: "WorkspaceId");
@@ -1817,6 +1933,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "ObjectView");
 
             migrationBuilder.DropTable(
+                name: "ObjectVisit");
+
+            migrationBuilder.DropTable(
                 name: "ObjectWatcher");
 
             migrationBuilder.DropTable(
@@ -1827,6 +1946,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Priority");
+
+            migrationBuilder.DropTable(
+                name: "SavedSearches");
 
             migrationBuilder.DropTable(
                 name: "SlaEscalationLevel");
@@ -1851,6 +1973,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Widget");
+
+            migrationBuilder.DropTable(
+                name: "WorkspaceBookmark");
 
             migrationBuilder.DropTable(
                 name: "WorkspaceCategory");
