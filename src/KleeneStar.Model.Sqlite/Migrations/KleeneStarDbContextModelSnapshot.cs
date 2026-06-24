@@ -1457,46 +1457,57 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 {
                     b.Property<int>("RawId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
 
                     b.Property<DateTime>("LastUsed")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastUsed");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("OwnerRawId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
 
                     b.Property<string>("Query")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Query");
 
                     b.Property<bool>("Starred")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Starred");
 
                     b.Property<int>("State")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
 
                     b.HasKey("RawId");
 
-                    b.HasIndex("OwnerRawId");
+                    b.HasIndex("OwnerId");
 
-                    b.ToTable("SavedSearches");
+                    b.ToTable("SavedSearch", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
@@ -2822,7 +2833,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 {
                     b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerRawId");
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Owner");
                 });

@@ -475,17 +475,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SavedSearches",
+                name: "SavedSearch",
                 columns: table => new
                 {
-                    RawId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Query = table.Column<string>(type: "TEXT", nullable: true),
-                    OwnerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    OwnerRawId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
                     Starred = table.Column<bool>(type: "INTEGER", nullable: false),
                     LastUsed = table.Column<DateTime>(type: "TEXT", nullable: false),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
@@ -494,12 +493,13 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SavedSearches", x => x.RawId);
+                    table.PrimaryKey("PK_SavedSearch", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SavedSearches_Identity_OwnerRawId",
-                        column: x => x.OwnerRawId,
+                        name: "FK_SavedSearch_Identity_Owner",
+                        column: x => x.Owner,
                         principalTable: "Identity",
-                        principalColumn: "Id");
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1738,9 +1738,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SavedSearches_OwnerRawId",
-                table: "SavedSearches",
-                column: "OwnerRawId");
+                name: "IX_SavedSearch_Owner",
+                table: "SavedSearch",
+                column: "Owner");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SlaEscalationLevel_Policy_Level",
@@ -1948,7 +1948,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Priority");
 
             migrationBuilder.DropTable(
-                name: "SavedSearches");
+                name: "SavedSearch");
 
             migrationBuilder.DropTable(
                 name: "SlaEscalationLevel");
