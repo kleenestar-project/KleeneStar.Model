@@ -44,6 +44,10 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.State)
                 .HasColumnName("State");
 
+            builder.Property(x => x.Order)
+                .HasColumnName("Order")
+                .IsRequired();
+
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
                 .IsRequired();

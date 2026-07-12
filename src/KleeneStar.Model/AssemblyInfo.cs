@@ -6,3 +6,5 @@
 /// </summary>
 [assembly: InternalsVisibleTo("KleeneStar.Core")]
 [assembly: InternalsVisibleTo("Kleenestar.Model.Test")]
+[assembly: InternalsVisibleTo("KleeneStar.Core.Test")]
+[assembly: InternalsVisibleTo("KleeneStar.Portal.Test")]

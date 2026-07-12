@@ -85,6 +85,10 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.AccessModifier)
                 .HasColumnName("AccessModifier");
 
+            builder.Property(x => x.PortalVisible)
+                .HasColumnName("PortalVisible")
+                .HasDefaultValue(false);
+
             // MANY-TO-MANY: Class <-> AllowedChildren (self-referencing)
             builder.HasMany(x => x.AllowedChildren)
                 .WithMany()

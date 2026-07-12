@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -45,6 +46,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the tenant.
         /// </summary>
+        [RestConverter<TenantStateConverter>]
         public TenantState State { get; set; }
 
         /// <summary>

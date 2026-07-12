@@ -25,8 +25,8 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the properties of a form instance and verifies that the values are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Form A", "Description A", FormState.Active, FormType.Standard)]
-        [InlineData("Form B", null, FormState.Archived, FormType.Additional)]
+        [InlineData("Form A", "Description A", FormState.Active, FormType.Create)]
+        [InlineData("Form B", null, FormState.Archived, FormType.Default)]
         public void SetProperties(string name, string description, FormState state, FormType formType)
         {
             // arrange
@@ -55,7 +55,7 @@ namespace Kleenestar.Model.Test.Entity
             var form = new Form();
 
             // validation
-            Assert.Equal(FormType.Standard, form.FormType);
+            Assert.Equal(FormType.Default, form.FormType);
         }
     }
 }

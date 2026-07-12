@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -39,6 +40,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the class.
         /// </summary>
+        [RestConverter<ClassStateConverter>]
         public ClassState State { get; set; }
 
         /// <summary>
@@ -92,7 +94,15 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the access modifier controlling the visibility of this class.
         /// </summary>
+        [RestConverter<AccessModifierConverter>]
         public AccessModifier AccessModifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the class is exposed in the customer
+        /// portal as a request type. Portal-visible classes appear in the portal's
+        /// request-type catalog; their objects surface as portal issues.
+        /// </summary>
+        public bool PortalVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of classes allowed as children of this class.

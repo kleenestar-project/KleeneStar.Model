@@ -131,6 +131,36 @@ namespace KleeneStar.Model
                 }
             }
 
+            if (!db.Values.Any())
+            {
+                try
+                {
+                    SeedValues(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    // log the exception or handle it as needed
+                    Console.WriteLine($"Error seeding values: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // Tags must be seeded AFTER Objects — SeedTags attaches labels to existing objects.
+            if (!db.ObjectTags.Any())
+            {
+                try
+                {
+                    SeedTags(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding tags: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             if (!db.Dashboards.Any())
             {
                 try
@@ -142,6 +172,114 @@ namespace KleeneStar.Model
                 {
                     // log the exception or handle it as needed
                     Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            if (!db.ObjectViews.Any())
+            {
+                try
+                {
+                    SeedObjectViews(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding object views: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // SavedSearches must be seeded AFTER Identities — each saved search is owned
+            // by the seeded admin identity (SavedSearch.OwnerId references Identity.Id).
+            if (!db.SavedSearches.Any())
+            {
+                try
+                {
+                    SeedSavedSearches(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding saved searches: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // WorkspaceBookmarks must be seeded AFTER Identities + Workspaces — each bookmark
+            // references both the seeded admin identity and an existing workspace.
+            if (!db.WorkspaceBookmarks.Any())
+            {
+                try
+                {
+                    SeedWorkspaceBookmarks(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding workspace bookmarks: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // Calendars must be seeded BEFORE SLA policies — SeedSlas resolves the
+            // per-class calendar by name to populate SlaPolicy.CalendarId.
+            if (!db.Calendars.Any())
+            {
+                try
+                {
+                    SeedCalendars(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding calendars: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            if (!db.SlaPolicies.Any())
+            {
+                try
+                {
+                    SeedSlas(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding SLA policies: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // Comments must be seeded AFTER Objects + Identities — SeedComments
+            // resolves authors by e-mail and attaches each thread to an existing object.
+            if (!db.Comments.Any())
+            {
+                try
+                {
+                    SeedComments(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding comments: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // Attachments must be seeded AFTER Objects + Identities — SeedAttachments
+            // resolves uploaders by e-mail and attaches each file to an existing object.
+            if (!db.Attachments.Any())
+            {
+                try
+                {
+                    SeedAttachments(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding attachments: {ex.InnerException?.Message ?? ex.Message}");
                     throw;
                 }
             }

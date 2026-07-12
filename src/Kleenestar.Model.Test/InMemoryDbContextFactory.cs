@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Collections.Concurrent;
 
 namespace KleeneStar.Model.Test
@@ -26,6 +27,7 @@ namespace KleeneStar.Model.Test
             {
                 return new DbContextOptionsBuilder<KleeneStarDbContext>()
                     .UseInMemoryDatabase(key)
+                    .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
                     .Options;
             });
 

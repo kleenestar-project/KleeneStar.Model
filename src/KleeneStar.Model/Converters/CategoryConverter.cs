@@ -7,6 +7,10 @@ using WebExpress.WebApp.WebRestApi;
 
 namespace KleeneStar.Model.Converters
 {
+    /// <summary>
+    /// Provides methods to convert category-related values between their raw representations and strongly typed objects
+    /// for use in RESTful APIs.
+    /// </summary>
     public class CategoryConverter : IRestValueConverter
     {
         /// <summary>

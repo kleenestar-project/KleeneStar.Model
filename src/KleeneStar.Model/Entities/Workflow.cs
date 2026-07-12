@@ -1,6 +1,8 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
@@ -36,6 +38,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the current state of the workflow.
         /// </summary>
+        [RestConverter<WorkflowStateConverter>]
         public WorkflowState State { get; set; }
 
         /// <summary>

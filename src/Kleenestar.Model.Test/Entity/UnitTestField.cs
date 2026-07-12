@@ -66,7 +66,6 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Null(field.Description);
             Assert.Null(field.HelpText);
             Assert.Null(field.Placeholder);
-            Assert.Null(field.FieldType);
             Assert.Null(field.DefaultSpec);
             Assert.Equal(FieldState.Active, field.State);
             Assert.Equal(FieldCardinality.Single, field.Cardinality);
@@ -184,10 +183,10 @@ namespace Kleenestar.Model.Test.Entity
             var field = new Field();
 
             // act
-            field.FieldType = "Number";
+            field.FieldType = FieldType.Number;
 
             // validation
-            Assert.Equal("Number", field.FieldType);
+            Assert.Equal(FieldType.Number, field.FieldType);
         }
 
         /// <summary>
@@ -310,7 +309,7 @@ namespace Kleenestar.Model.Test.Entity
                 HelpText = "Help for test field",
                 Placeholder = "Enter value",
                 State = FieldState.Active,
-                FieldType = "Text",
+                FieldType = FieldType.Text,
                 Cardinality = FieldCardinality.Multiple,
                 ValidationRules = new System.Collections.Generic.List<string> { "required", "min:1" },
                 DefaultSpec = "default-val",
@@ -333,7 +332,7 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Equal("Help for test field", retrieved.HelpText);
             Assert.Equal("Enter value", retrieved.Placeholder);
             Assert.Equal(FieldState.Active, retrieved.State);
-            Assert.Equal("Text", retrieved.FieldType);
+            Assert.Equal(FieldType.Text, retrieved.FieldType);
             Assert.Equal(FieldCardinality.Multiple, retrieved.Cardinality);
             Assert.Equal("default-val", retrieved.DefaultSpec);
             Assert.True(retrieved.Required);
@@ -369,7 +368,6 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Null(retrieved.Description);
             Assert.Null(retrieved.HelpText);
             Assert.Null(retrieved.Placeholder);
-            Assert.Null(retrieved.FieldType);
             Assert.Null(retrieved.DefaultSpec);
             Assert.False(retrieved.Required);
             Assert.False(retrieved.Unique);
@@ -405,6 +403,213 @@ namespace Kleenestar.Model.Test.Entity
             Assert.Equal(FieldState.Archived, retrieved.State);
             Assert.Equal(FieldCardinality.Multiple, retrieved.Cardinality);
             Assert.Equal(AccessModifier.Internal, retrieved.AccessModifier);
+        }
+
+        /// <summary>
+        /// Verifies that cardinality bounds (min, max, unlimited) can be set and retrieved.
+        /// </summary>
+        [Theory]
+        [InlineData(0, 1, false)]
+        [InlineData(1, 5, false)]
+        [InlineData(0, 1, true)]
+        public void SetCardinalityBounds(int min, int max, bool unlimited)
+        {
+            // arrange
+            var field = new Field();
+
+            // act
+            field.CardinalityMin = min;
+            field.CardinalityMax = max;
+            field.CardinalityUnlimited = unlimited;
+
+            // validation
+            Assert.Equal(min, field.CardinalityMin);
+            Assert.Equal(max, field.CardinalityMax);
+            Assert.Equal(unlimited, field.CardinalityUnlimited);
+        }
+
+        /// <summary>
+        /// Verifies that a regex pattern can be set and cleared on a field.
+        /// </summary>
+        [Fact]
+        public void SetRegexPattern()
+        {
+            // arrange
+            var field = new Field();
+
+            // act
+            field.RegexPattern = @"^[a-z]+$";
+
+            // validation
+            Assert.Equal(@"^[a-z]+$", field.RegexPattern);
+
+            // act - clear
+            field.RegexPattern = null;
+
+            // validation
+            Assert.Null(field.RegexPattern);
+        }
+
+        /// <summary>
+        /// Verifies that options can be added and retrieved on a field.
+        /// </summary>
+        [Fact]
+        public void SetOptions()
+        {
+            // arrange
+            var field = new Field();
+
+            // act
+            field.Options.Add("Low");
+            field.Options.Add("Medium");
+            field.Options.Add("High");
+
+            // validation
+            Assert.Equal(3, field.Options.Count);
+            Assert.Contains("Medium", field.Options);
+        }
+
+        /// <summary>
+        /// Verifies that WorkflowId can be assigned and cleared.
+        /// </summary>
+        [Fact]
+        public void SetWorkflowId()
+        {
+            // arrange
+            var field = new Field();
+            var workflowId = Guid.NewGuid();
+
+            // act
+            field.WorkflowId = workflowId;
+
+            // validation
+            Assert.Equal(workflowId, field.WorkflowId);
+
+            // act - clear
+            field.WorkflowId = null;
+
+            // validation
+            Assert.Null(field.WorkflowId);
+        }
+
+        /// <summary>
+        /// Verifies that DefaultPriorityId and SelectedPriorityIds can be assigned.
+        /// </summary>
+        [Fact]
+        public void SetPriorityConfiguration()
+        {
+            // arrange
+            var field = new Field();
+            var defaultId = Guid.NewGuid();
+            var p1 = Guid.NewGuid();
+            var p2 = Guid.NewGuid();
+
+            // act
+            field.DefaultPriorityId = defaultId;
+            field.SelectedPriorityIds.Add(p1);
+            field.SelectedPriorityIds.Add(p2);
+
+            // validation
+            Assert.Equal(defaultId, field.DefaultPriorityId);
+            Assert.Equal(2, field.SelectedPriorityIds.Count);
+            Assert.Contains(p1, field.SelectedPriorityIds);
+        }
+
+        /// <summary>
+        /// Verifies that cardinality configuration properties are correctly persisted through the DbContext.
+        /// </summary>
+        [Fact]
+        public void PersistCardinalityConfiguration()
+        {
+            // arrange
+            using var db = InMemoryDbContextFactory.Create("PersistCardinalityConfiguration");
+
+            var field = new Field
+            {
+                Id = Guid.NewGuid(),
+                Name = "CardinalityField",
+                CardinalityMin = 1,
+                CardinalityMax = 5,
+                CardinalityUnlimited = false,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+
+            // act
+            db.Fields.Add(field);
+            db.SaveChanges();
+
+            // validation
+            var retrieved = db.Fields.Single();
+            Assert.Equal(1, retrieved.CardinalityMin);
+            Assert.Equal(5, retrieved.CardinalityMax);
+            Assert.False(retrieved.CardinalityUnlimited);
+        }
+
+        /// <summary>
+        /// Verifies that validation and option configuration properties are correctly persisted.
+        /// </summary>
+        [Fact]
+        public void PersistValidationAndOptions()
+        {
+            // arrange
+            using var db = InMemoryDbContextFactory.Create("PersistValidationAndOptions");
+
+            var field = new Field
+            {
+                Id = Guid.NewGuid(),
+                Name = "OptionsField",
+                RegexPattern = @"^\d+$",
+                Options = ["Option A", "Option B"],
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+
+            // act
+            db.Fields.Add(field);
+            db.SaveChanges();
+
+            // validation
+            var retrieved = db.Fields.Single();
+            Assert.Equal(@"^\d+$", retrieved.RegexPattern);
+            Assert.Equal(2, retrieved.Options.Count);
+            Assert.Contains("Option A", retrieved.Options);
+        }
+
+        /// <summary>
+        /// Verifies that workflow and priority configuration properties are correctly persisted.
+        /// </summary>
+        [Fact]
+        public void PersistWorkflowAndPriorityConfiguration()
+        {
+            // arrange
+            using var db = InMemoryDbContextFactory.Create("PersistWorkflowAndPriority");
+            var workflowId = Guid.NewGuid();
+            var defaultPriorityId = Guid.NewGuid();
+            var p1 = Guid.NewGuid();
+            var p2 = Guid.NewGuid();
+
+            var field = new Field
+            {
+                Id = Guid.NewGuid(),
+                Name = "WorkflowPriorityField",
+                WorkflowId = workflowId,
+                DefaultPriorityId = defaultPriorityId,
+                SelectedPriorityIds = [p1, p2],
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+
+            // act
+            db.Fields.Add(field);
+            db.SaveChanges();
+
+            // validation
+            var retrieved = db.Fields.Single();
+            Assert.Equal(workflowId, retrieved.WorkflowId);
+            Assert.Equal(defaultPriorityId, retrieved.DefaultPriorityId);
+            Assert.Equal(2, retrieved.SelectedPriorityIds.Count);
+            Assert.Contains(p1, retrieved.SelectedPriorityIds);
         }
     }
 }

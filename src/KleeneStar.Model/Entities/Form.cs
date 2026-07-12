@@ -1,5 +1,8 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebIndex.WebAttribute;
 using WebExpress.WebUI.WebIcon;
 
@@ -35,11 +38,12 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the type of the form, indicating whether it is a standard form or an additional form.
         /// </summary>
-        public FormType FormType { get; set; } = FormType.Standard;
+        public FormType FormType { get; set; } = FormType.Default;
 
         /// <summary>
         /// Gets or sets the current state of the form.
         /// </summary>
+        [RestConverter<FormStateConverter>]
         public FormState State { get; set; }
 
         /// <summary>
@@ -66,6 +70,26 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the class associated with the current form.
         /// </summary>
         public Class Class { get; set; }
+
+        /// <summary>
+        /// Gets or sets the structural tabs of the form.
+        /// </summary>
+        [IndexIgnore]
+        public List<FormTab> Tabs { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the structural revision counter used as an optimistic-concurrency
+        /// token for editor saves. Incremented on every successful structure update.
+        /// </summary>
+        [IndexIgnore]
+        public int Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the form is offered as a template in
+        /// the customer portal. Portal templates appear in the portal's template picker
+        /// for the request type backed by the owning class.
+        /// </summary>
+        public bool PortalTemplate { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the class.

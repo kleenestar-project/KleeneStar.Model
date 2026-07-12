@@ -1,7 +1,9 @@
-﻿using System;
+﻿using KleeneStar.Model.Converters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebCore.WebIdentity;
@@ -46,11 +48,30 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the identity state (active, locked, disabled, etc.).
         /// </summary>
+        [RestConverter<IdentityStateConverter>]
         public IdentityState State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the tenant the identity belongs to.
+        /// <see langword="null"/> for operator-side accounts that are not members of
+        /// any tenant (the fallback admin identity, integration users). Portal-side
+        /// user accounts always carry a tenant id so the
+        /// <see cref="KleeneStar.Portal.WebManager.PortalManager"/> can scope
+        /// <c>IssueScope.Organization</c> queries to the identity's tenant.
+        /// </summary>
+        public Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the navigation property for the tenant the identity belongs
+        /// to. <see langword="null"/> for operator-side accounts.
+        /// </summary>
+        [JsonIgnore]
+        public Tenant Tenant { get; set; }
 
         /// <summary>
         /// Gets or sets the navigation property for group memberships (m:n).
         /// </summary>
+        [JsonIgnore]
         public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];
 
         /// <summary>
@@ -61,6 +82,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the hashed representation of the user's password.
         /// </summary>
+        [JsonIgnore]
         public string PasswordHash { get; set; }
 
         /// <summary>

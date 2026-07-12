@@ -105,6 +105,48 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Applies a new display order to a set of priorities. The position of each id
+        /// in <paramref name="orderedIds"/> becomes the persisted Order value (0-based,
+        /// dense). Ids not found in the database are skipped.
+        /// </summary>
+        /// <param name="orderedIds">The priority ids in the desired display order.</param>
+        public static void ReorderPriorities(IReadOnlyList<Guid> orderedIds)
+        {
+            ArgumentNullException.ThrowIfNull(orderedIds);
+
+            if (orderedIds.Count == 0)
+            {
+                return;
+            }
+
+            using var db = CreateDbContext();
+
+            var ids = orderedIds.ToHashSet();
+            var entities = db.Priorities
+                .Where(p => ids.Contains(p.Id))
+                .ToList();
+
+            var lookup = entities.ToDictionary(p => p.Id);
+            var now = DateTime.UtcNow;
+
+            for (var i = 0; i < orderedIds.Count; i++)
+            {
+                if (!lookup.TryGetValue(orderedIds[i], out var entity))
+                {
+                    continue;
+                }
+
+                if (entity.Order != i)
+                {
+                    entity.Order = i;
+                    entity.Updated = now;
+                }
+            }
+
+            db.SaveChanges();
+        }
+
+        /// <summary>
         /// Removes the specified priority from the data store if it exists.
         /// </summary>
         /// <param name="priorityEntry">

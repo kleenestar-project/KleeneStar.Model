@@ -58,6 +58,26 @@ namespace KleeneStar.Model
                 });
             }
 
+            void addTenantedIdentity(string id, string name, string email, string passwordHash, string tenantName, params string[] groups)
+            {
+                db.Identities.Add(new Identity
+                {
+                    Id = Guid.Parse(id),
+                    Name = name,
+                    Email = email,
+                    PasswordHash = passwordHash,
+                    Tenant = db.Tenants.First(x => x.Name == tenantName),
+                    GroupMemberships =
+                    [
+                        .. db.Groups
+                            .Where(x => groups.Contains(x.Name))
+                            .Select(x => new IdentityGroupMembership { Group = x })
+                    ]
+                });
+            }
+
+            // operator-side admin has no tenant (the portal excludes it from
+            // IssueScope.Organization entirely).
             addIdentity(
                 "77087646-B13A-44B1-9BAC-6E66443CEDFD",
                 "Admin User",
@@ -66,14 +86,17 @@ namespace KleeneStar.Model
                 "Admin"
             );
 
-            addIdentity(
+            // Alice is an Acme tenant member (typical end-user identity).
+            addTenantedIdentity(
                 "BBF45E5D-AA35-4382-9B84-6055193CE544",
                 "Alice Engineer",
                 "alice.engineer@kleenestar.org",
                 aliceHash,
+                "Acme Corp",
                 "Engineering"
             );
 
+            // Marketer is a Globex tenant member.
             addIdentity(
                 "1AA3B0E0-5C40-46D8-8ACF-ED12740FD239",
                 "Marketing User",
@@ -82,6 +105,7 @@ namespace KleeneStar.Model
                 "Marketing"
             );
 
+            // Support stays tenant-less — operator-side account.
             addIdentity(
                 "D1C5AED2-78D3-45F7-BB19-E87B8F134301",
                 "Support User",

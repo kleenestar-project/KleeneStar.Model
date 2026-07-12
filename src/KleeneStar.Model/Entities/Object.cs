@@ -82,6 +82,51 @@ namespace KleeneStar.Model.Entities
         public Class Class { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the parent object, if any. The parent
+        /// expresses a containment relationship inside the same workspace (e.g. an
+        /// "Epic" object owning child "Story" objects).
+        /// </summary>
+        public Guid? ParentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent object.
+        /// </summary>
+        public Object Parent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the identity that created the object,
+        /// if known.
+        /// </summary>
+        public Guid? CreatorId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity that created the object.
+        /// </summary>
+        public Identity Creator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the identity the object is currently
+        /// assigned to, or <c>null</c> when the object is unassigned.
+        /// </summary>
+        public Guid? AssigneeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity the object is currently assigned to.
+        /// </summary>
+        public Identity Assignee { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the identity that last updated the
+        /// object, or <c>null</c> when the updater is unknown.
+        /// </summary>
+        public Guid? UpdaterId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity that last updated the object.
+        /// </summary>
+        public Identity Updater { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Object()

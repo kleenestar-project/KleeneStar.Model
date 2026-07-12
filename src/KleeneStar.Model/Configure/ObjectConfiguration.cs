@@ -80,6 +80,42 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.ClassId)
                 .HasPrincipalKey(w => w.Id);
 
+            builder.Property(x => x.ParentId)
+                .HasColumnName("Parent");
+
+            builder.HasOne(x => x.Parent)
+                .WithMany()
+                .HasForeignKey(x => x.ParentId)
+                .HasPrincipalKey(p => p.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.CreatorId)
+                .HasColumnName("Creator");
+
+            builder.HasOne(x => x.Creator)
+                .WithMany()
+                .HasForeignKey(x => x.CreatorId)
+                .HasPrincipalKey(i => i.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.AssigneeId)
+                .HasColumnName("Assignee");
+
+            builder.HasOne(x => x.Assignee)
+                .WithMany()
+                .HasForeignKey(x => x.AssigneeId)
+                .HasPrincipalKey(i => i.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.UpdaterId)
+                .HasColumnName("Updater");
+
+            builder.HasOne(x => x.Updater)
+                .WithMany()
+                .HasForeignKey(x => x.UpdaterId)
+                .HasPrincipalKey(i => i.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(x => x.Key)
                 .IsUnique();
         }

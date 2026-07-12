@@ -6,18 +6,24 @@ namespace KleeneStar.Model.Entities
     public enum FormType
     {
         /// <summary>
-        /// Indicates that the form is the standard form of its class.
-        /// Each class has exactly one standard form. It is created automatically
-        /// when the class is created and cannot be deleted.
-        /// The standard form provides three predefined views: new, edit, and view.
+        /// Indicates the default form type. This value is used when no specific
+        /// view type (create, edit, or view) is assigned.
         /// </summary>
-        Standard,
+        Default,
 
         /// <summary>
-        /// Indicates that the form is an additional form.
-        /// Additional forms are flexible UI masks (e.g., workflow screens, wizard steps,
-        /// or other specialized layouts). They can be freely created and deleted by the user.
+        /// Indicates that the form represents the "create" view of the standard form.
         /// </summary>
-        Additional
+        Create,
+
+        /// <summary>
+        /// Indicates that the form represents the "edit" view of the standard form.
+        /// </summary>
+        Edit,
+
+        /// <summary>
+        /// Indicates that the form represents the "view" (read‑only) view of the standard form.
+        /// </summary>
+        View
     }
 }

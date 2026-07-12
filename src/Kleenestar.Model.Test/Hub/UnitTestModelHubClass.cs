@@ -259,10 +259,14 @@ namespace Kleenestar.Model.Test.Hub
 
             // validation
             using var db = ModelHub.CreateDbContext();
-            var forms = db.Forms.Where(f => f.ClassId == classEntry.Id).ToList();
-            Assert.Single(forms);
-            Assert.Equal("Standard", forms[0].Name);
-            Assert.Equal(FormType.Standard, forms[0].FormType);
+            var forms = db.Forms.Where(f => f.ClassId == classEntry.Id).ToList().OrderBy(x => x.Name).ToList();
+            Assert.Equal(3, forms.Count);
+            Assert.Equal("Create", forms[0].Name);
+            Assert.Equal(FormType.Create, forms[0].FormType);
+            Assert.Equal("Edit", forms[1].Name);
+            Assert.Equal(FormType.Edit, forms[1].FormType);
+            Assert.Equal("View", forms[2].Name);
+            Assert.Equal(FormType.View, forms[2].FormType);
         }
     }
 }

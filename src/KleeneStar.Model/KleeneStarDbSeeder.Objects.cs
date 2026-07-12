@@ -16,6 +16,11 @@ namespace KleeneStar.Model
         /// <param name="db">The database context used for adding the new objects.</param>
         private static void SeedObjects(KleeneStarDbContext db)
         {
+            // Seeded objects are attributed to the seeded admin identity as creator; every
+            // fourth object is additionally pre-assigned to the admin so both the "assigned"
+            // and "unassigned" states of the people card are exercised out of the box.
+            var creatorId = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD");
+
             var c = 1000;
             var classes = db.Classes
                 .AsNoTracking()
@@ -38,6 +43,9 @@ namespace KleeneStar.Model
                         State = WorkspaceState.Active,
                         WorkspaceId = cls.WorkspaceId,
                         ClassId = cls.Id,
+                        CreatorId = creatorId,
+                        AssigneeId = i % 4 == 0 ? creatorId : null,
+                        UpdaterId = creatorId,
                         Created = DateTime.UtcNow,
                         Updated = DateTime.UtcNow
                     };
