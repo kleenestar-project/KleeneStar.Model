@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebIndex.WebAttribute;
@@ -59,9 +60,58 @@ namespace KleeneStar.Model.Entities
         public List<IdentityGroupMembership> GroupMemberships { get; set; } = [];
 
         /// <summary>
-        /// Gets the collection of policy names associated with the identity group.
+        /// Gets the collection of policies associated with the identity group.
         /// </summary>
-        IEnumerable<string> IIdentityGroup.Policies => GroupPolicies.Select(x => x.Policy);
+        IEnumerable<IIdentityPolicy> IIdentityGroup.Policies => GroupPolicies
+            .Select(x => x.Policy)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(ResolvePolicyType)
+            .Where(x => x is not null)
+            .Select(x => Activator.CreateInstance(x!) as IIdentityPolicy)
+            .Where(x => x is not null)!;
+
+        private static readonly Lazy<Dictionary<string, Type>> PolicyTypes = new(() =>
+        {
+            var result = new Dictionary<string, Type>();
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in GetLoadableTypes(assembly))
+                {
+                    if (type is null ||
+                        !typeof(IIdentityPolicy).IsAssignableFrom(type) ||
+                        !type.IsClass ||
+                        type.IsAbstract ||
+                        type.FullName is null)
+                    {
+                        continue;
+                    }
+
+                    result[type.FullName.ToLowerInvariant()] = type;
+                }
+            }
+
+            return result;
+        });
+
+        private static Type ResolvePolicyType(string policy)
+        {
+            var normalizedPolicy = policy.ToLowerInvariant();
+
+            return PolicyTypes.Value.TryGetValue(normalizedPolicy, out var type) ? type : null;
+        }
+
+        private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(x => x is not null)!;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the class.
