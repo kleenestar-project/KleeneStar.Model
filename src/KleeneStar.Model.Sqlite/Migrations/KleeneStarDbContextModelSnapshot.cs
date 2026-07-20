@@ -284,6 +284,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("IsAbstract");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("issue")
+                        .HasColumnName("Kind");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -1026,13 +1034,33 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Key");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("issue")
+                        .HasColumnName("Kind");
+
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Parent");
 
+                    b.Property<Guid?>("SprintId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Sprint");
+
+                    b.Property<int>("SprintRank")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("SprintRank");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
+
+                    b.Property<int?>("StoryPoints")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("StoryPoints");
 
                     b.Property<string>("Summary")
                         .IsRequired()
@@ -1065,9 +1093,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasIndex("ParentId");
 
+                    b.HasIndex("SprintId");
+
                     b.HasIndex("UpdaterId");
 
-                    b.HasIndex("WorkspaceId");
+                    b.HasIndex("WorkspaceId", "Kind");
 
                     b.ToTable("Object", (string)null);
                 });
@@ -1257,6 +1287,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
+
+                    b.Property<bool>("Favorite")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasColumnName("Favorite");
 
                     b.Property<Guid>("Id")
                         .HasMaxLength(36)
@@ -1706,6 +1742,64 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("PolicyId", "Kind");
 
                     b.ToTable("SlaTarget", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Sprint", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Capacity");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<DateTime?>("End")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("End");
+
+                    b.Property<string>("Goal")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Goal");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<DateTime?>("Start")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Start");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Sprint", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Status", b =>
@@ -2654,6 +2748,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("KleeneStar.Model.Entities.Sprint", "Sprint")
+                        .WithMany()
+                        .HasForeignKey("SprintId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("KleeneStar.Model.Entities.Identity", "Updater")
                         .WithMany()
                         .HasForeignKey("UpdaterId")
@@ -2674,6 +2774,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Sprint");
 
                     b.Navigation("Updater");
 
@@ -2903,6 +3005,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Sprint", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Status", b =>

@@ -15,13 +15,14 @@ namespace KleeneStar.Model
         /// <param name="db">The database context.</param>
         private static void SeedClasses(KleeneStarDbContext db)
         {
-            void add(string id, string name, string description, string icon, string workspaceId, bool isAbstract = false, bool isSealed = false, AccessModifier accessModifier = AccessModifier.Public, bool portalVisible = false)
+            void add(string id, string name, string description, string icon, string workspaceId, bool isAbstract = false, bool isSealed = false, AccessModifier accessModifier = AccessModifier.Public, bool portalVisible = false, string kind = ObjectKind.Issue)
                 => db.Classes.Add(new Class
                 {
                     Id = Guid.Parse(id),
                     Name = name,
                     Description = description,
                     Icon = ImageIcon.FromString(icon),
+                    Kind = kind,
                     WorkspaceId = Guid.Parse(workspaceId),
                     IsAbstract = isAbstract,
                     Sealed = isSealed,
@@ -43,10 +44,10 @@ namespace KleeneStar.Model
             // workspace: Software Development (DEV)
             add("4411D773-811A-4242-95CC-22CFC9B78CDA", "Repository", "Source code repositories.", "/kleenestar/assets/icons/repo.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
             add("B95B82D2-4C70-4908-ABF6-2525F9AC378B", "BuildPipeline", "Automated build pipelines.", "/kleenestar/assets/icons/build.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
-            add("41BF8EF5-03B8-4CCD-8666-83D91450ABC5", "Release", "Release management and deployment.", "/kleenestar/assets/icons/release.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
+            add("41BF8EF5-03B8-4CCD-8666-83D91450ABC5", "Release", "Release management and deployment.", "/kleenestar/assets/icons/release.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748", kind: ObjectKind.Blog);
             add("0657665A-051F-4DB5-A782-265A1FE373DD", "Task", "Development tasks and work items.", "/kleenestar/assets/icons/task.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
             add("C43355BF-2EE1-4B0C-8632-9F9C17FDCAF4", "Bug", "Bug tracking and issue management.", "/kleenestar/assets/icons/bug.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
-            add("1CF19C71-6FFA-4006-8014-929D3D0079F8", "Documentation", "Technical documentation and specs.", "/kleenestar/assets/icons/doc.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
+            add("1CF19C71-6FFA-4006-8014-929D3D0079F8", "Documentation", "Technical documentation and specs.", "/kleenestar/assets/icons/doc.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748", kind: ObjectKind.Document);
             add("D3F7D136-F214-4E4C-8CB5-9F43659F46A7", "Sprint", "Agile sprint planning and tracking.", "/kleenestar/assets/icons/sprint.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
 
             // workspace: Finance and Controlling (FIN)
@@ -88,8 +89,9 @@ namespace KleeneStar.Model
             add("D16D1B15-C83F-4489-9B1F-CCC46855D619", "Incident", "Incident management.", "/kleenestar/assets/icons/incident.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", portalVisible: true);
             add("14CF0195-8E7E-443A-A9CB-469C4C3C3DCC", "Problem", "Problem management.", "/kleenestar/assets/icons/problem.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
             add("481C4914-EA75-4B6B-96DC-6B594A1A7F3A", "Change", "Change management.", "/kleenestar/assets/icons/change.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
-            add("4F80098A-C986-415A-9288-1C85232C27C9", "Knowledge", "Knowledge base articles.", "/kleenestar/assets/icons/knowledge.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA");
+            add("4F80098A-C986-415A-9288-1C85232C27C9", "Knowledge", "Knowledge base articles.", "/kleenestar/assets/icons/knowledge.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", kind: ObjectKind.Document);
             add("52A740B7-1978-454E-9A46-DF2D20888E2E", "ServiceRequest", "Service request items.", "/kleenestar/assets/icons/servicerequest.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", portalVisible: true);
+            add("5D2A9C40-6E1B-4F7A-9B93-A4C2D85E1F0A", "Announcement", "Service desk announcements and news.", "/kleenestar/assets/icons/release.svg", "F027A791-4219-4B1D-BA7C-2E7757091AAA", kind: ObjectKind.Blog);
         }
     }
 }

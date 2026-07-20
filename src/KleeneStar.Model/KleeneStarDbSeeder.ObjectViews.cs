@@ -10,8 +10,10 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Per-workspace deterministic ids for the six default tabs, in display order
-        /// Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog.
+        /// Per-workspace deterministic ids for the seven default tabs, in display order
+        /// Issues, Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog. The
+        /// seventh id (index 6) belongs to the issues view, which was appended after
+        /// the original six and leads the display order.
         /// </summary>
         private static readonly Dictionary<Guid, Guid[]> _objectViewIds = new()
         {
@@ -23,7 +25,8 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-CDB0-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-CDB0-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-CDB0-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-CDB0-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-CDB0-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-CDB0-0007-0000-000000000007")
             ],
 
             // DEV
@@ -34,7 +37,8 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-DDE0-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-DDE0-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-DDE0-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-DDE0-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-DDE0-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-DDE0-0007-0000-000000000007")
             ],
 
             // FIN
@@ -45,7 +49,8 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-DF10-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-DF10-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-DF10-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-DF10-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-DF10-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-DF10-0007-0000-000000000007")
             ],
 
             // HR
@@ -56,7 +61,8 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-DD40-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-DD40-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-DD40-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-DD40-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-DD40-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-DD40-0007-0000-000000000007")
             ],
 
             // PM
@@ -67,7 +73,8 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-D0A0-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-D0A0-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-D0A0-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-D0A0-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-D0A0-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-D0A0-0007-0000-000000000007")
             ],
 
             // PROC
@@ -78,7 +85,8 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-AC00-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-AC00-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-AC00-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-AC00-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-AC00-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-AC00-0007-0000-000000000007")
             ],
 
             // SD
@@ -89,14 +97,16 @@ namespace KleeneStar.Model
                 Guid.Parse("0A1B2C30-DD50-0003-0000-000000000003"),
                 Guid.Parse("0A1B2C30-DD50-0004-0000-000000000004"),
                 Guid.Parse("0A1B2C30-DD50-0005-0000-000000000005"),
-                Guid.Parse("0A1B2C30-DD50-0006-0000-000000000006")
+                Guid.Parse("0A1B2C30-DD50-0006-0000-000000000006"),
+                Guid.Parse("0A1B2C30-DD50-0007-0000-000000000007")
             ]
         };
 
         /// <summary>
         /// Creates one <see cref="ObjectView"/> of each <see cref="ObjectViewType"/> for every
-        /// seeded workspace, in display order Table, List, Dashboard, Kanban, ScrumSprint,
-        /// ScrumBacklog.
+        /// seeded workspace, in display order Issues, Table, List, Dashboard, Kanban,
+        /// ScrumSprint, ScrumBacklog. The issues view leads because it is the default
+        /// entry of the issue overview page hosting the tab control.
         /// </summary>
         /// <param name="db">The database context. Cannot be null.</param>
         private static void SeedObjectViews(KleeneStarDbContext db)
@@ -125,30 +135,35 @@ namespace KleeneStar.Model
                     continue;
                 }
 
+                add(ids[6], workspace.Id, "Issues",
+                    $"Most recently updated issues of {workspace.Name} with personal filters.",
+                    ObjectViewType.Issues, 0);
+
                 add(ids[0], workspace.Id, "Table",
                     $"Tabular view of {workspace.Name} objects.",
-                    ObjectViewType.Table, 0);
+                    ObjectViewType.Table, 1);
 
                 add(ids[1], workspace.Id, "List",
                     $"Compact list view of {workspace.Name} objects.",
-                    ObjectViewType.List, 1);
+                    ObjectViewType.List, 2);
 
                 add(ids[2], workspace.Id, "Dashboard",
                     $"Aggregated dashboard for {workspace.Name}.",
-                    ObjectViewType.Dashboard, 2);
+                    ObjectViewType.Dashboard, 3);
 
                 add(ids[3], workspace.Id, "Kanban",
                     $"Kanban board of {workspace.Name} objects grouped by status.",
-                    ObjectViewType.Kanban, 3);
+                    ObjectViewType.Kanban, 4);
 
                 add(ids[4], workspace.Id, "Sprint",
                     $"Active Scrum sprint board for {workspace.Name}.",
-                    ObjectViewType.ScrumSprint, 4);
+                    ObjectViewType.ScrumSprint, 5);
 
                 add(ids[5], workspace.Id, "Backlog",
                     $"Scrum product backlog for {workspace.Name}.",
-                    ObjectViewType.ScrumBacklog, 5);
+                    ObjectViewType.ScrumBacklog, 6);
             }
         }
+
     }
 }

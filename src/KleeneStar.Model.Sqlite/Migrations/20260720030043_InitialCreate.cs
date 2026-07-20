@@ -294,6 +294,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Parent = table.Column<Guid>(type: "TEXT", nullable: true),
                     AccessModifier = table.Column<int>(type: "INTEGER", nullable: false),
                     PortalVisible = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
                     Workspace = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -375,6 +376,35 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     table.ForeignKey(
                         name: "FK_PermissionProfile_Workspace_WorkspaceId",
                         column: x => x.WorkspaceId,
+                        principalTable: "Workspace",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sprint",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Goal = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Start = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    End = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Capacity = table.Column<int>(type: "INTEGER", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sprint", x => x.Id);
+                    table.UniqueConstraint("AK_Sprint_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Sprint_Workspace_Workspace",
+                        column: x => x.Workspace,
                         principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
@@ -688,69 +718,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Object",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Summary = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Creator = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Updater = table.Column<Guid>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Object", x => x.Id);
-                    table.UniqueConstraint("AK_Object_Guid", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_Object_Class_Class",
-                        column: x => x.Class,
-                        principalTable: "Class",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Object_Identity_Assignee",
-                        column: x => x.Assignee,
-                        principalTable: "Identity",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Object_Identity_Creator",
-                        column: x => x.Creator,
-                        principalTable: "Identity",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Object_Identity_Updater",
-                        column: x => x.Updater,
-                        principalTable: "Identity",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Object_Object_Parent",
-                        column: x => x.Parent,
-                        principalTable: "Object",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Object_Workspace_Workspace",
-                        column: x => x.Workspace,
-                        principalTable: "Workspace",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Priority",
                 columns: table => new
                 {
@@ -828,6 +795,79 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_Workflow_Class_Class",
                         column: x => x.Class,
                         principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Object",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Summary = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Creator = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Sprint = table.Column<Guid>(type: "TEXT", nullable: true),
+                    SprintRank = table.Column<int>(type: "INTEGER", nullable: false),
+                    StoryPoints = table.Column<int>(type: "INTEGER", nullable: true),
+                    Updater = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Object", x => x.Id);
+                    table.UniqueConstraint("AK_Object_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Object_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Object_Identity_Assignee",
+                        column: x => x.Assignee,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Object_Identity_Creator",
+                        column: x => x.Creator,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Object_Identity_Updater",
+                        column: x => x.Updater,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Object_Object_Parent",
+                        column: x => x.Parent,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Object_Sprint_Sprint",
+                        column: x => x.Sprint,
+                        principalTable: "Sprint",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Object_Workspace_Workspace",
+                        column: x => x.Workspace,
+                        principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -945,6 +985,46 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Form",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Status",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<Guid>(type: "TEXT", nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                    WorkflowRawId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Status", x => x.Id);
+                    table.UniqueConstraint("AK_Status_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Status_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Status_StatusCategory_Category",
+                        column: x => x.Category,
+                        principalTable: "StatusCategory",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Status_Workflow_WorkflowRawId",
+                        column: x => x.WorkflowRawId,
+                        principalTable: "Workflow",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1115,6 +1195,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Owner = table.Column<Guid>(type: "TEXT", nullable: false),
                     Object = table.Column<Guid>(type: "TEXT", nullable: false),
                     LastVisited = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Favorite = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -1191,46 +1272,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Status",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Category = table.Column<Guid>(type: "TEXT", nullable: false),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Class = table.Column<Guid>(type: "TEXT", nullable: false),
-                    WorkflowRawId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Status", x => x.Id);
-                    table.UniqueConstraint("AK_Status_Guid", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_Status_Class_Class",
-                        column: x => x.Class,
-                        principalTable: "Class",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Status_StatusCategory_Category",
-                        column: x => x.Category,
-                        principalTable: "StatusCategory",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Status_Workflow_WorkflowRawId",
-                        column: x => x.WorkflowRawId,
-                        principalTable: "Workflow",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1345,6 +1386,45 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transition",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Workflow = table.Column<Guid>(type: "TEXT", nullable: false),
+                    SourceId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TargetId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transition_Status_SourceId",
+                        column: x => x.SourceId,
+                        principalTable: "Status",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transition_Status_TargetId",
+                        column: x => x.TargetId,
+                        principalTable: "Status",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transition_Workflow_Workflow",
+                        column: x => x.Workflow,
+                        principalTable: "Workflow",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommentLike",
                 columns: table => new
                 {
@@ -1399,45 +1479,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Identity",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Transition",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Workflow = table.Column<Guid>(type: "TEXT", nullable: false),
-                    SourceId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TargetId = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Transition_Status_SourceId",
-                        column: x => x.SourceId,
-                        principalTable: "Status",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transition_Status_TargetId",
-                        column: x => x.TargetId,
-                        principalTable: "Status",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transition_Workflow_Workflow",
-                        column: x => x.Workflow,
-                        principalTable: "Workflow",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -1628,14 +1669,19 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Parent");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Object_Sprint",
+                table: "Object",
+                column: "Sprint");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Object_Updater",
                 table: "Object",
                 column: "Updater");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Object_Workspace",
+                name: "IX_Object_Workspace_Kind",
                 table: "Object",
-                column: "Workspace");
+                columns: new[] { "Workspace", "Kind" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ObjectLink_Source",
@@ -1773,6 +1819,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_SlaTarget_Policy_Kind",
                 table: "SlaTarget",
                 columns: new[] { "Policy", "Kind" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sprint_Workspace_Name",
+                table: "Sprint",
+                columns: new[] { "Workspace", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Status_Category_Name_Class",
@@ -2033,6 +2085,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Identity");
+
+            migrationBuilder.DropTable(
+                name: "Sprint");
 
             migrationBuilder.DropTable(
                 name: "Class");

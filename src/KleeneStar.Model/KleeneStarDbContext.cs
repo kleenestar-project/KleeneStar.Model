@@ -87,6 +87,11 @@ namespace KleeneStar.Model
         public DbSet<ObjectView> ObjectViews { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of Scrum sprints.
+        /// </summary>
+        public DbSet<Sprint> Sprints { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of field values associated with objects.
         /// </summary>
         public DbSet<Value> Values { get; set; }

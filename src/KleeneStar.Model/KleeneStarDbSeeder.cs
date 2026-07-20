@@ -190,6 +190,22 @@ namespace KleeneStar.Model
                 }
             }
 
+            // Sprints must be seeded AFTER Objects — SeedSprints commits a share of each
+            // workspace's existing objects to the seeded iterations.
+            if (!db.Sprints.Any())
+            {
+                try
+                {
+                    SeedSprints(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding sprints: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             // SavedSearches must be seeded AFTER Identities — each saved search is owned
             // by the seeded admin identity (SavedSearch.OwnerId references Identity.Id).
             if (!db.SavedSearches.Any())

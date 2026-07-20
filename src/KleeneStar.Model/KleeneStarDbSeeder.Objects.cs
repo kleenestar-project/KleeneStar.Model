@@ -1,6 +1,7 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace KleeneStar.Model
@@ -11,7 +12,12 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Populates the database with initial object data across multiple classes.
+        /// Populates the database with initial object data across multiple classes. The
+        /// objects inherit the kind of their class: document classes form a small page
+        /// tree (the first three objects become roots, the rest are nested beneath
+        /// them), blog classes get creation dates staggered across recent months
+        /// (feeding the year/month timeline of the blog overview), and issue classes
+        /// keep plain work items.
         /// </summary>
         /// <param name="db">The database context used for adding the new objects.</param>
         private static void SeedObjects(KleeneStarDbContext db)
@@ -29,10 +35,18 @@ namespace KleeneStar.Model
 
             foreach (var cls in classes)
             {
+                var roots = new List<Entities.Object>();
+
                 // creates exactly 20 distinct items per class based on the extended seeding logic
                 for (int i = 0; i < 20; i++)
                 {
                     var (summary, description) = GetRandomContentForClass(cls.Name, i);
+
+                    // blog posts spread over several months, everything else is created "now"
+                    var created = cls.Kind == ObjectKind.Blog
+                        ? DateTime.UtcNow.AddDays(-11 * i).AddHours(-i)
+                        : DateTime.UtcNow;
+
                     var entity = new Entities.Object
                     {
                         Id = Guid.NewGuid(),
@@ -40,15 +54,29 @@ namespace KleeneStar.Model
                         Summary = summary,
                         Description = description,
                         Icon = cls.Icon,
+                        Kind = cls.Kind,
                         State = WorkspaceState.Active,
                         WorkspaceId = cls.WorkspaceId,
                         ClassId = cls.Id,
                         CreatorId = creatorId,
                         AssigneeId = i % 4 == 0 ? creatorId : null,
                         UpdaterId = creatorId,
-                        Created = DateTime.UtcNow,
-                        Updated = DateTime.UtcNow
+                        Created = created,
+                        Updated = created
                     };
+
+                    // documents form a page tree: a few roots, the rest nested beneath them
+                    if (cls.Kind == ObjectKind.Document)
+                    {
+                        if (roots.Count < 3)
+                        {
+                            roots.Add(entity);
+                        }
+                        else
+                        {
+                            entity.ParentId = roots[i % roots.Count].Id;
+                        }
+                    }
 
                     db.Objects.Add(entity);
                 }
@@ -929,6 +957,30 @@ namespace KleeneStar.Model
                     break;
 
                 // --- SD Classes ---
+                case "Announcement":
+                    (summary, descriptionPrefix) = Get(
+                        ("Maintenance Window", "The ticket system will be unavailable Saturday night for database maintenance."),
+                        ("New VPN Portal", "The new VPN self-service portal is live for all employees."),
+                        ("Phishing Warning", "A phishing wave imitating the payroll portal is circulating; do not enter credentials."),
+                        ("Portal Redesign", "The self-service portal received a refreshed navigation and search."),
+                        ("Printer Rollout", "Floor printers are being replaced by the new managed fleet this month."),
+                        ("Password Policy", "Passwords now require twelve characters; existing passwords expire in 30 days."),
+                        ("Extended Hours", "The service desk now answers calls until 8 pm on weekdays."),
+                        ("Patch Tuesday", "This month's Windows updates roll out in three waves starting Monday."),
+                        ("New KB Articles", "Twenty new knowledge-base articles cover the most frequent VPN issues."),
+                        ("Outage Postmortem", "Read the summary of last week's collaboration-platform outage."),
+                        ("Ordering Freeze", "Hardware orders pause during the inventory at the end of the quarter."),
+                        ("MFA Enforcement", "Multi-factor authentication becomes mandatory for all remote logins."),
+                        ("Chat Support Pilot", "A live-chat channel to the service desk starts as a pilot."),
+                        ("Loaner Laptops", "Loaner laptops are now available at the front desk for short-term use."),
+                        ("Wi-Fi Upgrade", "Access points in the conference wing are upgraded to Wi-Fi 6."),
+                        ("Ticket Categories", "Ticket categories were consolidated to speed up triage."),
+                        ("Holiday Coverage", "On-call coverage during the holidays follows the reduced schedule."),
+                        ("New Onboarding Flow", "IT onboarding requests are now bundled into a single request type."),
+                        ("Storage Quota", "Personal drive quotas increase to 50 GB next week."),
+                        ("Feedback Survey", "Tell us how the service desk is doing in the quarterly survey.")
+                    );
+                    break;
                 case "Ticket":
                 case "Incident":
                 case "Problem":

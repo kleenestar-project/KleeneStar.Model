@@ -33,6 +33,33 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Stamps the supplied kind onto every object of the supplied class whose kind
+        /// differs. Called when a class changes its object kind, so the class stays the
+        /// single source of the kind and the kind overviews immediately reflect the
+        /// change.
+        /// </summary>
+        /// <param name="classId">The id of the class whose objects are aligned.</param>
+        /// <param name="kind">The normalized kind key to stamp. Must not be null or empty.</param>
+        /// <returns>The number of objects whose kind was changed.</returns>
+        public static int AlignObjectKinds(System.Guid classId, string kind)
+        {
+            using var db = CreateDbContext();
+
+            var stale = db.Objects
+                .Where(x => x.ClassId == classId && x.Kind != kind)
+                .ToList();
+
+            foreach (var objectEntity in stale)
+            {
+                objectEntity.Kind = kind;
+            }
+
+            db.SaveChanges();
+
+            return stale.Count;
+        }
+
+        /// <summary>
         /// Returns a queryable collection of objects from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>

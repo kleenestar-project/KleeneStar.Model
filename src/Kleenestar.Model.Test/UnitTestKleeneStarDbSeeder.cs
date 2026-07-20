@@ -90,6 +90,7 @@ namespace KleeneStar.Model.Test
             var statuses = db.Statuses.Count();
             var workflows = db.Workflows.Count();
             var objects = db.Objects.Count();
+            var sprints = db.Sprints.Count();
             var dashboards = db.Dashboards.Count();
             var slaPolicies = db.SlaPolicies.Count();
             var slaTargets = db.SlaTargets.Count();
@@ -122,6 +123,7 @@ namespace KleeneStar.Model.Test
             Assert.Equal(statuses, db.Statuses.Count());
             Assert.Equal(workflows, db.Workflows.Count());
             Assert.Equal(objects, db.Objects.Count());
+            Assert.Equal(sprints, db.Sprints.Count());
             Assert.Equal(dashboards, db.Dashboards.Count());
             Assert.Equal(slaPolicies, db.SlaPolicies.Count());
             Assert.Equal(slaTargets, db.SlaTargets.Count());
@@ -385,6 +387,182 @@ namespace KleeneStar.Model.Test
             {
                 Assert.Contains(type, typesInForm);
             }
+        }
+
+        /// <summary>
+        /// Verifies that the objects tab views are seeded: every workspace that receives views
+        /// gets exactly one <see cref="Entities.ObjectView"/> of each <see cref="Entities.ObjectViewType"/>,
+        /// in the display order Issues, Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog,
+        /// and that all of them are active.
+        /// </summary>
+        [Fact]
+        public async Task SeedObjectViews()
+        {
+            // arrange
+            var connectionString = $"SeedObjectViews_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.True(db.ObjectViews.Any(), "expected at least one seeded object view");
+
+            var expectedOrder = new[]
+            {
+                Entities.ObjectViewType.Issues,
+                Entities.ObjectViewType.Table,
+                Entities.ObjectViewType.List,
+                Entities.ObjectViewType.Dashboard,
+                Entities.ObjectViewType.Kanban,
+                Entities.ObjectViewType.ScrumSprint,
+                Entities.ObjectViewType.ScrumBacklog
+            };
+
+            var byWorkspace = db.ObjectViews
+                .ToList()
+                .GroupBy(v => v.WorkspaceId)
+                .ToList();
+
+            Assert.NotEmpty(byWorkspace);
+
+            foreach (var group in byWorkspace)
+            {
+                var ordered = group.OrderBy(v => v.Order).ToList();
+
+                // one view per type, in the canonical display order
+                Assert.Equal(expectedOrder.Length, ordered.Count);
+                Assert.Equal(expectedOrder, ordered.Select(v => v.ViewType).ToArray());
+                Assert.Equal(Enumerable.Range(0, expectedOrder.Length).ToArray(), ordered.Select(v => v.Order).ToArray());
+
+                // all seeded views are active and carry a name
+                Assert.All(ordered, v => Assert.Equal(Entities.ObjectViewState.Active, v.State));
+                Assert.All(ordered, v => Assert.False(string.IsNullOrWhiteSpace(v.Name)));
+            }
+        }
+
+        /// <summary>
+        /// Verifies that the sprints are seeded: every workspace gets one completed, one
+        /// active and one planned sprint, a share of the workspace objects is committed
+        /// to the completed and active sprints with dense 1-based ranks per group, and
+        /// most objects carry a story-point estimate.
+        /// </summary>
+        [Fact]
+        public async Task SeedSprints()
+        {
+            // arrange
+            var connectionString = $"SeedSprints_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.True(db.Sprints.Any(), "expected at least one seeded sprint");
+
+            foreach (var workspace in db.Workspaces.ToList())
+            {
+                var sprints = db.Sprints.Where(s => s.WorkspaceId == workspace.Id).ToList();
+
+                // one sprint per lifecycle state, exactly one active
+                Assert.Equal(3, sprints.Count);
+                Assert.Single(sprints, s => s.State == Entities.SprintState.Completed);
+                Assert.Single(sprints, s => s.State == Entities.SprintState.Active);
+                Assert.Single(sprints, s => s.State == Entities.SprintState.Planned);
+                Assert.All(sprints, s => Assert.False(string.IsNullOrWhiteSpace(s.Name)));
+                Assert.All(sprints, s => Assert.True(s.Start.HasValue && s.End.HasValue && s.Start < s.End));
+
+                var active = sprints.Single(s => s.State == Entities.SprintState.Active);
+                var objects = db.Objects.Where(o => o.WorkspaceId == workspace.Id).ToList();
+
+                if (objects.Count == 0)
+                {
+                    continue;
+                }
+
+                // the active sprint carries objects, the backlog is non-empty, and the
+                // ranks per group are dense and 1-based
+                var committed = objects.Where(o => o.SprintId == active.Id).OrderBy(o => o.SprintRank).ToList();
+                var backlog = objects.Where(o => o.SprintId == null).OrderBy(o => o.SprintRank).ToList();
+
+                Assert.NotEmpty(committed);
+                Assert.NotEmpty(backlog);
+                Assert.Equal(Enumerable.Range(1, committed.Count), committed.Select(o => o.SprintRank));
+                Assert.Equal(Enumerable.Range(1, backlog.Count), backlog.Select(o => o.SprintRank));
+
+                // most objects are estimated, at least one is deliberately left open
+                Assert.Contains(objects, o => o.StoryPoints.HasValue);
+            }
+        }
+
+        /// <summary>
+        /// Verifies that the object-kind partition is seeded: objects of the
+        /// documentation-like classes become documents arranged into a page tree, the
+        /// release objects become blog posts with creation dates spread over several
+        /// months, and every other object keeps the default issue kind.
+        /// </summary>
+        [Fact]
+        public async Task SeedObjectKinds()
+        {
+            // arrange
+            var connectionString = $"SeedObjectKinds_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation — the class is the source of the kind: the documentation-like
+            // classes are document classes, the release class is a blog class, and
+            // every other class keeps the default issue kind
+            var documentClassIds = db.Classes
+                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge")
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            Assert.NotEmpty(documentClassIds);
+            Assert.All(db.Classes.Where(c => documentClassIds.Contains(c.Id)).ToList(),
+                c => Assert.Equal(Entities.ObjectKind.Document, c.Kind));
+            Assert.All(db.Classes.Where(c => c.Name == "Release" || c.Name == "Announcement").ToList(),
+                c => Assert.Equal(Entities.ObjectKind.Blog, c.Kind));
+            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Release" && c.Name != "Announcement").ToList(),
+                c => Assert.Equal(Entities.ObjectKind.Issue, c.Kind));
+
+            var documents = db.Objects.Where(o => documentClassIds.Contains(o.ClassId)).ToList();
+            Assert.NotEmpty(documents);
+            Assert.All(documents, o => Assert.Equal(Entities.ObjectKind.Document, o.Kind));
+
+            // the documents form a tree: some roots, the rest nested beneath them
+            var documentIds = documents.Select(o => o.Id).ToHashSet();
+            Assert.Contains(documents, o => o.ParentId == null);
+            Assert.Contains(documents, o => o.ParentId.HasValue);
+            Assert.All(documents.Where(o => o.ParentId.HasValue), o => Assert.Contains(o.ParentId!.Value, documentIds));
+
+            // validation — blog posts: every Release object is a blog post and the
+            // staggered creation dates span more than one month (feeding the timeline)
+            var blogClassIds = db.Classes
+                .Where(c => c.Name == "Release" || c.Name == "Announcement")
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            Assert.NotEmpty(blogClassIds);
+
+            var posts = db.Objects.Where(o => blogClassIds.Contains(o.ClassId)).ToList();
+            Assert.NotEmpty(posts);
+            Assert.All(posts, o => Assert.Equal(Entities.ObjectKind.Blog, o.Kind));
+            Assert.True(posts.Select(o => (o.Created.Year, o.Created.Month)).Distinct().Count() > 1,
+                "expected the blog posts to spread over more than one month");
+
+            // validation — everything else keeps the default issue kind
+            var otherKinds = db.Objects
+                .Where(o => !documentClassIds.Contains(o.ClassId) && !blogClassIds.Contains(o.ClassId))
+                .Select(o => o.Kind)
+                .Distinct()
+                .ToList();
+
+            Assert.Equal([Entities.ObjectKind.Issue], otherKinds);
         }
 
         /// <summary>

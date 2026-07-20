@@ -13,7 +13,9 @@ namespace KleeneStar.Model.Entities
     /// <remarks>
     /// The visit backs the object dropdown in the application header: with no search term it lists
     /// the calling identity's most recently opened objects, newest first — the object analogue of
-    /// the per-identity <see cref="WorkspaceBookmark"/> recency signal.
+    /// the per-identity <see cref="WorkspaceBookmark"/>. Like the workspace bookmark, the row also
+    /// carries the personal <see cref="Favorite"/> (star) flag, so a single row per pair combines
+    /// both signals; a row exists once the identity has either visited or starred the object.
     /// </remarks>
     public class ObjectVisit : IEntity
     {
@@ -59,6 +61,12 @@ namespace KleeneStar.Model.Entities
         /// "recently used" ordering in the object dropdown.
         /// </summary>
         public DateTime LastVisited { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the owner has starred the object.
+        /// Starred objects surface in the "starred" quickfilter of the issues overview.
+        /// </summary>
+        public bool Favorite { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time when the visit was created.

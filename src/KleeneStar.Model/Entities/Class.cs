@@ -105,6 +105,17 @@ namespace KleeneStar.Model.Entities
         public bool PortalVisible { get; set; }
 
         /// <summary>
+        /// Gets or sets the object-kind key of the class, e.g.
+        /// <see cref="ObjectKind.Document"/>, <see cref="ObjectKind.Blog"/>, or
+        /// <see cref="ObjectKind.Issue"/>. The class is the single source of the kind:
+        /// every object of the class carries this kind (stamped onto
+        /// <see cref="Object.Kind"/> on create and update), which decides in which kind
+        /// overview the objects appear. The set of kinds is open — add-ons may
+        /// introduce further keys. Defaults to <see cref="ObjectKind.Default"/>.
+        /// </summary>
+        public string Kind { get; set; } = ObjectKind.Default;
+
+        /// <summary>
         /// Gets or sets the collection of classes allowed as children of this class.
         /// </summary>
         [JsonIgnore]

@@ -62,6 +62,15 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
+        /// Gets or sets the kind key that assigns the object to one of the object kinds
+        /// (subtypes), e.g. <see cref="ObjectKind.Document"/>, <see cref="ObjectKind.Blog"/>,
+        /// or <see cref="ObjectKind.Issue"/>. The set of kinds is open — add-ons may
+        /// introduce further keys — and the kind decides which overview view presents the
+        /// object. Defaults to <see cref="ObjectKind.Default"/>.
+        /// </summary>
+        public string Kind { get; set; } = ObjectKind.Default;
+
+        /// <summary>
         /// Gets or sets the unique identifier of the workspace associated with this object.
         /// </summary>
         public Guid WorkspaceId { get; set; }
@@ -114,6 +123,30 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the identity the object is currently assigned to.
         /// </summary>
         public Identity Assignee { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the sprint the object is committed to,
+        /// or <c>null</c> when the object sits in the product backlog of its workspace.
+        /// </summary>
+        public Guid? SprintId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sprint the object is committed to.
+        /// </summary>
+        public Sprint Sprint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the 1-based ordering rank of the object within its sprint, or —
+        /// when <see cref="SprintId"/> is <c>null</c> — within the product backlog of its
+        /// workspace. Zero means the object has not been ranked yet.
+        /// </summary>
+        public int SprintRank { get; set; }
+
+        /// <summary>
+        /// Gets or sets the story-point estimate of the object, or <c>null</c> when the
+        /// object has not been estimated.
+        /// </summary>
+        public int? StoryPoints { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the identity that last updated the

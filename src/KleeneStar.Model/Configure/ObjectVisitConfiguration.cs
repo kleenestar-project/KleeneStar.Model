@@ -52,6 +52,11 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("LastVisited")
                 .IsRequired();
 
+            builder.Property(x => x.Favorite)
+                .HasColumnName("Favorite")
+                .IsRequired()
+                .HasDefaultValue(false);
+
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
                 .IsRequired();

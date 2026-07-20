@@ -49,6 +49,12 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.State)
                 .HasColumnName("State");
 
+            builder.Property(x => x.Kind)
+                .HasColumnName("Kind")
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue(ObjectKind.Default);
+
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
                 .IsRequired();
@@ -107,6 +113,21 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(i => i.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(x => x.SprintId)
+                .HasColumnName("Sprint");
+
+            builder.HasOne(x => x.Sprint)
+                .WithMany()
+                .HasForeignKey(x => x.SprintId)
+                .HasPrincipalKey(s => s.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Property(x => x.SprintRank)
+                .HasColumnName("SprintRank");
+
+            builder.Property(x => x.StoryPoints)
+                .HasColumnName("StoryPoints");
+
             builder.Property(x => x.UpdaterId)
                 .HasColumnName("Updater");
 
@@ -118,6 +139,8 @@ namespace KleeneStar.Model.Configure
 
             builder.HasIndex(x => x.Key)
                 .IsUnique();
+
+            builder.HasIndex(x => new { x.WorkspaceId, x.Kind });
         }
     }
 }

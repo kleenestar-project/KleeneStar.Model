@@ -85,6 +85,12 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.AccessModifier)
                 .HasColumnName("AccessModifier");
 
+            builder.Property(x => x.Kind)
+                .HasColumnName("Kind")
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue(ObjectKind.Default);
+
             builder.Property(x => x.PortalVisible)
                 .HasColumnName("PortalVisible")
                 .HasDefaultValue(false);
