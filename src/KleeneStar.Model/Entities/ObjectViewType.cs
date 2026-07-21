@@ -46,7 +46,15 @@ namespace KleeneStar.Model.Entities
         /// archived), and pagination. Appended after <see cref="ScrumBacklog"/> because
         /// the enum is persisted by ordinal and therefore append-only.
         /// </summary>
-        Issues
+        Issues,
+
+        /// <summary>
+        /// Curated asset list: the most recently updated assets of the workspace with
+        /// search, personal quickfilters (starred, assigned to me, created by me,
+        /// archived), and pagination. Appended after <see cref="Issues"/> because the
+        /// enum is persisted by ordinal and therefore append-only.
+        /// </summary>
+        Assets
     }
 
     /// <summary>
@@ -77,6 +85,7 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.ScrumSprint => "kleenestar-core-webfragment-object-objecttabscrumsprinttemplatefragment",
                 ObjectViewType.ScrumBacklog => "kleenestar-core-webfragment-object-objecttabscrumbacklogtemplatefragment",
                 ObjectViewType.Issues => "kleenestar-core-webfragment-object-issues-issueviewtemplatefragment",
+                ObjectViewType.Assets => "kleenestar-core-webfragment-object-assets-assetviewtemplatefragment",
                 _ => null
             };
         }
@@ -96,6 +105,7 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.ScrumSprint => Guid.Parse("5B5C18D3-7AAB-481C-A8E6-A95F4D2B7E05"),
                 ObjectViewType.ScrumBacklog => Guid.Parse("6E7D9342-5CBE-409B-9A1F-0C5BAD3E2F06"),
                 ObjectViewType.Issues => Guid.Parse("7A2C41F8-90DE-4B6B-8D3A-1E5F72C4AE07"),
+                ObjectViewType.Assets => Guid.Parse("8B3D52A9-A1EF-4C7C-9E4B-2F6A83D5BF08"),
                 _ => Guid.Empty
             };
         }
@@ -114,6 +124,7 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.ScrumSprint => "kleenestar.core:object.view.scrum.sprint.label",
                 ObjectViewType.ScrumBacklog => "kleenestar.core:object.view.scrum.backlog.label",
                 ObjectViewType.Issues => "kleenestar.core:object.view.issues.label",
+                ObjectViewType.Assets => "kleenestar.core:object.view.assets.label",
                 _ => null
             };
         }
@@ -135,6 +146,7 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.ScrumSprint => "kleenestar.core:object.view.scrum.sprint.description",
                 ObjectViewType.ScrumBacklog => "kleenestar.core:object.view.scrum.backlog.description",
                 ObjectViewType.Issues => "kleenestar.core:object.view.issues.description",
+                ObjectViewType.Assets => "kleenestar.core:object.view.assets.description",
                 _ => null
             };
         }
@@ -153,6 +165,7 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.ScrumSprint => new IconBolt(),
                 ObjectViewType.ScrumBacklog => new IconListCheck(),
                 ObjectViewType.Issues => new IconClipboardList(),
+                ObjectViewType.Assets => new IconCubes(),
                 _ => null
             };
         }

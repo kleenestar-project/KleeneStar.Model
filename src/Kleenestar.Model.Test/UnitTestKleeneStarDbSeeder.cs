@@ -390,10 +390,11 @@ namespace KleeneStar.Model.Test
         }
 
         /// <summary>
-        /// Verifies that the objects tab views are seeded: every workspace that receives views
-        /// gets exactly one <see cref="Entities.ObjectView"/> of each <see cref="Entities.ObjectViewType"/>,
-        /// in the display order Issues, Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog,
-        /// and that all of them are active.
+        /// Verifies that the objects tab views are seeded per kind: every workspace that
+        /// receives views gets one issue tab set (Issues, Table, List, Dashboard, Kanban,
+        /// ScrumSprint, ScrumBacklog) and one asset tab set (Assets, Table, List, Dashboard,
+        /// Kanban) — the asset set omits the two Scrum boards — each in its own display
+        /// order starting at zero, and that all of them are active.
         /// </summary>
         [Fact]
         public async Task SeedObjectViews()
@@ -409,7 +410,7 @@ namespace KleeneStar.Model.Test
             // validation
             Assert.True(db.ObjectViews.Any(), "expected at least one seeded object view");
 
-            var expectedOrder = new[]
+            var expectedIssueOrder = new[]
             {
                 Entities.ObjectViewType.Issues,
                 Entities.ObjectViewType.Table,
@@ -420,18 +421,31 @@ namespace KleeneStar.Model.Test
                 Entities.ObjectViewType.ScrumBacklog
             };
 
-            var byWorkspace = db.ObjectViews
+            var expectedAssetOrder = new[]
+            {
+                Entities.ObjectViewType.Assets,
+                Entities.ObjectViewType.Table,
+                Entities.ObjectViewType.List,
+                Entities.ObjectViewType.Dashboard,
+                Entities.ObjectViewType.Kanban
+            };
+
+            // each kind keeps its own tab set within a workspace
+            var byWorkspaceKind = db.ObjectViews
                 .ToList()
-                .GroupBy(v => v.WorkspaceId)
+                .GroupBy(v => (v.WorkspaceId, v.Kind))
                 .ToList();
 
-            Assert.NotEmpty(byWorkspace);
+            Assert.NotEmpty(byWorkspaceKind);
 
-            foreach (var group in byWorkspace)
+            foreach (var group in byWorkspaceKind)
             {
                 var ordered = group.OrderBy(v => v.Order).ToList();
+                var expectedOrder = group.Key.Kind == Entities.ObjectKind.Asset
+                    ? expectedAssetOrder
+                    : expectedIssueOrder;
 
-                // one view per type, in the canonical display order
+                // one view per type of the kind, in the canonical display order
                 Assert.Equal(expectedOrder.Length, ordered.Count);
                 Assert.Equal(expectedOrder, ordered.Select(v => v.ViewType).ToArray());
                 Assert.Equal(Enumerable.Range(0, expectedOrder.Length).ToArray(), ordered.Select(v => v.Order).ToArray());
@@ -440,6 +454,19 @@ namespace KleeneStar.Model.Test
                 Assert.All(ordered, v => Assert.Equal(Entities.ObjectViewState.Active, v.State));
                 Assert.All(ordered, v => Assert.False(string.IsNullOrWhiteSpace(v.Name)));
             }
+
+            // both kinds are represented for every workspace that receives views
+            var kindsPerWorkspace = db.ObjectViews
+                .ToList()
+                .GroupBy(v => v.WorkspaceId)
+                .ToList();
+
+            Assert.All(kindsPerWorkspace, g =>
+            {
+                var kinds = g.Select(v => v.Kind).Distinct().ToList();
+                Assert.Contains(Entities.ObjectKind.Issue, kinds);
+                Assert.Contains(Entities.ObjectKind.Asset, kinds);
+            });
         }
 
         /// <summary>
@@ -501,7 +528,8 @@ namespace KleeneStar.Model.Test
         /// Verifies that the object-kind partition is seeded: objects of the
         /// documentation-like classes become documents arranged into a page tree, the
         /// release objects become blog posts with creation dates spread over several
-        /// months, and every other object keeps the default issue kind.
+        /// months, the Asset class objects become assets, and every other object keeps
+        /// the default issue kind.
         /// </summary>
         [Fact]
         public async Task SeedObjectKinds()
@@ -527,7 +555,9 @@ namespace KleeneStar.Model.Test
                 c => Assert.Equal(Entities.ObjectKind.Document, c.Kind));
             Assert.All(db.Classes.Where(c => c.Name == "Release" || c.Name == "Announcement").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Blog, c.Kind));
-            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Release" && c.Name != "Announcement").ToList(),
+            Assert.All(db.Classes.Where(c => c.Name == "Asset").ToList(),
+                c => Assert.Equal(Entities.ObjectKind.Asset, c.Kind));
+            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Issue, c.Kind));
 
             var documents = db.Objects.Where(o => documentClassIds.Contains(o.ClassId)).ToList();
@@ -555,9 +585,22 @@ namespace KleeneStar.Model.Test
             Assert.True(posts.Select(o => (o.Created.Year, o.Created.Month)).Distinct().Count() > 1,
                 "expected the blog posts to spread over more than one month");
 
+            // validation — asset objects: the Asset class is an asset class, so every
+            // object of it carries the asset kind
+            var assetClassIds = db.Classes
+                .Where(c => c.Name == "Asset")
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            Assert.NotEmpty(assetClassIds);
+
+            var assets = db.Objects.Where(o => assetClassIds.Contains(o.ClassId)).ToList();
+            Assert.NotEmpty(assets);
+            Assert.All(assets, o => Assert.Equal(Entities.ObjectKind.Asset, o.Kind));
+
             // validation — everything else keeps the default issue kind
             var otherKinds = db.Objects
-                .Where(o => !documentClassIds.Contains(o.ClassId) && !blogClassIds.Contains(o.ClassId))
+                .Where(o => !documentClassIds.Contains(o.ClassId) && !blogClassIds.Contains(o.ClassId) && !assetClassIds.Contains(o.ClassId))
                 .Select(o => o.Kind)
                 .Distinct()
                 .ToList();

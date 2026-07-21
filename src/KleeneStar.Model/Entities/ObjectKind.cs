@@ -32,6 +32,12 @@ namespace KleeneStar.Model.Entities
         public const string Issue = "issue";
 
         /// <summary>
+        /// The kind key of asset objects (configuration items such as hardware,
+        /// software, or licenses tracked as a filterable inventory).
+        /// </summary>
+        public const string Asset = "asset";
+
+        /// <summary>
         /// The kind assigned when none is specified. Issues are the default because every
         /// object predating the kind partition behaves like a work item.
         /// </summary>

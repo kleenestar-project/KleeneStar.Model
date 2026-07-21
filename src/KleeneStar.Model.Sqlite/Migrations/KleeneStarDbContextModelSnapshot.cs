@@ -1243,6 +1243,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Guid");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("issue")
+                        .HasColumnName("Kind");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -1271,7 +1279,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasKey("RawId");
 
-                    b.HasIndex("WorkspaceId", "Name")
+                    b.HasIndex("WorkspaceId", "Kind", "Name")
                         .IsUnique();
 
                     b.ToTable("ObjectView", (string)null);

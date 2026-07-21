@@ -34,7 +34,7 @@ namespace KleeneStar.Model
 
             // workspace: Configuration Database (CMDB)
             add("083DA1FE-9E75-47B4-8CC4-39106000847B", "Compliance", "Compliance rules and audits.", "/kleenestar/assets/icons/compliance.svg", "D651799A-690E-4CFF-AE0C-D3341CA3BBB4");
-            add("7320C34D-F58A-4D7F-9761-8A998B9BFEC3", "Asset", "Configuration items and assets.", "/kleenestar/assets/icons/asset.svg", "D651799A-690E-4CFF-AE0C-D3341CA3BBB4", isAbstract: true);
+            add("7320C34D-F58A-4D7F-9761-8A998B9BFEC3", "Asset", "Configuration items and assets.", "/kleenestar/assets/icons/asset.svg", "D651799A-690E-4CFF-AE0C-D3341CA3BBB4", kind: ObjectKind.Asset);
             add("4112E505-B27F-427B-91E6-756C95FC307F", "Relationship", "Dependencies and relations between assets.", "/kleenestar/assets/icons/rel.svg", "D651799A-690E-4CFF-AE0C-D3341CA3BBB4");
             add("23998D21-5457-4779-921F-0420B3D41967", "Policy", "Configuration and governance policies.", "/kleenestar/assets/icons/policy.svg", "D651799A-690E-4CFF-AE0C-D3341CA3BBB4", isSealed: true);
             add("2D562E0C-CCF0-4484-8085-CC9FCA57E163", "Approval", "Approval workflows for configuration changes.", "/kleenestar/assets/icons/approval.svg", "D651799A-690E-4CFF-AE0C-D3341CA3BBB4");

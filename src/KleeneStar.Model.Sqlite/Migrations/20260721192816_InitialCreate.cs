@@ -330,6 +330,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
                     ViewType = table.Column<int>(type: "INTEGER", nullable: false),
                     Configuration = table.Column<string>(type: "TEXT", nullable: true),
                     Order = table.Column<int>(type: "INTEGER", nullable: false),
@@ -1717,9 +1718,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ObjectView_Workspace_Name",
+                name: "IX_ObjectView_Workspace_Kind_Name",
                 table: "ObjectView",
-                columns: new[] { "Workspace", "Name" },
+                columns: new[] { "Workspace", "Kind", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
