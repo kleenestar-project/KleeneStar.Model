@@ -34,6 +34,27 @@ namespace KleeneStar.Model.Entities
         public string Size { get; set; }
 
         /// <summary>
+        /// Gets or sets the optional accent color of the dashboard column (a CSS color such as
+        /// "#3273A3" or a named color). A null value leaves the column without an accent.
+        /// </summary>
+        public string Color { get; set; }
+
+        /// <summary>
+        /// Gets or sets the zero-based position of the column within its dashboard. The value is
+        /// authored by the client when columns are reordered and defines the render order.
+        /// </summary>
+        public int Position { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transient client key of a column that was added on the board but not yet
+        /// reloaded. The client keeps identifying a freshly added column by this non-GUID key across
+        /// saves (the update response carries no ids), so it is persisted to correlate the same column
+        /// between a board update and a later column update within a session. It is null for columns
+        /// the client addresses by their business id (everything after a reload).
+        /// </summary>
+        public string Key { get; set; }
+
+        /// <summary>
         /// Gets or sets the unique identifier of the dashboard that contains this column.
         /// </summary>
         public Guid DashboardId { get; set; }

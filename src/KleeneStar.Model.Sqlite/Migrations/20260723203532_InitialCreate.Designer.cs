@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260721192816_InitialCreate")]
+    [Migration("20260723203532_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -529,6 +529,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
                     b.Property<Guid>("DashboardId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Dashboard");
@@ -538,11 +543,20 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Guid");
 
+                    b.Property<string>("Key")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
 
                     b.Property<string>("Size")
                         .HasMaxLength(64)
@@ -551,8 +565,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasKey("RawId");
 
-                    b.HasIndex("DashboardId", "Name")
-                        .IsUnique();
+                    b.HasIndex("DashboardId");
 
                     b.ToTable("DashboardColumn", (string)null);
                 });
@@ -2172,6 +2185,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
                     b.Property<Guid>("ColumnId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Column");
@@ -2187,14 +2205,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<string>("Params")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Params");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Type");
+
                     b.Property<string>("Wql")
                         .HasColumnType("TEXT")
                         .HasColumnName("Wql");
 
                     b.HasKey("RawId");
 
-                    b.HasIndex("ColumnId", "Name")
-                        .IsUnique();
+                    b.HasIndex("ColumnId");
 
                     b.ToTable("Widget", (string)null);
                 });

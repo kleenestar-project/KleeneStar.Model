@@ -190,6 +190,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     Dashboard = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -467,6 +470,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    Params = table.Column<string>(type: "TEXT", nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
                     Wql = table.Column<string>(type: "TEXT", nullable: true),
                     Column = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
@@ -1580,10 +1587,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "DashboardId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DashboardColumn_Dashboard_Name",
+                name: "IX_DashboardColumn_Dashboard",
                 table: "DashboardColumn",
-                columns: new[] { "Dashboard", "Name" },
-                unique: true);
+                column: "Dashboard");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Field_Class_Name",
@@ -1890,10 +1896,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Widget_Column_Name",
+                name: "IX_Widget_Column",
                 table: "Widget",
-                columns: new[] { "Column", "Name" },
-                unique: true);
+                column: "Column");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workflow_Class_Name",

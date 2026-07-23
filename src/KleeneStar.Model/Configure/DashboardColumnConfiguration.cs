@@ -37,6 +37,18 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Size")
                 .HasMaxLength(64);
 
+            builder.Property(x => x.Color)
+                .HasColumnName("Color")
+                .HasMaxLength(32);
+
+            builder.Property(x => x.Position)
+                .HasColumnName("Position")
+                .IsRequired();
+
+            builder.Property(x => x.Key)
+                .HasColumnName("Key")
+                .HasMaxLength(64);
+
             builder.Property(x => x.DashboardId)
                 .HasColumnName("Dashboard")
                 .IsRequired();
@@ -54,8 +66,9 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(c => c.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(x => new { x.DashboardId, x.Name })
-                .IsUnique();
+            // Column names are not unique: the board "…" menu can add several columns that share
+            // the default "New column" name, so only a non-unique lookup index is kept.
+            builder.HasIndex(x => x.DashboardId);
         }
     }
 }
