@@ -294,6 +294,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
                     Filter = table.Column<string>(type: "TEXT", nullable: true),
                     Position = table.Column<int>(type: "INTEGER", nullable: false),
                     Class = table.Column<Guid>(type: "TEXT", nullable: true),

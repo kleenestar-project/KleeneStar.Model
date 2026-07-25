@@ -7,10 +7,10 @@ namespace KleeneStar.Model.Entities
 {
     /// <summary>
     /// Represents a board-owned swimlane of a <see cref="KanbanBoard"/>. The swimlane's display
-    /// name is owned by the board and edited independently of the linked <see cref="Class"/>
-    /// (renaming a board swimlane never renames the shared class). The optional
-    /// <see cref="ClassId"/> is what places cards: a card whose class matches this swimlane's
-    /// class lands here.
+    /// name and accent color are owned by the board and edited independently of the linked
+    /// <see cref="Class"/> (renaming or recoloring a board swimlane never rewrites the shared
+    /// class). The optional <see cref="ClassId"/> is what places cards: a card whose class
+    /// matches this swimlane's class lands here.
     /// </summary>
     public class KanbanBoardSwimlane : IEntity
     {
@@ -30,6 +30,13 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the board-owned display name of the swimlane.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional accent color of the swimlane (a CSS color such as "#3273A3"),
+        /// chosen through the swimlane "…" menu. A null value leaves the swimlane header in its
+        /// default color.
+        /// </summary>
+        public string Color { get; set; }
 
         /// <summary>
         /// Gets or sets the optional WQL filter of the swimlane, submitted through the swimlane

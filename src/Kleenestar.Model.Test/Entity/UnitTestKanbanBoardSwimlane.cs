@@ -27,9 +27,9 @@ namespace Kleenestar.Model.Test.Entity
         /// are assigned correctly.
         /// </summary>
         [Theory]
-        [InlineData("Bugs", "Priority = \"P1\"", 0)]
-        [InlineData("Features", null, 2)]
-        public void SetProperties(string name, string filter, int position)
+        [InlineData("Bugs", "#3273A3", "Priority = \"P1\"", 0)]
+        [InlineData("Features", null, null, 2)]
+        public void SetProperties(string name, string color, string filter, int position)
         {
             // arrange
             var swimlane = new KanbanBoardSwimlane();
@@ -37,6 +37,7 @@ namespace Kleenestar.Model.Test.Entity
 
             // act
             swimlane.Name = name;
+            swimlane.Color = color;
             swimlane.Filter = filter;
             swimlane.Position = position;
             swimlane.ClassId = classId;
@@ -44,6 +45,7 @@ namespace Kleenestar.Model.Test.Entity
 
             // validation
             Assert.Equal(name, swimlane.Name);
+            Assert.Equal(color, swimlane.Color);
             Assert.Equal(filter, swimlane.Filter);
             Assert.Equal(position, swimlane.Position);
             Assert.Equal(classId, swimlane.ClassId);

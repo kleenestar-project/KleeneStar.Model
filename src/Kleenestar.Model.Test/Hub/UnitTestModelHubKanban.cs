@@ -180,7 +180,7 @@ namespace Kleenestar.Model.Test.Hub
 
             var swimlanes = new List<KanbanBoardSwimlane>
             {
-                new KanbanBoardSwimlane(Guid.Empty) { Name = "Bugs", ClassId = classId, Key = "s1" }
+                new KanbanBoardSwimlane(Guid.Empty) { Name = "Bugs", Color = "#3273A3", ClassId = classId, Key = "s1" }
             };
 
             // act
@@ -191,8 +191,54 @@ namespace Kleenestar.Model.Test.Hub
             var swimlane = Assert.Single(reloaded.Swimlanes);
 
             Assert.Equal("Bugs", swimlane.Name);
+            Assert.Equal("#3273A3", swimlane.Color);
             Assert.Equal(classId, swimlane.ClassId);
             Assert.Equal(0, swimlane.Position);
+        }
+
+        /// <summary>
+        /// Verifies that the accent color of a swimlane re-submitted with its persisted business
+        /// id is recolored in place and can be cleared again ("None" in the swimlane color menu).
+        /// </summary>
+        [Fact]
+        public void SetSwimlanesRecolorsByIdAndClears()
+        {
+            // arrange
+            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            {
+                ConnectionString = "SetSwimlanesRecolorsByIdAndClears",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var board = ModelHub.EnsureKanbanBoard(Guid.NewGuid(), "issue");
+
+            ModelHub.SetKanbanSwimlanes(board.Id,
+            [
+                new KanbanBoardSwimlane(Guid.Empty) { Name = "Bugs", Color = "#3273A3", Key = "s1" }
+            ]);
+
+            var swimlaneId = ModelHub.GetKanbanBoard(board.WorkspaceId, board.Kind).Swimlanes.Single().Id;
+
+            // act: recolor by the real id
+            ModelHub.SetKanbanSwimlanes(board.Id,
+            [
+                new KanbanBoardSwimlane(swimlaneId) { Name = "Bugs", Color = "#dc3545" }
+            ]);
+
+            // validation
+            var recolored = Assert.Single(ModelHub.GetKanbanBoard(board.WorkspaceId, board.Kind).Swimlanes);
+
+            Assert.Equal(swimlaneId, recolored.Id);
+            Assert.Equal("#dc3545", recolored.Color);
+
+            // act: clear the color again
+            ModelHub.SetKanbanSwimlanes(board.Id,
+            [
+                new KanbanBoardSwimlane(swimlaneId) { Name = "Bugs" }
+            ]);
+
+            // validation
+            Assert.Null(ModelHub.GetKanbanBoard(board.WorkspaceId, board.Kind).Swimlanes.Single().Color);
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260725072027_InitialCreate")]
+    [Migration("20260725084623_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1102,6 +1102,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<Guid?>("ClassId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Class");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
 
                     b.Property<string>("Filter")
                         .HasColumnType("TEXT")

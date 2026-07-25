@@ -1100,6 +1100,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Class");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
                     b.Property<string>("Filter")
                         .HasColumnType("TEXT")
                         .HasColumnName("Filter");

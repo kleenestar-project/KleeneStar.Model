@@ -33,6 +33,10 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(64);
 
+            builder.Property(x => x.Color)
+                .HasColumnName("Color")
+                .HasMaxLength(32);
+
             builder.Property(x => x.Filter)
                 .HasColumnName("Filter");
 

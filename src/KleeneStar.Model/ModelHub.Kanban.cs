@@ -148,7 +148,8 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Applies a swimlane layout change (add / rename / reorder / delete) to a Kanban board.
+        /// Applies a swimlane layout change (add / rename / recolor / reorder / delete) to a
+        /// Kanban board.
         /// </summary>
         /// <remarks>
         /// Each desired swimlane is matched to an existing one by its business id, then by its
@@ -201,6 +202,7 @@ namespace KleeneStar.Model
                 }
 
                 swimlane.Name = desired.Name;
+                swimlane.Color = desired.Color;
                 swimlane.Filter = desired.Filter;
                 swimlane.ClassId = desired.ClassId;
                 swimlane.Position = index;
