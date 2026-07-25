@@ -1004,6 +1004,257 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("IdentityGroupMembership", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoard", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Filter")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Filter");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Kind");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId", "Kind")
+                        .IsUnique();
+
+                    b.ToTable("KanbanBoard", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoardColumn", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("BoardId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Board");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Category");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Key")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("BoardId");
+
+                    b.ToTable("KanbanBoardColumn", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoardSwimlane", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("BoardId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Board");
+
+                    b.Property<Guid?>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<string>("Filter")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Filter");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Key")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("BoardId");
+
+                    b.ToTable("KanbanBoardSwimlane", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboard", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Kind");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId", "Kind")
+                        .IsUnique();
+
+                    b.ToTable("KindDashboard", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboardColumn", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("BoardId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Board");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Key")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.Property<string>("Size")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Size");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("BoardId");
+
+                    b.ToTable("KindDashboardColumn", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboardWidget", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
+                    b.Property<Guid>("ColumnId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Column");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Params")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Params");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Position");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Type");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ColumnId");
+
+                    b.ToTable("KindDashboardWidget", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
                 {
                     b.Property<int>("RawId")
@@ -2759,6 +3010,54 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Identity");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoardColumn", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.KanbanBoard", "Board")
+                        .WithMany("Columns")
+                        .HasForeignKey("BoardId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Board");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoardSwimlane", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.KanbanBoard", "Board")
+                        .WithMany("Swimlanes")
+                        .HasForeignKey("BoardId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Board");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboardColumn", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.KindDashboard", "Board")
+                        .WithMany("Columns")
+                        .HasForeignKey("BoardId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Board");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboardWidget", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.KindDashboardColumn", "Column")
+                        .WithMany("Widgets")
+                        .HasForeignKey("ColumnId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Column");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Identity", "Assignee")
@@ -3323,6 +3622,23 @@ namespace KleeneStar.Model.Sqlite.Migrations
             modelBuilder.Entity("KleeneStar.Model.Entities.Identity", b =>
                 {
                     b.Navigation("GroupMemberships");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoard", b =>
+                {
+                    b.Navigation("Columns");
+
+                    b.Navigation("Swimlanes");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboard", b =>
+                {
+                    b.Navigation("Columns");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.KindDashboardColumn", b =>
+                {
+                    b.Navigation("Widgets");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Policy", b =>

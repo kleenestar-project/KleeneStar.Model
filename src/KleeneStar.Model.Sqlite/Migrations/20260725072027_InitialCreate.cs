@@ -64,6 +64,39 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "KanbanBoard",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Filter = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KanbanBoard", x => x.Id);
+                    table.UniqueConstraint("AK_KanbanBoard_Guid", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KindDashboard",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KindDashboard", x => x.Id);
+                    table.UniqueConstraint("AK_KindDashboard_Guid", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Permission",
                 columns: table => new
                 {
@@ -225,6 +258,82 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         column: x => x.GroupId,
                         principalTable: "Group",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KanbanBoardColumn",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Category = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Board = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KanbanBoardColumn", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KanbanBoardColumn_KanbanBoard_Board",
+                        column: x => x.Board,
+                        principalTable: "KanbanBoard",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KanbanBoardSwimlane",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Filter = table.Column<string>(type: "TEXT", nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Board = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KanbanBoardSwimlane", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KanbanBoardSwimlane_KanbanBoard_Board",
+                        column: x => x.Board,
+                        principalTable: "KanbanBoard",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KindDashboardColumn",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Board = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KindDashboardColumn", x => x.Id);
+                    table.UniqueConstraint("AK_KindDashboardColumn_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_KindDashboardColumn_KindDashboard_Board",
+                        column: x => x.Board,
+                        principalTable: "KindDashboard",
+                        principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -484,6 +593,31 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_Widget_DashboardColumn_Column",
                         column: x => x.Column,
                         principalTable: "DashboardColumn",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KindDashboardWidget",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    Params = table.Column<string>(type: "TEXT", nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Column = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KindDashboardWidget", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KindDashboardWidget_KindDashboardColumn_Column",
+                        column: x => x.Column,
+                        principalTable: "KindDashboardColumn",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1650,6 +1784,38 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_KanbanBoard_Workspace_Kind",
+                table: "KanbanBoard",
+                columns: new[] { "Workspace", "Kind" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KanbanBoardColumn_Board",
+                table: "KanbanBoardColumn",
+                column: "Board");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KanbanBoardSwimlane_Board",
+                table: "KanbanBoardSwimlane",
+                column: "Board");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KindDashboard_Workspace_Kind",
+                table: "KindDashboard",
+                columns: new[] { "Workspace", "Kind" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KindDashboardColumn_Board",
+                table: "KindDashboardColumn",
+                column: "Board");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KindDashboardWidget_Column",
+                table: "KindDashboardWidget",
+                column: "Column");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Object_Assignee",
                 table: "Object",
                 column: "Assignee");
@@ -1979,6 +2145,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IdentityGroupMembership");
 
             migrationBuilder.DropTable(
+                name: "KanbanBoardColumn");
+
+            migrationBuilder.DropTable(
+                name: "KanbanBoardSwimlane");
+
+            migrationBuilder.DropTable(
+                name: "KindDashboardWidget");
+
+            migrationBuilder.DropTable(
                 name: "ObjectLink");
 
             migrationBuilder.DropTable(
@@ -2048,6 +2223,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "FormTab");
 
             migrationBuilder.DropTable(
+                name: "KanbanBoard");
+
+            migrationBuilder.DropTable(
+                name: "KindDashboardColumn");
+
+            migrationBuilder.DropTable(
                 name: "Group");
 
             migrationBuilder.DropTable(
@@ -2076,6 +2257,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Form");
+
+            migrationBuilder.DropTable(
+                name: "KindDashboard");
 
             migrationBuilder.DropTable(
                 name: "Calendar");

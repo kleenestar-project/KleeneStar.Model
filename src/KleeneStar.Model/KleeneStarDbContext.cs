@@ -132,6 +132,36 @@ namespace KleeneStar.Model
         public DbSet<Widget> Widgets { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of Kanban board layout configurations.
+        /// </summary>
+        public DbSet<KanbanBoard> KanbanBoards { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of Kanban board columns.
+        /// </summary>
+        public DbSet<KanbanBoardColumn> KanbanBoardColumns { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of Kanban board swimlanes.
+        /// </summary>
+        public DbSet<KanbanBoardSwimlane> KanbanBoardSwimlanes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of object-kind dashboard layout configurations.
+        /// </summary>
+        public DbSet<KindDashboard> KindDashboards { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of object-kind dashboard columns.
+        /// </summary>
+        public DbSet<KindDashboardColumn> KindDashboardColumns { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of object-kind dashboard widgets.
+        /// </summary>
+        public DbSet<KindDashboardWidget> KindDashboardWidgets { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of tenants.
         /// </summary>
         public DbSet<Tenant> Tenants { get; set; }
