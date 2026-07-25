@@ -43,6 +43,13 @@ namespace KleeneStar.Model.Entities
         public string Color { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this is the category a newly created status
+        /// falls into. The workflow designer creates states on a canvas that has no way to ask
+        /// for a category, so one has to be nominated; at most one category should carry the flag.
+        /// </summary>
+        public bool IsDefault { get; set; }
+
+        /// <summary>
         /// Gets or sets the date and time when the entity was created.
         /// </summary>
         public DateTime Created { get; set; }

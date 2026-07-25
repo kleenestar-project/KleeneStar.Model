@@ -27,6 +27,9 @@ namespace KleeneStar.Model
                     Description = "Items that are planned but not yet started.",
                     Icon = ImageIcon.FromString("/kleenestar/assets/icons/status-category-todo.svg"),
                     Color = "#FF5733",
+                    // a state created on the designer canvas has not been through any workflow
+                    // yet, so it starts out as something planned
+                    IsDefault = true,
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
                 }
@@ -209,8 +212,18 @@ namespace KleeneStar.Model
                 var stateResolved = db.Statuses.FirstOrDefault(s => s.ClassId == cls.Id && s.Name == "Resolved");
                 var stateClosed = db.Statuses.FirstOrDefault(s => s.ClassId == cls.Id && s.Name == "Closed");
 
-                // add the states to the database context
-                workflow.Statuses = [stateNew, stateInProgress, stateResolved, stateClosed];
+                // add the states to the workflow, laid out left to right along the lifecycle and
+                // aligned to the designer's grid, so a fresh workflow opens on a readable canvas
+                // instead of on whatever the physics simulation happens to settle on. New opens
+                // the workflow and Closed terminates it; the designer needs both marks to reason
+                // about reachability and dead ends.
+                workflow.WorkflowStatuses =
+                [
+                    new WorkflowStatus { StatusId = stateNew.Id, X = 80, Y = 180, IsStart = true },
+                    new WorkflowStatus { StatusId = stateInProgress.Id, X = 300, Y = 180 },
+                    new WorkflowStatus { StatusId = stateResolved.Id, X = 520, Y = 180 },
+                    new WorkflowStatus { StatusId = stateClosed.Id, X = 740, Y = 180, IsEnd = true }
+                ];
 
                 // define allowed transitions between the states
                 var transitions = new List<Transition>

@@ -63,6 +63,26 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(s => s.WorkflowId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // MANY - TO - MANY: Workflow <-> Status, through a join entity that carries the
+            // canvas position and the entry/end marks of the pairing. Statuses stays a skip
+            // navigation, so the read sites that only need the states are unaffected; the
+            // designer reaches the payload through WorkflowStatuses.
+            builder.HasMany(w => w.Statuses)
+                .WithMany()
+                .UsingEntity<WorkflowStatus>
+                (
+                    r => r.HasOne(x => x.Status)
+                        .WithMany()
+                        .HasForeignKey(x => x.StatusId)
+                        .HasPrincipalKey(s => s.Id)
+                        .OnDelete(DeleteBehavior.Cascade),
+                    l => l.HasOne(x => x.Workflow)
+                        .WithMany(w => w.WorkflowStatuses)
+                        .HasForeignKey(x => x.WorkflowId)
+                        .HasPrincipalKey(w => w.Id)
+                        .OnDelete(DeleteBehavior.Cascade)
+                );
+
             builder.Property(x => x.ClassId)
                 .HasColumnName("Class")
                 .IsRequired();

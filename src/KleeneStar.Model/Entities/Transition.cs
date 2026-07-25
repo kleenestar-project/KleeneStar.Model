@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebExpress.WebIndex.WebAttribute;
 
@@ -35,6 +36,24 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the current state of the workflow transition.
         /// </summary>
         public TransitionState State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the colour the edge is drawn in on the designer canvas. Null leaves the
+        /// choice to the canvas.
+        /// </summary>
+        public string Color { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SVG dash pattern the edge is drawn with, for example <c>6 4</c> for a
+        /// dashed line. Null or empty draws a solid line.
+        /// </summary>
+        public string DashArray { get; set; }
+
+        /// <summary>
+        /// Gets or sets the intermediate points the edge is routed through on the designer
+        /// canvas, in the editor's model coordinate space.
+        /// </summary>
+        public List<TransitionWaypoint> Waypoints { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the date and time when the entity was created.

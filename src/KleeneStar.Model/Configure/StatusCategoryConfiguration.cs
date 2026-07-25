@@ -48,6 +48,9 @@ namespace KleeneStar.Model.Configure
                 );
 
             // color (e.g., #ffffffff)
+            builder.Property(x => x.IsDefault)
+                .HasColumnName("IsDefault");
+
             builder.Property(x => x.Color)
                 .HasMaxLength(9);
 

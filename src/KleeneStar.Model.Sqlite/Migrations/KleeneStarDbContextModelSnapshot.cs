@@ -2126,12 +2126,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
 
-                    b.Property<int?>("WorkflowRawId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("RawId");
-
-                    b.HasIndex("WorkflowRawId");
 
                     b.HasIndex("ClassId", "Name")
                         .IsUnique();
@@ -2170,6 +2165,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("TEXT")
                         .HasColumnName("Guid");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsDefault");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2292,9 +2291,19 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
+
+                    b.Property<string>("DashArray")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DashArray");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT")
@@ -2324,6 +2333,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
+
+                    b.Property<string>("Waypoints")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Waypoints");
 
                     b.Property<Guid>("WorkflowId")
                         .HasColumnType("TEXT")
@@ -2531,6 +2544,39 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Workflow", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.WorkflowStatus", b =>
+                {
+                    b.Property<Guid>("WorkflowId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workflow");
+
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Status");
+
+                    b.Property<bool>("IsEnd")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsEnd");
+
+                    b.Property<bool>("IsStart")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsStart");
+
+                    b.Property<int>("X")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("X");
+
+                    b.Property<int>("Y")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Y");
+
+                    b.HasKey("WorkflowId", "StatusId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("WorkflowStatus", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
@@ -3377,10 +3423,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KleeneStar.Model.Entities.Workflow", null)
-                        .WithMany("Statuses")
-                        .HasForeignKey("WorkflowRawId");
-
                     b.Navigation("Category");
 
                     b.Navigation("Class");
@@ -3483,6 +3525,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.WorkflowStatus", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workflow", "Workflow")
+                        .WithMany("WorkflowStatuses")
+                        .HasForeignKey("WorkflowId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Status");
+
+                    b.Navigation("Workflow");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
@@ -3662,9 +3725,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workflow", b =>
                 {
-                    b.Navigation("Statuses");
-
                     b.Navigation("Transitions");
+
+                    b.Navigation("WorkflowStatuses");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
