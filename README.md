@@ -34,6 +34,10 @@ Contributions are welcome in many areas:
 
 Forks, pull requests, and issue reports are always appreciated. For larger changes, please get in touch via kleenestar.project@gmail.com.
 
+# AI transparency notice
+
+Parts of this software, its documentation, and its assets were created with the assistance of AI-based tools, including large language models. AI-assisted contributions are reviewed by the project maintainer before they are included.
+
 ---
 
 Become part of the **KleeneStar** community and help shape an open, modular data future.
