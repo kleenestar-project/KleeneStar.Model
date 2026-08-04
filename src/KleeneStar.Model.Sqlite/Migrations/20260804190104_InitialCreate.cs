@@ -97,6 +97,25 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NavigatorLink",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Uri = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
+                    Ordinal = table.Column<int>(type: "INTEGER", nullable: false),
+                    State = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NavigatorLink", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Permission",
                 columns: table => new
                 {
@@ -1843,6 +1862,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Column");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NavigatorLink_Name",
+                table: "NavigatorLink",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Object_Assignee",
                 table: "Object",
                 column: "Assignee");
@@ -2179,6 +2204,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "KindDashboardWidget");
+
+            migrationBuilder.DropTable(
+                name: "NavigatorLink");
 
             migrationBuilder.DropTable(
                 name: "ObjectLink");

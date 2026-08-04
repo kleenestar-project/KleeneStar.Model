@@ -167,6 +167,11 @@ namespace KleeneStar.Model
         public DbSet<Tenant> Tenants { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of additional links shown in the app navigator.
+        /// </summary>
+        public DbSet<NavigatorLink> NavigatorLinks { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of identities.
         /// </summary>
         public DbSet<Identity> Identities { get; set; }

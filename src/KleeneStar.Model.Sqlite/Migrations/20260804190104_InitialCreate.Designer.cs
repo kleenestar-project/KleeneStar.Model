@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260725223537_InitialCreate")]
+    [Migration("20260804190104_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1261,6 +1261,55 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("ColumnId");
 
                     b.ToTable("KindDashboardWidget", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.NavigatorLink", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Ordinal");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Uri");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("NavigatorLink", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
