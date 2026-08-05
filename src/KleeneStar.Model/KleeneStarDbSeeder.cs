@@ -38,6 +38,12 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (!db.Maintenances.Any())
+            {
+                SeedMaintenance(db);
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Groups.Any())
             {
                 SeedGroups(db);

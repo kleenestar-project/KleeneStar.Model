@@ -172,6 +172,16 @@ namespace KleeneStar.Model
         public DbSet<NavigatorLink> NavigatorLinks { get; set; }
 
         /// <summary>
+        /// Gets or sets the maintenance notice of the installation. Holds a single record.
+        /// </summary>
+        public DbSet<Maintenance> Maintenances { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quickfilters the users defined themselves.
+        /// </summary>
+        public DbSet<CustomQuickfilter> CustomQuickfilters { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of identities.
         /// </summary>
         public DbSet<Identity> Identities { get; set; }

@@ -97,6 +97,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Maintenance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Message = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Maintenance", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "NavigatorLink",
                 columns: table => new
                 {
@@ -641,6 +656,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "KindDashboardColumn",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomQuickfilter",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    ViewKey = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    ContextKey = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Query = table.Column<string>(type: "TEXT", nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Shared = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Ordinal = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomQuickfilter", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomQuickfilter_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1756,6 +1799,22 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CustomQuickfilter_Guid",
+                table: "CustomQuickfilter",
+                column: "Guid",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomQuickfilter_Owner",
+                table: "CustomQuickfilter",
+                column: "Owner");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomQuickfilter_ViewKey_ContextKey",
+                table: "CustomQuickfilter",
+                columns: new[] { "ViewKey", "ContextKey" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dashboard_Name",
                 table: "Dashboard",
                 column: "Name",
@@ -1860,6 +1919,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_KindDashboardWidget_Column",
                 table: "KindDashboardWidget",
                 column: "Column");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Maintenance_Guid",
+                table: "Maintenance",
+                column: "Guid",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NavigatorLink_Name",
@@ -2182,6 +2247,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "CommentReaction");
 
             migrationBuilder.DropTable(
+                name: "CustomQuickfilter");
+
+            migrationBuilder.DropTable(
                 name: "DashboardCategory");
 
             migrationBuilder.DropTable(
@@ -2204,6 +2272,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "KindDashboardWidget");
+
+            migrationBuilder.DropTable(
+                name: "Maintenance");
 
             migrationBuilder.DropTable(
                 name: "NavigatorLink");

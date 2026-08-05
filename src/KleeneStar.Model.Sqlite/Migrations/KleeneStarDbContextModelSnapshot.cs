@@ -15,7 +15,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
             modelBuilder.Entity("ClassAllowedChild", b =>
                 {
@@ -470,6 +470,72 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("CommentReaction", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.CustomQuickfilter", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("ContextKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ContextKey");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Ordinal");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<string>("Query")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Query");
+
+                    b.Property<bool>("Shared")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Shared");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<string>("ViewKey")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ViewKey");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ViewKey", "ContextKey");
+
+                    b.ToTable("CustomQuickfilter", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>
@@ -1258,6 +1324,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("ColumnId");
 
                     b.ToTable("KindDashboardWidget", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Maintenance", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Enabled");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Message");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Maintenance", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.NavigatorLink", b =>
@@ -2989,6 +3083,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Comment");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.CustomQuickfilter", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.DashboardColumn", b =>

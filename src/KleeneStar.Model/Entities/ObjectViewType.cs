@@ -62,33 +62,12 @@ namespace KleeneStar.Model.Entities
     /// </summary>
     public static class ObjectViewTypeExtensions
     {
-        /// <summary>
-        /// Returns the stable string identifier of the view type. The identifier is the
-        /// client-side id of the corresponding tab template fragment in
-        /// <c>KleeneStar.Core</c>: the fragment's full type name, lower-cased, with dots
-        /// replaced by dashes (the id under which <c>FragmentControlDataTabTemplate</c>
-        /// renders its <c>&lt;template&gt;</c> element). <see cref="ObjectViewType.Table"/>
-        /// and <see cref="ObjectViewType.List"/> deliberately share the composite
-        /// <c>ObjectTabViewTemplateFragment</c>, which hosts the switchable
-        /// table/tile/list object view.
-        /// </summary>
-        /// <param name="type">The view type.</param>
-        /// <returns>The string identifier.</returns>
-        public static string TemplateId(this ObjectViewType type)
-        {
-            return type switch
-            {
-                ObjectViewType.Table => "kleenestar-core-webfragment-object-objecttabviewtemplatefragment",
-                ObjectViewType.List => "kleenestar-core-webfragment-object-objecttabviewtemplatefragment",
-                ObjectViewType.Dashboard => "kleenestar-core-webfragment-object-objecttabdashboardtemplatefragment",
-                ObjectViewType.Kanban => "kleenestar-core-webfragment-object-objecttabkanbantemplatefragment",
-                ObjectViewType.ScrumSprint => "kleenestar-core-webfragment-object-objecttabscrumsprinttemplatefragment",
-                ObjectViewType.ScrumBacklog => "kleenestar-core-webfragment-object-objecttabscrumbacklogtemplatefragment",
-                ObjectViewType.Issues => "kleenestar-core-webfragment-object-issues-issueviewtemplatefragment",
-                ObjectViewType.Assets => "kleenestar-core-webfragment-object-assets-assetviewtemplatefragment",
-                _ => null
-            };
-        }
+        // The mapping from a view type to the tab template that renders it used to live here, as a
+        // table of hard-written fragment ids. It named fragments that no longer existed, so no id
+        // matched and every tab a user added came out as a table. Naming types of KleeneStar.Core
+        // from the model could only ever be checked by eye, and the templates differ per object
+        // kind anyway, so the mapping now lives next to those fragments in
+        // KleeneStar.Core.WebFragment.Object.ObjectViewTemplate and is derived from the types.
 
         /// <summary>
         /// Returns the well-known identifier of the view type as a <see cref="Guid"/>
