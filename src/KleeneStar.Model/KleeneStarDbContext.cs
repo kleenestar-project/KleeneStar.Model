@@ -182,6 +182,11 @@ namespace KleeneStar.Model
         public DbSet<CustomQuickfilter> CustomQuickfilters { get; set; }
 
         /// <summary>
+        /// Gets or sets the group-to-policy grants the permission dialogs administer.
+        /// </summary>
+        public DbSet<PermissionAssignment> PermissionAssignments { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of identities.
         /// </summary>
         public DbSet<Identity> Identities { get; set; }

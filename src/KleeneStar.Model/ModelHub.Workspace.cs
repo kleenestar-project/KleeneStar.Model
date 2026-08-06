@@ -87,7 +87,7 @@ namespace KleeneStar.Model
                 return;
             }
 
-            db.AddEntity(workspace, ["Categories", "Classes", "Objects", "Tenants", "PermissionProfiles"]);
+            db.AddEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
 
             // persist changes
             db.SaveChanges();
