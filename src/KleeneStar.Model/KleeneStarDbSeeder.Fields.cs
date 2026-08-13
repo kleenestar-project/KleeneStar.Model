@@ -85,6 +85,7 @@ namespace KleeneStar.Model
                 ("Tags",           "Keywords used for filtering and grouping.", "/kleenestar/assets/icons/field/tags.svg",        FieldType.Tag,        null),
                 ("CreatedAt",      "Timestamp when the entry was created.",     "/kleenestar/assets/icons/field/created.svg",     FieldType.Date,       null),
                 ("UpdatedAt",      "Timestamp of the last update.",             "/kleenestar/assets/icons/field/updated.svg",     FieldType.Date,       null),
+                ("DueDate",        "Date the entry is due on.",                 "/kleenestar/assets/icons/field/calendar.svg",    FieldType.Date,       null),
                 ("EstimatedHours", "Estimated effort in hours.",                "/kleenestar/assets/icons/field/period.svg",      FieldType.Number,     null),
                 ("Confidential",   "Whether the entry is confidential.",        "/kleenestar/assets/icons/field/approval.svg",    FieldType.Boolean,    null),
                 ("RelatedItem",    "Reference to a related entry.",             "/kleenestar/assets/icons/field/id.svg",          FieldType.Reference,  null),
