@@ -1,4 +1,4 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,10 +17,10 @@ namespace KleeneStar.Model
         /// </summary>
         /// <remarks>
         /// This method is intended to seed the database with a standard set of fields. The
-        /// default field set deliberately spans every <see cref="FieldType"/> (text, number,
-        /// date, boolean, selection, reference, workflow, attachment, user, tag, priority) so
-        /// the forms rendered from the seed data contain at least one field of each type out
-        /// of the box.
+        /// default field set deliberately spans every <see cref="FieldType"/>, so the forms
+        /// rendered from the seed data contain at least one field of each type — and with it
+        /// one of every input control the framework offers — out of the box. Two tests hold
+        /// that invariant, so a field type added to the model has to be seeded here as well.
         /// It does not save changes to the database; callers must call SaveChanges on the
         /// context to persist the additions.
         /// </remarks>
@@ -89,7 +89,29 @@ namespace KleeneStar.Model
                 ("EstimatedHours", "Estimated effort in hours.",                "/kleenestar/assets/icons/field/period.svg",      FieldType.Number,     null),
                 ("Confidential",   "Whether the entry is confidential.",        "/kleenestar/assets/icons/field/approval.svg",    FieldType.Boolean,    null),
                 ("RelatedItem",    "Reference to a related entry.",             "/kleenestar/assets/icons/field/id.svg",          FieldType.Reference,  null),
-                ("Attachment",     "Attached file or document.",                "/kleenestar/assets/icons/field/description.svg", FieldType.Attachment, null)
+                ("Attachment",     "Attached file or document.",                "/kleenestar/assets/icons/field/description.svg", FieldType.Attachment, null),
+
+                // one field per remaining field type, so the seeded forms exercise every
+                // input control the framework offers rather than only the common few
+                ("Notes",          "Longer notes kept as plain text.",          "/kleenestar/assets/icons/field/description.svg", FieldType.Multiline,  null),
+                ("Synopsis",       "Synopsis written as formatted prose.",      "/kleenestar/assets/icons/field/description.svg", FieldType.RichText,   null),
+                ("AccessCode",     "Secret needed to work on the entry.",       "/kleenestar/assets/icons/field/approval.svg",    FieldType.Password,   null),
+                ("Label",          "Color the entry is marked with.",           "/kleenestar/assets/icons/field/category.svg",    FieldType.Color,      null),
+                ("Satisfaction",   "Satisfaction rated in stars.",              "/kleenestar/assets/icons/field/priority.svg",    FieldType.Rating,     null),
+                ("Progress",       "Completion picked from a scale.",           "/kleenestar/assets/icons/field/period.svg",      FieldType.Slider,     null),
+                ("CostRange",      "Expected cost between two bounds.",         "/kleenestar/assets/icons/field/period.svg",      FieldType.Range,      null),
+                ("Estimation",     "Effort in story points.",                   "/kleenestar/assets/icons/field/period.svg",      FieldType.Estimate,   null),
+                ("Health",         "Health as a red / yellow / green status.",  "/kleenestar/assets/icons/field/status.svg",      FieldType.TrafficLight, null),
+                ("Timeframe",      "Span the entry is scheduled in.",           "/kleenestar/assets/icons/field/calendar.svg",    FieldType.DateRange,  null),
+                ("ReviewDate",     "Date picked from an inline calendar.",      "/kleenestar/assets/icons/field/calendar.svg",    FieldType.Calendar,   null),
+                ("Availability",   "Span picked from an inline calendar.",      "/kleenestar/assets/icons/field/calendar.svg",    FieldType.CalendarRange, null),
+                ("Picture",        "Image shown alongside the entry.",          "/kleenestar/assets/icons/field/owner.svg",       FieldType.Avatar,     null),
+                ("Effort",         "Effort picked from a segmented choice.",    "/kleenestar/assets/icons/field/period.svg",      FieldType.Choice,     ["S", "M", "L", "XL"]),
+                ("Channel",        "Channel the entry arrived through.",        "/kleenestar/assets/icons/field/category.svg",    FieldType.Tile,       ["Phone", "Mail", "Portal", "Chat"]),
+                ("Watchers",       "People assembled from two lists.",          "/kleenestar/assets/icons/field/owner.svg",       FieldType.Move,       ["Support", "Engineering", "Sales", "Management"]),
+                ("Region",         "Region narrowed level by level.",           "/kleenestar/assets/icons/field/service.svg",     FieldType.Cascading,  ["Europe", "America", "Asia"]),
+                ("Confidence",     "Confidence picked from radio buttons.",     "/kleenestar/assets/icons/field/status.svg",      FieldType.Radio,      ["Low", "Medium", "High"]),
+                ("Audiences",      "Groups the entry is relevant for.",         "/kleenestar/assets/icons/field/category.svg",    FieldType.MultiSelection, ["Internal", "Customer", "Partner", "Public"])
             };
 
             switch (className)

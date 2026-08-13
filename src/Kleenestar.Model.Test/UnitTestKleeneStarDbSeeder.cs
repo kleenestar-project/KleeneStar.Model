@@ -310,6 +310,38 @@ namespace KleeneStar.Model.Test
         }
 
         /// <summary>
+        /// Verifies that no class receives two fields of the same name.
+        /// </summary>
+        /// <remarks>
+        /// A field is unique per class and name (see the index on <c>ClassId, Name</c>), but
+        /// the in-memory provider the seeder tests run against does not enforce a unique
+        /// index — a duplicate therefore passes here and only fails on a real database, at
+        /// startup, where it takes the whole seeding with it. The invariant is asserted
+        /// explicitly instead.
+        /// </remarks>
+        [Fact]
+        public async Task SeedFieldNamesAreUniquePerClass()
+        {
+            // arrange
+            var connectionString = $"SeedFieldNames_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var duplicates = db.Fields
+                .ToList()
+                .GroupBy(f => (f.ClassId, f.Name))
+                .Where(g => g.Count() > 1)
+                .Select(g => $"{g.Key.Name} ({g.Count()}x)")
+                .ToList();
+
+            Assert.True(duplicates.Count == 0, $"duplicate field names: {string.Join(", ", duplicates)}");
+        }
+
+        /// <summary>
         /// Verifies that the seeded workflow-typed field is linked to a workflow of its class,
         /// i.e. its <see cref="Entities.Field.WorkflowId"/> is populated and references an
         /// existing workflow.
