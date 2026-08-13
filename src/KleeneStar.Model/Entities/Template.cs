@@ -1,6 +1,7 @@
 using KleeneStar.Model.Converters;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
@@ -57,6 +58,27 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the JSON serialized collection of predefined field value presets.
         /// </summary>
         public string Presets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the parent template.
+        /// </summary>
+        /// <remarks>
+        /// The parent reference composes templates: creating an object from a template also
+        /// creates one object per child template, linked below the created object.
+        /// </remarks>
+        public Guid? ParentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent template.
+        /// </summary>
+        [JsonIgnore]
+        public Template Parent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the position of the template among its siblings, so the objects a
+        /// composite template creates appear in a defined order.
+        /// </summary>
+        public int Order { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the class this template is bound to.

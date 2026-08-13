@@ -939,6 +939,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
                     Presets = table.Column<string>(type: "TEXT", nullable: true),
+                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false),
                     Class = table.Column<Guid>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
@@ -946,12 +948,19 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Template", x => x.Id);
+                    table.UniqueConstraint("AK_Template_Guid", x => x.Guid);
                     table.ForeignKey(
                         name: "FK_Template_Class_Class",
                         column: x => x.Class,
                         principalTable: "Class",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Template_Template_Parent",
+                        column: x => x.Parent,
+                        principalTable: "Template",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -2064,6 +2073,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "Template",
                 columns: new[] { "Class", "Name" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Template_Parent",
+                table: "Template",
+                column: "Parent");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenant_Name",

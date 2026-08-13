@@ -64,6 +64,18 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
+            builder.Property(x => x.Order)
+                .HasColumnName("Order");
+
+            builder.Property(x => x.ParentId)
+                .HasColumnName("Parent");
+
+            builder.HasOne(x => x.Parent)
+                .WithMany()
+                .HasForeignKey(x => x.ParentId)
+                .HasPrincipalKey(t => t.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(x => x.ClassId)
                 .HasColumnName("Class")
                 .IsRequired();

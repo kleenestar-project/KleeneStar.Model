@@ -80,6 +80,22 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            // Templates must be seeded AFTER Classes — each template is bound to the class
+            // its objects are created from (Template.ClassId references Class.Id).
+            if (!db.Templates.Any())
+            {
+                try
+                {
+                    SeedTemplates(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding templates: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             if (!db.Priorities.Any())
             {
                 SeedPriorities(db);

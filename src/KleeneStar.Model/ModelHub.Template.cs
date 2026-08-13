@@ -48,6 +48,7 @@ namespace KleeneStar.Model
             var data = context.Templates
                 .Include(x => x.Class)
                 .ThenInclude(c => c.Workspace)
+                .Include(x => x.Parent)
                 .AsNoTracking();
 
             return query.Apply(data); // none materialize query
@@ -108,6 +109,8 @@ namespace KleeneStar.Model
             dbEntry.Icon = templateEntry.Icon;
             dbEntry.State = templateEntry.State;
             dbEntry.Presets = templateEntry.Presets;
+            dbEntry.ParentId = templateEntry.ParentId;
+            dbEntry.Order = templateEntry.Order;
             dbEntry.Updated = DateTime.UtcNow;
 
             db.SaveChanges();

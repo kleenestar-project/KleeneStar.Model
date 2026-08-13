@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260806164927_InitialCreate")]
+    [Migration("20260813035256_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -2349,6 +2349,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Order");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Parent");
+
                     b.Property<string>("Presets")
                         .HasColumnType("TEXT")
                         .HasColumnName("Presets");
@@ -2362,6 +2370,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Updated");
 
                     b.HasKey("RawId");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("ClassId", "Name")
                         .IsUnique();
@@ -3541,7 +3551,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("KleeneStar.Model.Entities.Template", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Class");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Transition", b =>
