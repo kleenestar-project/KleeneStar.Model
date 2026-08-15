@@ -18,15 +18,10 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         Email = 1,
 
-        /// <summary>
-        /// Send notifications to a Slack channel.
-        /// </summary>
-        Slack = 2,
-
-        /// <summary>
-        /// Send notifications by SMS.
-        /// </summary>
-        Sms = 4,
+        // bits 2 and 4 were the Slack and SMS channels, which the product no longer offers.
+        // The values are left unassigned rather than reused, so a policy stored while those
+        // channels still existed does not silently turn into a different channel when it is
+        // read back.
 
         /// <summary>
         /// Show in-app notifications.

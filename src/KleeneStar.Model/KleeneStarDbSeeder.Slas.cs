@@ -214,7 +214,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Critical,
             CalendarName: AlwaysOnCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer, Scheduled maintenance",
             OwnerId: SeedAdminIdentityId,
             Targets:
@@ -245,7 +245,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
             CalendarName: StandardCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for customer",
             OwnerId: SeedSupportIdentityId,
             Targets:
@@ -300,7 +300,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Critical,
             CalendarName: AlwaysOnCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAdminIdentityId,
             Targets:
@@ -329,7 +329,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Draft,
             Priority: SlaPriority.Medium,
             CalendarName: NightShiftCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAliceIdentityId,
             Targets:
@@ -378,7 +378,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
             CalendarName: StandardCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for 3rd-party, Waiting for vendor",
             OwnerId: SeedAdminIdentityId,
             Targets:
@@ -431,7 +431,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Active,
             Priority: SlaPriority.Critical,
             CalendarName: AlwaysOnCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: null,
             OwnerId: SeedAdminIdentityId,
             Targets:
@@ -556,7 +556,7 @@ namespace KleeneStar.Model
             State: SlaPolicyState.Active,
             Priority: SlaPriority.High,
             CalendarName: StandardCalendarName,
-            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.InApp,
+            Notifications: SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
             PauseOn: "Waiting for reporter",
             OwnerId: SeedAliceIdentityId,
             Targets:

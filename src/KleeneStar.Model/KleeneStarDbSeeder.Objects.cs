@@ -531,7 +531,7 @@ namespace KleeneStar.Model
                         ("Payroll Setup", "Collecting tax forms."),
                         ("Benefits Enroll", "Signing up for health insurance."),
                         ("Desk Setup", "Allocating seating."),
-                        ("Slack Invite", "Adding to communication channels."),
+                        ("Chat Invite", "Adding to communication channels."),
                         ("Github Access", "Granting repo permissions."),
                         ("VPN Config", "Setting up remote access."),
                         ("Intro Meeting", "Team lunch coordination."),

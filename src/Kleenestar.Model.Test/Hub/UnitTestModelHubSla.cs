@@ -96,7 +96,7 @@ namespace Kleenestar.Model.Test.Hub
                 State = SlaPolicyState.Active,
                 Priority = SlaPriority.Critical,
                 CalendarId = null,
-                Notifications = SlaNotificationChannels.Email | SlaNotificationChannels.Slack,
+                Notifications = SlaNotificationChannels.Email | SlaNotificationChannels.InApp,
                 Targets =
                 {
                     new SlaTarget { Name = "First response", Kind = SlaTargetKind.Response,   TargetValue = 5, Unit = SlaTargetUnit.Minutes },
@@ -120,7 +120,7 @@ namespace Kleenestar.Model.Test.Hub
             Assert.Equal(2, loaded.Targets.Count);
             Assert.Single(loaded.Scope);
             Assert.Single(loaded.Escalations);
-            Assert.True(loaded.Notifications.HasFlag(SlaNotificationChannels.Slack));
+            Assert.True(loaded.Notifications.HasFlag(SlaNotificationChannels.InApp));
         }
 
         /// <summary>

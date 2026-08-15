@@ -54,6 +54,25 @@ namespace KleeneStar.Model
             {
                 SeedIdentities(db);
                 await db.SaveChangesAsync();
+
+                // the deputy points at another identity, so it can only be named once the
+                // rows written above have been committed.
+                SeedIdentityDeputies(db);
+                await db.SaveChangesAsync();
+            }
+
+            // IdentitySessions and AccessTokens must be seeded AFTER Identities — both are
+            // owned by the identity whose profile pages list them.
+            if (!db.IdentitySessions.Any())
+            {
+                SeedIdentitySessions(db);
+                await db.SaveChangesAsync();
+            }
+
+            if (!db.AccessTokens.Any())
+            {
+                SeedAccessTokens(db);
+                await db.SaveChangesAsync();
             }
 
             if (!db.Workspaces.Any())

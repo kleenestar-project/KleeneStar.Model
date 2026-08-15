@@ -257,6 +257,16 @@ namespace KleeneStar.Model
         public DbSet<UserSession> UserSessions { get; set; }
 
         /// <summary>
+        /// Gets or sets the devices and browsers currently signed in with an identity.
+        /// </summary>
+        public DbSet<IdentitySession> IdentitySessions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the personal access tokens the identities created for API access.
+        /// </summary>
+        public DbSet<AccessToken> AccessTokens { get; set; }
+
+        /// <summary>
         /// Gets or sets the per-identity saved searches over the object model.
         /// </summary>
         public DbSet<SavedSearch> SavedSearches { get; set; }

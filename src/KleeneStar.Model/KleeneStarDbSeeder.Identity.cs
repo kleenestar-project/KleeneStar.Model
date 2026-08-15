@@ -31,6 +31,12 @@ namespace KleeneStar.Model
         /// <summary>
         /// Adds a predefined set of identity entities and group memberships to the specified database context.
         /// </summary>
+        /// <remarks>
+        /// Every identity is seeded with a filled-in profile — display name, bio, contact
+        /// channels, regional formats and the business data of its tenant — so the profile
+        /// settings pages show a realistic account from the first run rather than a set of
+        /// empty inputs.
+        /// </remarks>
         /// <param name="db">The database context to which the identity entities will be added. Cannot be null.</param>
         private static void SeedIdentities(KleeneStarDbContext db)
         {
@@ -41,78 +47,125 @@ namespace KleeneStar.Model
             const string marketerHash = "$seed$v1$903d043655ff45119a3d1ec0f7bc6f16";
             const string supportHash = "$seed$v1$9b5ddb23be9945039f8d2bf8ff5b81c5";
 
-            void addIdentity(string id, string name, string email, string passwordHash, params string[] groups)
+            void addIdentity(Identity identity, string tenantName, params string[] groups)
             {
-                db.Identities.Add(new Identity
-                {
-                    Id = Guid.Parse(id),
-                    Name = name,
-                    Email = email,
-                    PasswordHash = passwordHash,
-                    GroupMemberships =
-                    [
-                        .. db.Groups
-                            .Where(x => groups.Contains(x.Name))
-                            .Select(x => new IdentityGroupMembership { Group = x })
-                    ]
-                });
-            }
+                identity.Tenant = tenantName is null
+                    ? null
+                    : db.Tenants.FirstOrDefault(x => x.Name == tenantName);
 
-            void addTenantedIdentity(string id, string name, string email, string passwordHash, string tenantName, params string[] groups)
-            {
-                db.Identities.Add(new Identity
-                {
-                    Id = Guid.Parse(id),
-                    Name = name,
-                    Email = email,
-                    PasswordHash = passwordHash,
-                    Tenant = db.Tenants.First(x => x.Name == tenantName),
-                    GroupMemberships =
-                    [
-                        .. db.Groups
-                            .Where(x => groups.Contains(x.Name))
-                            .Select(x => new IdentityGroupMembership { Group = x })
-                    ]
-                });
+                identity.GroupMemberships =
+                [
+                    .. db.Groups
+                        .Where(x => groups.Contains(x.Name))
+                        .Select(x => new IdentityGroupMembership { Group = x })
+                ];
+
+                db.Identities.Add(identity);
             }
 
             // operator-side admin has no tenant (the portal excludes it from
             // IssueScope.Organization entirely).
-            addIdentity(
-                "77087646-B13A-44B1-9BAC-6E66443CEDFD",
-                "Admin User",
-                "admin@kleenestar.org",
-                adminHash,
-                "Admin"
-            );
+            addIdentity(new Identity
+            {
+                Id = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD"),
+                Name = "Admin User",
+                UserName = "admin",
+                Email = "admin@kleenestar.org",
+                EmailVerified = true,
+                PasswordHash = adminHash,
+                Bio = "Senior Product Designerin · arbeitet an Workflow-Tools im Bereich SaaS. Berlin → Lissabon → Wien.",
+                PhoneCountry = "+49",
+                Phone = "151 23456789",
+                Website = "kleenestar.org",
+                Location = "Berlin, Deutschland",
+                Position = "Senior Product Designerin",
+                Language = "de",
+                TimeZone = null,
+                DateFormat = "dd.MM.yyyy",
+                WeekStart = WeekStart.Monday,
+                Role = "Workspace-Admin · Klasse Bug",
+                RoleSince = new DateTime(2024, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+                Department = "Engineering · QA",
+                CostCenter = "CC-4711",
+                PersonnelNumber = "A-00482"
+            }, null, "Admin");
 
             // Alice is an Acme tenant member (typical end-user identity).
-            addTenantedIdentity(
-                "BBF45E5D-AA35-4382-9B84-6055193CE544",
-                "Alice Engineer",
-                "alice.engineer@kleenestar.org",
-                aliceHash,
-                "Acme Corp",
-                "Engineering"
-            );
+            addIdentity(new Identity
+            {
+                Id = Guid.Parse("BBF45E5D-AA35-4382-9B84-6055193CE544"),
+                Name = "Alice Engineer",
+                UserName = "alice.engineer",
+                Email = "alice.engineer@kleenestar.org",
+                EmailVerified = true,
+                PasswordHash = aliceHash,
+                Bio = "Backend-Entwicklerin · Plattform und Integrationen.",
+                PhoneCountry = "+49",
+                Phone = "170 9876543",
+                Location = "Hamburg, Deutschland",
+                Position = "Software Engineer",
+                Language = "de",
+                DateFormat = "dd.MM.yyyy",
+                WeekStart = WeekStart.Monday,
+                Role = "Mitglied · Engineering",
+                RoleSince = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                Department = "Engineering · Platform",
+                CostCenter = "CC-2200",
+                PersonnelNumber = "A-01137"
+            }, "Acme Corp", "Engineering");
 
-            // Marketer is a Globex tenant member.
-            addIdentity(
-                "1AA3B0E0-5C40-46D8-8ACF-ED12740FD239",
-                "Marketing User",
-                "marketer@kleenestar.org",
-                marketerHash,
-                "Marketing"
-            );
+            // Marketer stays tenant-less — operator-side account.
+            addIdentity(new Identity
+            {
+                Id = Guid.Parse("1AA3B0E0-5C40-46D8-8ACF-ED12740FD239"),
+                Name = "Marketing User",
+                UserName = "marketing.user",
+                Email = "marketer@kleenestar.org",
+                PasswordHash = marketerHash,
+                Location = "München, Deutschland",
+                Position = "Marketing Manager",
+                Language = "de",
+                DateFormat = "dd.MM.yyyy",
+                WeekStart = WeekStart.Monday,
+                Role = "Mitglied · Marketing",
+                Department = "Marketing"
+            }, null, "Marketing");
 
             // Support stays tenant-less — operator-side account.
-            addIdentity(
-                "D1C5AED2-78D3-45F7-BB19-E87B8F134301",
-                "Support User",
-                "support@kleenestar.org",
-                supportHash,
-                "Support"
-            );
+            addIdentity(new Identity
+            {
+                Id = Guid.Parse("D1C5AED2-78D3-45F7-BB19-E87B8F134301"),
+                Name = "Support User",
+                UserName = "support.user",
+                Email = "support@kleenestar.org",
+                PasswordHash = supportHash,
+                Location = "Wien, Österreich",
+                Position = "Service Desk Agent",
+                Language = "de",
+                DateFormat = "dd.MM.yyyy",
+                WeekStart = WeekStart.Monday,
+                Role = "Mitglied · Support",
+                Department = "Customer Support"
+            }, null, "Support");
+        }
+
+        /// <summary>
+        /// Names the deputy of the seeded profile identity. Runs after
+        /// <see cref="SeedIdentities"/> has been committed, because the deputy is another row
+        /// of the very table being written and can only be referenced once it exists.
+        /// </summary>
+        /// <param name="db">The database context holding the seeded identities. Cannot be null.</param>
+        private static void SeedIdentityDeputies(KleeneStarDbContext db)
+        {
+            var profile = db.Identities.FirstOrDefault(x => x.Id == Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD"));
+            var deputy = db.Identities.FirstOrDefault(x => x.Id == Guid.Parse("BBF45E5D-AA35-4382-9B84-6055193CE544"));
+
+            if (profile is null || deputy is null || profile.DeputyId.HasValue)
+            {
+                return;
+            }
+
+            profile.DeputyId = deputy.Id;
         }
     }
 }

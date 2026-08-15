@@ -60,6 +60,90 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(512);
 
+            // profile page — publicly visible inside the tenant
+            builder.Property(x => x.UserName)
+                .HasColumnName("UserName")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.EmailVerified)
+                .HasColumnName("EmailVerified")
+                .IsRequired();
+
+            builder.Property(x => x.Bio)
+                .HasColumnName("Bio")
+                .HasMaxLength(1024);
+
+            builder.Property(x => x.PhoneCountry)
+                .HasColumnName("PhoneCountry")
+                .HasMaxLength(8);
+
+            builder.Property(x => x.Phone)
+                .HasColumnName("Phone")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.Website)
+                .HasColumnName("Website")
+                .HasMaxLength(256);
+
+            builder.Property(x => x.Location)
+                .HasColumnName("Location")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.Position)
+                .HasColumnName("Position")
+                .HasMaxLength(128);
+
+            // account page — login, language, time zone and regional formats
+            builder.Property(x => x.Language)
+                .HasColumnName("Language")
+                .HasMaxLength(16);
+
+            builder.Property(x => x.TimeZone)
+                .HasColumnName("TimeZone")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.DateFormat)
+                .HasColumnName("DateFormat")
+                .HasMaxLength(32);
+
+            builder.Property(x => x.WeekStart)
+                .HasColumnName("WeekStart")
+                .IsRequired();
+
+            // tenant & role page — business data of the identity's active tenant
+            builder.Property(x => x.Role)
+                .HasColumnName("Role")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.RoleSince)
+                .HasColumnName("RoleSince");
+
+            builder.Property(x => x.Department)
+                .HasColumnName("Department")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.CostCenter)
+                .HasColumnName("CostCenter")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.PersonnelNumber)
+                .HasColumnName("PersonnelNumber")
+                .HasMaxLength(64);
+
+            // self-referencing, nullable FK: the deputy is another identity, and removing it
+            // must not cascade into the identities it stands in for.
+            builder.Property(x => x.DeputyId)
+                .HasColumnName("Deputy")
+                .HasMaxLength(36);
+
+            builder.HasOne(x => x.Deputy)
+                .WithMany()
+                .HasForeignKey(x => x.DeputyId)
+                .HasPrincipalKey(x => x.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.UserName);
+
             // nullable FK: portal-side accounts carry the tenant they belong to;
             // operator-side accounts (the seeded admin, integration users) stay
             // tenant-less and are simply excluded from IssueScope.Organization
