@@ -449,8 +449,10 @@ namespace KleeneStar.Model.Test
                 Entities.ObjectViewType.List,
                 Entities.ObjectViewType.Dashboard,
                 Entities.ObjectViewType.Kanban,
-                Entities.ObjectViewType.ScrumSprint,
-                Entities.ObjectViewType.ScrumBacklog
+
+                // the sprint board and the backlog share one seeded tab now; it is persisted
+                // as ScrumSprint, and ScrumBacklog is no longer seeded
+                Entities.ObjectViewType.ScrumSprint
             };
 
             var expectedAssetOrder = new[]

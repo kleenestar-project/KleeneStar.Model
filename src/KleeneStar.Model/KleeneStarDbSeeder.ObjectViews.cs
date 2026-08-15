@@ -10,10 +10,12 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Per-workspace deterministic ids for the seven default tabs, in display order
-        /// Issues, Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog. The
-        /// seventh id (index 6) belongs to the issues view, which was appended after
-        /// the original six and leads the display order.
+        /// Per-workspace deterministic ids for the default tabs, in the original order
+        /// Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog. The seventh id
+        /// (index 6) belongs to the issues view, which was appended after the original six
+        /// and leads the display order. Index 5 — the former backlog tab — is no longer
+        /// seeded since the sprint and the backlog were merged into one scrum view, but the
+        /// id stays listed: it is well-known and still present in existing databases.
         /// </summary>
         private static readonly Dictionary<Guid, Guid[]> _objectViewIds = new()
         {
@@ -184,8 +186,8 @@ namespace KleeneStar.Model
 
         /// <summary>
         /// Creates the default <see cref="ObjectView"/> tabs for every seeded workspace:
-        /// the issue tab set (Issues, Table, List, Dashboard, Kanban, ScrumSprint,
-        /// ScrumBacklog) and the asset tab set (Assets, Table, List, Dashboard, Kanban).
+        /// the issue tab set (Issues, Table, List, Dashboard, Kanban, Scrum) and the asset
+        /// tab set (Assets, Table, List, Dashboard, Kanban).
         /// Each kind keeps its own tab set; the curated view of each kind leads because it
         /// is the default entry of that kind's overview page hosting the tab control.
         /// </summary>
@@ -234,13 +236,13 @@ namespace KleeneStar.Model
                         $"Kanban board of {workspace.Name} issues grouped by status.",
                         ObjectViewType.Kanban, 4);
 
-                    add(ids[4], workspace.Id, ObjectKind.Issue, "Sprint",
-                        $"Active Scrum sprint board for {workspace.Name}.",
+                    // the sprint board and the backlog share one view now, so only one tab
+                    // is seeded. ids[5] — the former backlog tab — is deliberately left
+                    // unused: the ids are well-known and reusing it for something else
+                    // would collide with the row an existing database still carries.
+                    add(ids[4], workspace.Id, ObjectKind.Issue, "Scrum",
+                        $"Active Scrum sprint and product backlog for {workspace.Name}.",
                         ObjectViewType.ScrumSprint, 5);
-
-                    add(ids[5], workspace.Id, ObjectKind.Issue, "Backlog",
-                        $"Scrum product backlog for {workspace.Name}.",
-                        ObjectViewType.ScrumBacklog, 6);
                 }
 
                 if (_assetObjectViewIds.TryGetValue(workspace.Id, out var assetIds))
