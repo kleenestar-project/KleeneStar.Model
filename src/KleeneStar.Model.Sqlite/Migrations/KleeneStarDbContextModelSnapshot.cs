@@ -2697,6 +2697,71 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Transition", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.UserNotification", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid?>("ActorId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Actor");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("MessageKey")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("MessageKey");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Read");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Subject");
+
+                    b.Property<string>("SubjectIcon")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("SubjectIcon");
+
+                    b.Property<string>("TargetUri")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TargetUri");
+
+                    b.Property<string>("TitleKey")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TitleKey");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("OwnerId", "Read");
+
+                    b.ToTable("UserNotification", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.UserSession", b =>
                 {
                     b.Property<int>("RawId")
@@ -3831,6 +3896,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Target");
 
                     b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.UserNotification", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Actor")
+                        .WithMany()
+                        .HasForeignKey("ActorId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.UserSession", b =>

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260813035256_InitialCreate")]
+    [Migration("20260816045343_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -48,6 +48,67 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("DashboardId");
 
                     b.ToTable("DashboardCategory");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.AccessToken", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<DateTime?>("Expires")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Expires");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<DateTime?>("LastUsed")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastUsed");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<string>("Prefix")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Prefix");
+
+                    b.Property<bool>("Revoked")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Revoked");
+
+                    b.Property<string>("Scopes")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Scopes");
+
+                    b.Property<string>("TokenHash")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TokenHash");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("AccessToken", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Attachment", b =>
@@ -1017,16 +1078,55 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Icon");
 
+                    b.Property<string>("Bio")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Bio");
+
+                    b.Property<string>("CostCenter")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CostCenter");
+
+                    b.Property<string>("DateFormat")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("DateFormat");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Department");
+
+                    b.Property<Guid?>("DeputyId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Deputy");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("TEXT")
                         .HasColumnName("Email");
 
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("EmailVerified");
+
                     b.Property<Guid>("Id")
                         .HasMaxLength(36)
                         .HasColumnType("TEXT")
                         .HasColumnName("Guid");
+
+                    b.Property<string>("Language")
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Language");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Location");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1040,6 +1140,35 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("PasswordHash");
 
+                    b.Property<string>("PersonnelNumber")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PersonnelNumber");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Phone");
+
+                    b.Property<string>("PhoneCountry")
+                        .HasMaxLength(8)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PhoneCountry");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Position");
+
+                    b.Property<string>("Role")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Role");
+
+                    b.Property<DateTime?>("RoleSince")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RoleSince");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
@@ -1049,9 +1178,32 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Tenant");
 
+                    b.Property<string>("TimeZone")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TimeZone");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("UserName");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Website");
+
+                    b.Property<int>("WeekStart")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("WeekStart");
+
                     b.HasKey("RawId");
 
+                    b.HasIndex("DeputyId");
+
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("UserName");
 
                     b.ToTable("Identity", (string)null);
                 });
@@ -1071,6 +1223,66 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("IdentityGroupMembership", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.IdentitySession", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Client")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Client");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<bool>("Current")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Current");
+
+                    b.Property<string>("Device")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Device");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("IpAddress");
+
+                    b.Property<DateTime>("LastActive")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastActive");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Location");
+
+                    b.Property<bool>("Mobile")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Mobile");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("IdentitySession", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoard", b =>
@@ -2488,6 +2700,71 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Transition", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.UserNotification", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid?>("ActorId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Actor");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("MessageKey")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("MessageKey");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Read");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Subject");
+
+                    b.Property<string>("SubjectIcon")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("SubjectIcon");
+
+                    b.Property<string>("TargetUri")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TargetUri");
+
+                    b.Property<string>("TitleKey")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TitleKey");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("OwnerId", "Read");
+
+                    b.ToTable("UserNotification", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.UserSession", b =>
                 {
                     b.Property<int>("RawId")
@@ -2918,6 +3195,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.AccessToken", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Attachment", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Object", "Object")
@@ -3164,11 +3453,19 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Identity", b =>
                 {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Deputy")
+                        .WithMany()
+                        .HasForeignKey("DeputyId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("KleeneStar.Model.Entities.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Deputy");
 
                     b.Navigation("Tenant");
                 });
@@ -3190,6 +3487,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Identity");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.IdentitySession", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoardColumn", b =>
@@ -3590,6 +3899,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Target");
 
                     b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.UserNotification", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Actor")
+                        .WithMany()
+                        .HasForeignKey("ActorId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.UserSession", b =>

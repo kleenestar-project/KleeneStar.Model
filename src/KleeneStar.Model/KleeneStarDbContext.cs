@@ -262,6 +262,11 @@ namespace KleeneStar.Model
         public DbSet<IdentitySession> IdentitySessions { get; set; }
 
         /// <summary>
+        /// Gets or sets the in-app notifications listed in the notification center.
+        /// </summary>
+        public DbSet<UserNotification> UserNotifications { get; set; }
+
+        /// <summary>
         /// Gets or sets the personal access tokens the identities created for API access.
         /// </summary>
         public DbSet<AccessToken> AccessTokens { get; set; }

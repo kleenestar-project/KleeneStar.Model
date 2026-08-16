@@ -382,6 +382,24 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    EmailVerified = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Bio = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                    PhoneCountry = table.Column<string>(type: "TEXT", maxLength: 8, nullable: true),
+                    Phone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Website = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Location = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    Position = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    Language = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                    TimeZone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    DateFormat = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    WeekStart = table.Column<int>(type: "INTEGER", nullable: false),
+                    Role = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    RoleSince = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Department = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    CostCenter = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    PersonnelNumber = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Deputy = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
                     Tenant = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
                     PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
                 },
@@ -389,6 +407,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 {
                     table.PrimaryKey("PK_Identity", x => x.Id);
                     table.UniqueConstraint("AK_Identity_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Identity_Identity_Deputy",
+                        column: x => x.Deputy,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Identity_Tenant_Tenant",
                         column: x => x.Tenant,
@@ -601,6 +625,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AccessToken",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Prefix = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    TokenHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    Scopes = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastUsed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Expires = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Revoked = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccessToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccessToken_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CustomQuickfilter",
                 columns: table => new
                 {
@@ -653,6 +705,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdentitySession",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Device = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Client = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    Mobile = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Location = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    IpAddress = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastActive = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Current = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentitySession", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IdentitySession_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SavedSearch",
                 columns: table => new
                 {
@@ -678,6 +758,40 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Identity",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserNotification",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Actor = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                    TitleKey = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    MessageKey = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
+                    Subject = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    TargetUri = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    SubjectIcon = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    Read = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNotification", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserNotification_Identity_Actor",
+                        column: x => x.Actor,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_UserNotification_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1664,6 +1778,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccessToken_Owner",
+                table: "AccessToken",
+                column: "Owner");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Attachment_Object_Created",
                 table: "Attachment",
                 columns: new[] { "Object", "Created" });
@@ -1830,14 +1949,29 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 columns: new[] { "Calendar", "Date" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Identity_Deputy",
+                table: "Identity",
+                column: "Deputy");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Identity_Tenant",
                 table: "Identity",
                 column: "Tenant");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Identity_UserName",
+                table: "Identity",
+                column: "UserName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IdentityGroupMembership_GroupId",
                 table: "IdentityGroupMembership",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdentitySession_Owner",
+                table: "IdentitySession",
+                column: "Owner");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KanbanBoard_Workspace_Kind",
@@ -2102,6 +2236,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserNotification_Actor",
+                table: "UserNotification",
+                column: "Actor");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotification_Owner_Read",
+                table: "UserNotification",
+                columns: new[] { "Owner", "Read" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserSession_Owner_Scope_Key",
                 table: "UserSession",
                 columns: new[] { "Owner", "Scope", "Key" },
@@ -2177,6 +2321,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AccessToken");
+
+            migrationBuilder.DropTable(
                 name: "Attachment");
 
             migrationBuilder.DropTable(
@@ -2208,6 +2355,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "IdentityGroupMembership");
+
+            migrationBuilder.DropTable(
+                name: "IdentitySession");
 
             migrationBuilder.DropTable(
                 name: "KanbanBoardColumn");
@@ -2265,6 +2415,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Transition");
+
+            migrationBuilder.DropTable(
+                name: "UserNotification");
 
             migrationBuilder.DropTable(
                 name: "UserSession");
