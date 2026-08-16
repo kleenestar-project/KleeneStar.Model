@@ -15,7 +15,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
             modelBuilder.Entity("ClassAllowedChild", b =>
                 {
@@ -447,6 +447,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
+
+                    b.Property<int>("Visibility")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Visibility");
 
                     b.HasKey("RawId");
 

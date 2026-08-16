@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260816045343_InitialCreate")]
+    [Migration("20260816103911_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
             modelBuilder.Entity("ClassAllowedChild", b =>
                 {
@@ -450,6 +450,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")
                         .HasColumnName("Updated");
+
+                    b.Property<int>("Visibility")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Visibility");
 
                     b.HasKey("RawId");
 

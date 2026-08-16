@@ -1407,6 +1407,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Content = table.Column<string>(type: "TEXT", nullable: false),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Visibility = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),

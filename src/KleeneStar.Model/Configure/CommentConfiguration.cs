@@ -19,6 +19,9 @@ namespace KleeneStar.Model.Configure
         /// to keep reply threads navigable; soft delete is the supported flow).</item>
         /// <item>Composite index on (Object, Created) so the comment-list endpoint can
         /// retrieve comments per object in chronological order without a full scan.</item>
+        /// <item><see cref="Comment.Visibility"/> defaulting to
+        /// <see cref="CommentVisibility.Public"/> so pre-existing rows keep the audience
+        /// they were posted with.</item>
         /// </list>
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -43,6 +46,12 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.State)
                 .HasColumnName("State");
+
+            // rows written before the column existed have to keep the audience they were
+            // posted with, so the store-side default is Public (ordinal 0) rather than null
+            builder.Property(x => x.Visibility)
+                .HasColumnName("Visibility")
+                .HasDefaultValue(CommentVisibility.Public);
 
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
