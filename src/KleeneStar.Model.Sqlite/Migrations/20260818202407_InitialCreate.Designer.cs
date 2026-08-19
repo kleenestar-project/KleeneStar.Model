@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260816103911_InitialCreate")]
+    [Migration("20260818202407_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -311,6 +311,52 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Change", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("CommitId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Commit");
+
+                    b.Property<Guid?>("FieldId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Field");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("NewValue");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("OldValue");
+
+                    b.Property<int>("Ordinal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Ordinal");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("CommitId", "Ordinal");
+
+                    b.ToTable("Change", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
                 {
                     b.Property<int>("RawId")
@@ -540,6 +586,68 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("CommentReaction", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Commit", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<string>("CreatedByName")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedByName");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Message");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Number");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<string>("ObjectKey")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ObjectKey");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Parent");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Type");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ObjectId", "Created");
+
+                    b.HasIndex("ObjectId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("Commit", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.CustomQuickfilter", b =>
@@ -3257,6 +3365,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Class");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Change", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Commit", "Commit")
+                        .WithMany("Changes")
+                        .HasForeignKey("CommitId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Commit");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Class", "Inherited")
@@ -4093,6 +4213,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Reactions");
 
                     b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Commit", b =>
+                {
+                    b.Navigation("Changes");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Dashboard", b =>

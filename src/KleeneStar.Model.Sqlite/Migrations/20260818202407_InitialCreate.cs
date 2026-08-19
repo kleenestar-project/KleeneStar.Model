@@ -27,6 +27,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Commit",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ObjectKey = table.Column<string>(type: "TEXT", nullable: true),
+                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Number = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                    CreatedByName = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Message = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Commit", x => x.Id);
+                    table.UniqueConstraint("AK_Commit_Guid", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Dashboard",
                 columns: table => new
                 {
@@ -197,6 +221,31 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Change",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Commit = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Field = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    OldValue = table.Column<string>(type: "TEXT", nullable: true),
+                    NewValue = table.Column<string>(type: "TEXT", nullable: true),
+                    Ordinal = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Change", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Change_Commit_Commit",
+                        column: x => x.Commit,
+                        principalTable: "Commit",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1812,6 +1861,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Change_Commit_Ordinal",
+                table: "Change",
+                columns: new[] { "Commit", "Ordinal" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Class_Inherited",
                 table: "Class",
                 column: "Inherited");
@@ -1867,6 +1921,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_CommentReaction_Comment_Author_Emoji",
                 table: "CommentReaction",
                 columns: new[] { "Comment", "Author", "Emoji" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Commit_Object_Created",
+                table: "Commit",
+                columns: new[] { "Object", "Created" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Commit_Object_Number",
+                table: "Commit",
+                columns: new[] { "Object", "Number" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -2331,6 +2396,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "BusinessHourSlot");
 
             migrationBuilder.DropTable(
+                name: "Change");
+
+            migrationBuilder.DropTable(
                 name: "ClassAllowedChild");
 
             migrationBuilder.DropTable(
@@ -2440,6 +2508,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkspaceTenant");
+
+            migrationBuilder.DropTable(
+                name: "Commit");
 
             migrationBuilder.DropTable(
                 name: "Comment");

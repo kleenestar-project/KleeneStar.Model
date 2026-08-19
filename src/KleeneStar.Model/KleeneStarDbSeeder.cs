@@ -187,6 +187,22 @@ namespace KleeneStar.Model
                 }
             }
 
+            // Commits must be seeded AFTER Values — a seeded chain is constructed backwards from
+            // the state the objects were left in, so it needs the value rows to exist.
+            if (!db.Commits.Any())
+            {
+                try
+                {
+                    SeedCommits(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding commits: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             // Tags must be seeded AFTER Objects — SeedTags attaches labels to existing objects.
             if (!db.ObjectTags.Any())
             {

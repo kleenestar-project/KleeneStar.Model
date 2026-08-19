@@ -97,6 +97,17 @@ namespace KleeneStar.Model
         public DbSet<Value> Values { get; set; }
 
         /// <summary>
+        /// Gets or sets the append-only commit chains that record every change made to an
+        /// object. The head of an object's chain always matches its <see cref="Values"/>.
+        /// </summary>
+        public DbSet<Commit> Commits { get; set; }
+
+        /// <summary>
+        /// Gets or sets the individual field modifications recorded inside the commits.
+        /// </summary>
+        public DbSet<Change> Changes { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of typed directional links between objects.
         /// </summary>
         public DbSet<ObjectLink> ObjectLinks { get; set; }
