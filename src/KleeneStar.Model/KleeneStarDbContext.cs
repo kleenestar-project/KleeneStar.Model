@@ -188,6 +188,12 @@ namespace KleeneStar.Model
         public DbSet<Maintenance> Maintenances { get; set; }
 
         /// <summary>
+        /// Gets or sets the branding of the installation: the title and the icon the application
+        /// is presented under. A singleton, like the maintenance notice.
+        /// </summary>
+        public DbSet<Branding> Brandings { get; set; }
+
+        /// <summary>
         /// Gets or sets the quickfilters the users defined themselves.
         /// </summary>
         public DbSet<CustomQuickfilter> CustomQuickfilters { get; set; }

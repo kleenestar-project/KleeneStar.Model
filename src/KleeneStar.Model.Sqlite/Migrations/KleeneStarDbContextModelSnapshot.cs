@@ -174,6 +174,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Attachment", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Branding", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Title");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Branding", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.BusinessHourSlot", b =>
                 {
                     b.Property<int>("RawId")

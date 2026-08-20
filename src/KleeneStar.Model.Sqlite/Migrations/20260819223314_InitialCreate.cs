@@ -12,6 +12,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Branding",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Branding", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Category",
                 columns: table => new
                 {
@@ -1843,6 +1858,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Uploader");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Branding_Guid",
+                table: "Branding",
+                column: "Guid",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BusinessHourSlot_Calendar_DayOfWeek",
                 table: "BusinessHourSlot",
                 columns: new[] { "Calendar", "DayOfWeek" },
@@ -2391,6 +2412,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Attachment");
+
+            migrationBuilder.DropTable(
+                name: "Branding");
 
             migrationBuilder.DropTable(
                 name: "BusinessHourSlot");

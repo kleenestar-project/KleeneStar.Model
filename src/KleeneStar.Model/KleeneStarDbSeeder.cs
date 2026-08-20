@@ -44,6 +44,12 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (!db.Brandings.Any())
+            {
+                SeedBranding(db);
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Groups.Any())
             {
                 SeedGroups(db);
