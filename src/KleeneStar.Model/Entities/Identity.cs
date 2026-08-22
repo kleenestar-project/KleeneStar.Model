@@ -1,4 +1,5 @@
 ﻿using KleeneStar.Model.Converters;
+using KleeneStar.Model.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -195,6 +196,7 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the hashed representation of the user's password.
         /// </summary>
         [JsonIgnore]
+        [AuditRedacted]
         public string PasswordHash { get; set; }
 
         /// <summary>

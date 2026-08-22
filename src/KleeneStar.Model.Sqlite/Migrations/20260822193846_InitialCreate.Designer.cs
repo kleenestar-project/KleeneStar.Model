@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260819223314_InitialCreate")]
+    [Migration("20260822193846_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -175,6 +175,171 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("ObjectId", "Created");
 
                     b.ToTable("Attachment", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.AuditDelta", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Attribute")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Attribute");
+
+                    b.Property<Guid?>("AttributeId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("AttributeRef");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Event");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Kind");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("NewValue");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("OldValue");
+
+                    b.Property<int>("Ordinal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Ordinal");
+
+                    b.Property<int>("ValueKind")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("ValueKind");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Attribute");
+
+                    b.HasIndex("EventId", "Ordinal");
+
+                    b.ToTable("AuditDelta", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.AuditEvent", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("Action")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Action");
+
+                    b.Property<Guid?>("ActorId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Actor");
+
+                    b.Property<string>("ActorName")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ActorName");
+
+                    b.Property<string>("Agent")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Agent");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Category");
+
+                    b.Property<Guid?>("CausationId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Causation");
+
+                    b.Property<string>("ClientAddress")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ClientAddress");
+
+                    b.Property<Guid>("CorrelationId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Correlation");
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Hash");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Origin");
+
+                    b.Property<int>("Outcome")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Outcome");
+
+                    b.Property<string>("PreviousHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PreviousHash");
+
+                    b.Property<long>("Sequence")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Sequence");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Severity");
+
+                    b.Property<Guid?>("TargetId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Target");
+
+                    b.Property<string>("TargetKey")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TargetKey");
+
+                    b.Property<int?>("TargetRevision")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("TargetRevision");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("TargetType");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Timestamp");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("CorrelationId");
+
+                    b.HasIndex("Sequence")
+                        .IsUnique();
+
+                    b.HasIndex("Timestamp");
+
+                    b.HasIndex("Category", "Timestamp");
+
+                    b.HasIndex("Origin", "Timestamp");
+
+                    b.HasIndex("TargetType", "TargetId", "Sequence");
+
+                    b.ToTable("AuditEvent", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Branding", b =>
@@ -3371,6 +3536,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Uploader");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.AuditDelta", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.AuditEvent", "Event")
+                        .WithMany("Deltas")
+                        .HasForeignKey("EventId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.BusinessHourSlot", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Calendar", "Calendar")
@@ -4227,6 +4404,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.AuditEvent", b =>
+                {
+                    b.Navigation("Deltas");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Calendar", b =>

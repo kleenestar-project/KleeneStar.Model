@@ -12,6 +12,39 @@ namespace KleeneStar.Model.Sqlite.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AuditEvent",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Sequence = table.Column<long>(type: "INTEGER", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Origin = table.Column<int>(type: "INTEGER", nullable: false),
+                    Category = table.Column<int>(type: "INTEGER", nullable: false),
+                    Action = table.Column<int>(type: "INTEGER", nullable: false),
+                    Outcome = table.Column<int>(type: "INTEGER", nullable: false),
+                    Severity = table.Column<int>(type: "INTEGER", nullable: false),
+                    Actor = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ActorName = table.Column<string>(type: "TEXT", nullable: true),
+                    Agent = table.Column<string>(type: "TEXT", nullable: true),
+                    ClientAddress = table.Column<string>(type: "TEXT", nullable: true),
+                    TargetType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Target = table.Column<Guid>(type: "TEXT", nullable: true),
+                    TargetKey = table.Column<string>(type: "TEXT", nullable: true),
+                    TargetRevision = table.Column<int>(type: "INTEGER", nullable: true),
+                    Correlation = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Causation = table.Column<Guid>(type: "TEXT", nullable: true),
+                    PreviousHash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Hash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditEvent", x => x.Id);
+                    table.UniqueConstraint("AK_AuditEvent_Guid", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Branding",
                 columns: table => new
                 {
@@ -236,6 +269,33 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditDelta",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Event = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Kind = table.Column<int>(type: "INTEGER", nullable: false),
+                    Attribute = table.Column<string>(type: "TEXT", nullable: false),
+                    AttributeRef = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ValueKind = table.Column<int>(type: "INTEGER", nullable: false),
+                    OldValue = table.Column<string>(type: "TEXT", nullable: true),
+                    NewValue = table.Column<string>(type: "TEXT", nullable: true),
+                    Ordinal = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditDelta", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AuditDelta_AuditEvent_Event",
+                        column: x => x.Event,
+                        principalTable: "AuditEvent",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1858,6 +1918,47 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Uploader");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuditDelta_Attribute",
+                table: "AuditDelta",
+                column: "Attribute");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditDelta_Event_Ordinal",
+                table: "AuditDelta",
+                columns: new[] { "Event", "Ordinal" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditEvent_Category_Timestamp",
+                table: "AuditEvent",
+                columns: new[] { "Category", "Timestamp" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditEvent_Correlation",
+                table: "AuditEvent",
+                column: "Correlation");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditEvent_Origin_Timestamp",
+                table: "AuditEvent",
+                columns: new[] { "Origin", "Timestamp" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditEvent_Sequence",
+                table: "AuditEvent",
+                column: "Sequence",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditEvent_TargetType_Target_Sequence",
+                table: "AuditEvent",
+                columns: new[] { "TargetType", "Target", "Sequence" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditEvent_Timestamp",
+                table: "AuditEvent",
+                column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Branding_Guid",
                 table: "Branding",
                 column: "Guid",
@@ -2414,6 +2515,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Attachment");
 
             migrationBuilder.DropTable(
+                name: "AuditDelta");
+
+            migrationBuilder.DropTable(
                 name: "Branding");
 
             migrationBuilder.DropTable(
@@ -2532,6 +2636,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkspaceTenant");
+
+            migrationBuilder.DropTable(
+                name: "AuditEvent");
 
             migrationBuilder.DropTable(
                 name: "Commit");

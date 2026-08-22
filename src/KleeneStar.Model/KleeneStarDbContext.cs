@@ -108,6 +108,17 @@ namespace KleeneStar.Model
         public DbSet<Change> Changes { get; set; }
 
         /// <summary>
+        /// Gets or sets the append-only, hash-chained audit log: one installation-wide sequence
+        /// of every event worth reconstructing later, whoever or whatever caused it.
+        /// </summary>
+        public DbSet<AuditEvent> AuditEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attribute-level state changes recorded inside the audit events.
+        /// </summary>
+        public DbSet<AuditDelta> AuditDeltas { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of typed directional links between objects.
         /// </summary>
         public DbSet<ObjectLink> ObjectLinks { get; set; }

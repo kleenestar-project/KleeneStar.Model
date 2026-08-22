@@ -362,6 +362,22 @@ namespace KleeneStar.Model
                     throw;
                 }
             }
+
+            // The audit log is seeded LAST and deliberately so: its single genesis event counts
+            // what the seed produced, so everything it counts has to already be in the store.
+            if (!db.AuditEvents.Any())
+            {
+                try
+                {
+                    SeedAudit(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding audit log: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
         }
     }
 }

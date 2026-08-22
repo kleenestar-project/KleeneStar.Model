@@ -1,4 +1,5 @@
 using KleeneStar.Model.Converters;
+using KleeneStar.Model.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -57,6 +58,7 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the hash of the token secret. The secret itself is never persisted.
         /// </summary>
         [JsonIgnore]
+        [AuditRedacted]
         public string TokenHash { get; set; }
 
         /// <summary>
