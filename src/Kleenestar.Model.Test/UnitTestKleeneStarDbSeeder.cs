@@ -102,6 +102,9 @@ namespace KleeneStar.Model.Test
             var comments = db.Comments.Count();
             var commentLikes = db.CommentLikes.Count();
             var commentReactions = db.CommentReactions.Count();
+            var shares = db.ObjectShares.Count();
+            var watchers = db.ObjectWatchers.Count();
+            var tags = db.ObjectTags.Count();
 
             await KleeneStarDbSeeder.SeedAsync(db);
 
@@ -135,6 +138,9 @@ namespace KleeneStar.Model.Test
             Assert.Equal(comments, db.Comments.Count());
             Assert.Equal(commentLikes, db.CommentLikes.Count());
             Assert.Equal(commentReactions, db.CommentReactions.Count());
+            Assert.Equal(shares, db.ObjectShares.Count());
+            Assert.Equal(watchers, db.ObjectWatchers.Count());
+            Assert.Equal(tags, db.ObjectTags.Count());
         }
 
         /// <summary>
@@ -687,6 +693,142 @@ namespace KleeneStar.Model.Test
             {
                 Assert.Single(portalTemplates, f => f.ClassId == classId);
             }
+        }
+        /// <summary>
+        /// Verifies that the landing-page content is seeded: the help pages exist as documents,
+        /// each carries the reserved label of the column it belongs to, and a handful of
+        /// documents is pinned. The landing page reads objects by label, so a page without its
+        /// label is invisible to it even though the row exists.
+        /// </summary>
+        [Fact]
+        public async Task SeedLandingContent()
+        {
+            // arrange
+            var connectionString = $"SeedLandingContent_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation — the help pages exist and are active documents carrying a description
+            var helpPages = db.Objects
+                .Where(x => x.Key.StartsWith("SD-9"))
+                .ToList();
+
+            Assert.True(helpPages.Count >= 12, $"expected the help set, found {helpPages.Count} pages");
+            Assert.All(helpPages, x => Assert.Equal(Entities.ObjectKind.Document, x.Kind));
+            Assert.All(helpPages, x => Assert.Equal(Entities.WorkspaceState.Active, x.State));
+            Assert.All(helpPages, x => Assert.False(string.IsNullOrWhiteSpace(x.Description)));
+
+            // validation — no page carries markup: an answer is read where it stands, and a
+            // stray asterisk would be shown as written
+            Assert.All(helpPages, x => Assert.DoesNotContain("**", x.Description));
+
+            // validation — every column of the help area is filled
+            var labelled = db.ObjectTags
+                .Join(db.Objects, tag => tag.ObjectId, obj => obj.Id, (tag, obj) => new { obj.Key, tag.Name })
+                .Where(x => x.Key.StartsWith("SD-9"))
+                .ToList();
+
+            foreach (var label in new[] { "Help", "FAQ", "First Steps" })
+            {
+                Assert.True
+                (
+                    labelled.Count(x => x.Name == label) >= 3,
+                    $"expected several pages labelled {label}"
+                );
+            }
+
+            // validation — a page carries exactly one of the reserved labels, so it appears in
+            // one column rather than in two
+            foreach (var group in labelled.GroupBy(x => x.Key))
+            {
+                Assert.Single(group);
+            }
+
+            // validation — the pinned area has something to show, and every pinned object is an
+            // active document rather than an arbitrary row
+            var pinned = db.ObjectTags
+                .Where(x => x.Name == "Pinned")
+                .Join(db.Objects, tag => tag.ObjectId, obj => obj.Id, (tag, obj) => obj)
+                .ToList();
+
+            Assert.NotEmpty(pinned);
+            Assert.All(pinned, x => Assert.Equal(Entities.ObjectKind.Document, x.Kind));
+            Assert.All(pinned, x => Assert.Equal(Entities.WorkspaceState.Active, x.State));
+        }
+
+        /// <summary>
+        /// Verifies that seeding the landing content twice adds nothing the second time - the
+        /// step runs on every start so a later addition to the page set reaches an installation
+        /// that was seeded before it existed.
+        /// </summary>
+        [Fact]
+        public async Task SeedLandingContentIsIdempotent()
+        {
+            // arrange
+            var connectionString = $"SeedLandingContentIsIdempotent_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            var pages = db.Objects.Count(x => x.Key.StartsWith("SD-9"));
+            var labels = db.ObjectTags.Count(x => x.Name == "Help" || x.Name == "FAQ" || x.Name == "First Steps" || x.Name == "Pinned");
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            Assert.Equal(pages, db.Objects.Count(x => x.Key.StartsWith("SD-9")));
+            Assert.Equal(labels, db.ObjectTags.Count(x => x.Name == "Help" || x.Name == "FAQ" || x.Name == "First Steps" || x.Name == "Pinned"));
+        }
+
+        /// <summary>
+        /// Verifies that shares and watchers are seeded, that every row points at an
+        /// existing identity and object, and that the admin identity — whom a demo
+        /// installation is normally read as — receives some of each. An entry path that is
+        /// empty for whoever is looking demonstrates nothing.
+        /// </summary>
+        [Fact]
+        public async Task SeedSharesAndWatchers()
+        {
+            // arrange
+            var connectionString = $"SeedSharesAndWatchers_{Guid.NewGuid()}";
+            var admin = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD");
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation — both sets are populated
+            var shares = db.ObjectShares.ToList();
+            var watchers = db.ObjectWatchers.ToList();
+
+            Assert.NotEmpty(shares);
+            Assert.NotEmpty(watchers);
+
+            // validation — every row points at rows that exist
+            var objectIds = db.Objects.Select(x => x.Id).ToHashSet();
+            var identityIds = db.Identities.Select(x => x.Id).ToHashSet();
+
+            Assert.All(shares, x => Assert.Contains(x.ObjectId, objectIds));
+            Assert.All(shares, x => Assert.Contains(x.IdentityId, identityIds));
+            Assert.All(watchers, x => Assert.Contains(x.ObjectId, objectIds));
+            Assert.All(watchers, x => Assert.Contains(x.IdentityId, identityIds));
+
+            // validation — the admin sees both entry paths populated
+            Assert.Contains(shares, x => x.IdentityId == admin);
+            Assert.Contains(watchers, x => x.IdentityId == admin);
+
+            // validation — shares and watches land on different objects, so the two paths
+            // are not two names for the same list
+            var sharedObjects = shares.Select(x => x.ObjectId).ToHashSet();
+            var watchedObjects = watchers.Select(x => x.ObjectId).ToHashSet();
+
+            Assert.False(sharedObjects.SetEquals(watchedObjects));
         }
     }
 }

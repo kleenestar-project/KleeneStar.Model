@@ -116,6 +116,24 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the number of audit events that satisfy the supplied query without
+        /// materializing a single row. Counts against the bare event set, so the deltas are
+        /// not dragged along. Callers must leave paging off the query.
+        /// </summary>
+        /// <remarks>
+        /// This is the filtered counterpart of <see cref="GetAuditEventCount"/>, which
+        /// reports the length of the whole chain.
+        /// </remarks>
+        /// <param name="query">The query criteria used to filter the counted events.</param>
+        /// <returns>The number of matching audit events.</returns>
+        public static int CountAuditEvents(IQuery<AuditEvent> query)
+        {
+            using var db = CreateDbContext();
+
+            return query.Apply(db.AuditEvents.AsNoTracking()).Count();
+        }
+
+        /// <summary>
         /// Returns a single audit event by its unique identifier, with its deltas.
         /// </summary>
         /// <param name="eventId">The event id.</param>

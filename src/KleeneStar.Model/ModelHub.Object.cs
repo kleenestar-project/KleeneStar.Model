@@ -84,6 +84,26 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the number of objects that satisfy the supplied query without
+        /// materializing a single row.
+        /// </summary>
+        /// <remarks>
+        /// The count runs against the bare object set - none of the includes
+        /// <see cref="GetObjects(IQuery{Object}, KleeneStarDbContext)"/> adds are needed for
+        /// a count, and asking for them would drag the workspace and parent rows across for
+        /// nothing. Callers must leave paging off the query; a query carrying
+        /// <c>WithPaging</c> counts the page rather than the whole result.
+        /// </remarks>
+        /// <param name="query">The query criteria used to filter the counted objects.</param>
+        /// <returns>The number of matching objects.</returns>
+        public static int CountObjects(IQuery<Object> query)
+        {
+            using var db = CreateDbContext();
+
+            return query.Apply(db.Objects.AsNoTracking()).Count();
+        }
+
+        /// <summary>
         /// Adds the specified object to the database if it does not already exist.
         /// </summary>
         /// <remarks>

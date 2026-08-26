@@ -41,6 +41,20 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the number of identities that satisfy the supplied query without
+        /// materializing a single row. Counts against the bare identity set, so the group
+        /// memberships are not dragged along. Callers must leave paging off the query.
+        /// </summary>
+        /// <param name="query">The query criteria used to filter the counted identities.</param>
+        /// <returns>The number of matching identities.</returns>
+        public static int CountIdentities(IQuery<Identity> query)
+        {
+            using var db = CreateDbContext();
+
+            return query.Apply(db.Identities.AsNoTracking()).Count();
+        }
+
+        /// <summary>
         /// Adds the specified identity to the database if it does not already exist.
         /// </summary>
         /// <param name="identity">The identity to add.</param>

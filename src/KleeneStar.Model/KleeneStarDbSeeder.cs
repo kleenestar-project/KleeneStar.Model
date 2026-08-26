@@ -224,6 +224,40 @@ namespace KleeneStar.Model
                 }
             }
 
+            // Shares and watchers must be seeded AFTER Objects and Identities — both name an
+            // object and an identity by id.
+            if (!db.ObjectShares.Any() && !db.ObjectWatchers.Any())
+            {
+                try
+                {
+                    SeedSharesAndWatchers(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding shares and watchers: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // The landing page reads objects by label, so the pages it offers have to exist
+            // before the labels naming them can be attached — hence two passes rather than
+            // one. Both passes skip what is already there, so this runs on every start and
+            // fills in pages added to the set since the installation was first seeded.
+            try
+            {
+                SeedLandingPages(db);
+                await db.SaveChangesAsync();
+
+                SeedLandingLabels(db);
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error seeding landing content: {ex.InnerException?.Message ?? ex.Message}");
+                throw;
+            }
+
             if (!db.Dashboards.Any())
             {
                 try
