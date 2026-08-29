@@ -92,9 +92,10 @@ namespace KleeneStar.Model.Entities
         Tag,
 
         /// <summary>
-        /// A typed link between two objects.
+        /// A semantic relation an object holds - to another object or to an address
+        /// outside the installation.
         /// </summary>
-        Link,
+        Relation,
 
         /// <summary>
         /// A share relationship on an object.
@@ -175,7 +176,13 @@ namespace KleeneStar.Model.Entities
         /// A REST API or portal endpoint, for events that record access rather than a record
         /// change.
         /// </summary>
-        Endpoint
+        Endpoint,
+
+        /// <summary>
+        /// The definition of a relation objects may hold - what it is called from either end,
+        /// which classes it accepts and what it does to the workflow.
+        /// </summary>
+        RelationType
     }
 
     /// <summary>

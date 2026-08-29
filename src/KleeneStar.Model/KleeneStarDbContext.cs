@@ -121,7 +121,12 @@ namespace KleeneStar.Model
         /// <summary>
         /// Gets or sets the collection of typed directional links between objects.
         /// </summary>
-        public DbSet<ObjectLink> ObjectLinks { get; set; }
+        public DbSet<ObjectRelation> ObjectRelations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of relation definitions the links are classified by.
+        /// </summary>
+        public DbSet<ObjectRelationType> ObjectRelationTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of per-identity watch relationships on objects.

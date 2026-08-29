@@ -397,6 +397,39 @@ namespace KleeneStar.Model
                 }
             }
 
+            // The relation catalog carries no dependency of its own — a relation is defined
+            // before anything uses it, and the classes it may name are matched by name rather
+            // than by a foreign key.
+            if (!db.ObjectRelationTypes.Any())
+            {
+                try
+                {
+                    SeedObjectRelationTypes(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding object link types: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // Links must be seeded AFTER Objects + Identities and AFTER the relation catalog —
+            // SeedObjectRelations pairs existing objects and references a relation by its key.
+            if (!db.ObjectRelations.Any())
+            {
+                try
+                {
+                    SeedObjectRelations(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding object links: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
             // The audit log is seeded LAST and deliberately so: its single genesis event counts
             // what the seed produced, so everything it counts has to already be in the store.
             if (!db.AuditEvents.Any())

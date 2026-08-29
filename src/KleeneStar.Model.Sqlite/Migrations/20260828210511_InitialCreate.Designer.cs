@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260822193846_InitialCreate")]
+    [Migration("20260828210511_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -2038,33 +2038,75 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Object", (string)null);
                 });
 
-            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectLink", b =>
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelation", b =>
                 {
                     b.Property<int>("RawId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Comment");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<string>("Direction")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Direction");
 
                     b.Property<Guid>("Id")
                         .HasMaxLength(36)
                         .HasColumnType("TEXT")
                         .HasColumnName("Guid");
 
-                    b.Property<int>("RelationType")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("RelationType");
+                    b.Property<string>("Metadata")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Metadata");
 
                     b.Property<Guid>("SourceObjectId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Source");
 
-                    b.Property<Guid>("TargetObjectId")
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Status");
+
+                    b.Property<string>("System")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("System");
+
+                    b.Property<Guid?>("TargetObjectId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Target");
+
+                    b.Property<string>("TargetTitle")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TargetTitle");
+
+                    b.Property<string>("TargetUri")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TargetUri");
+
+                    b.Property<string>("TypeKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Type");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT")
@@ -2072,14 +2114,104 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasKey("RawId");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("SourceObjectId");
 
                     b.HasIndex("TargetObjectId");
 
-                    b.HasIndex("SourceObjectId", "TargetObjectId", "RelationType")
+                    b.HasIndex("SourceObjectId", "TargetObjectId", "TypeKey")
                         .IsUnique();
 
-                    b.ToTable("ObjectLink", (string)null);
+                    b.ToTable("ObjectRelation", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelationType", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Active");
+
+                    b.Property<string>("Cardinality")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Cardinality");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Effect")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Effect");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("InverseLabel")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("InverseLabel");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Label");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Order");
+
+                    b.Property<bool>("Symmetric")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Symmetric");
+
+                    b.Property<string>("System")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("System");
+
+                    b.Property<string>("TargetClasses")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TargetClasses");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("ObjectRelationType", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectShare", b =>
@@ -3943,8 +4075,14 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectLink", b =>
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelation", b =>
                 {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("KleeneStar.Model.Entities.Object", "SourceObject")
                         .WithMany()
                         .HasForeignKey("SourceObjectId")
@@ -3956,8 +4094,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .WithMany()
                         .HasForeignKey("TargetObjectId")
                         .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("SourceObject");
 

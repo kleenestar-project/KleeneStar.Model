@@ -203,6 +203,33 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectRelationType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Label = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    InverseLabel = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Symmetric = table.Column<bool>(type: "INTEGER", nullable: false),
+                    System = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    TargetClasses = table.Column<string>(type: "TEXT", nullable: true),
+                    Cardinality = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    Effect = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    Active = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectRelationType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StatusCategory",
                 columns: table => new
                 {
@@ -1565,29 +1592,43 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ObjectLink",
+                name: "ObjectRelation",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    System = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Direction = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     Source = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Target = table.Column<Guid>(type: "TEXT", nullable: false),
-                    RelationType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Target = table.Column<Guid>(type: "TEXT", nullable: true),
+                    TargetUri = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                    TargetTitle = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    Comment = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Metadata = table.Column<string>(type: "TEXT", nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ObjectLink", x => x.Id);
+                    table.PrimaryKey("PK_ObjectRelation", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ObjectLink_Object_Source",
+                        name: "FK_ObjectRelation_Identity_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ObjectRelation_Object_Source",
                         column: x => x.Source,
                         principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ObjectLink_Object_Target",
+                        name: "FK_ObjectRelation_Object_Target",
                         column: x => x.Target,
                         principalTable: "Object",
                         principalColumn: "Guid",
@@ -2247,20 +2288,31 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 columns: new[] { "Workspace", "Kind" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ObjectLink_Source",
-                table: "ObjectLink",
+                name: "IX_ObjectRelation_CreatedBy",
+                table: "ObjectRelation",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectRelation_Source",
+                table: "ObjectRelation",
                 column: "Source");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ObjectLink_Source_Target_RelationType",
-                table: "ObjectLink",
-                columns: new[] { "Source", "Target", "RelationType" },
+                name: "IX_ObjectRelation_Source_Target_Type",
+                table: "ObjectRelation",
+                columns: new[] { "Source", "Target", "Type" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ObjectLink_Target",
-                table: "ObjectLink",
+                name: "IX_ObjectRelation_Target",
+                table: "ObjectRelation",
                 column: "Target");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectRelationType_Key",
+                table: "ObjectRelationType",
+                column: "Key",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ObjectShare_Identity",
@@ -2572,7 +2624,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "NavigatorLink");
 
             migrationBuilder.DropTable(
-                name: "ObjectLink");
+                name: "ObjectRelation");
+
+            migrationBuilder.DropTable(
+                name: "ObjectRelationType");
 
             migrationBuilder.DropTable(
                 name: "ObjectShare");
