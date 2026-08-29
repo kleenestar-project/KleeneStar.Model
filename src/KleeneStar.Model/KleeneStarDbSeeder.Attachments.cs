@@ -50,11 +50,19 @@ namespace KleeneStar.Model
                     continue;
                 }
 
+                // the seed writes through the context rather than through ModelHub.Add, so the
+                // version each row holds among the files of its name is counted here - a template
+                // catalogue that ever repeats a name then seeds a version chain rather than two
+                // files that collide
+                var chains = new Dictionary<string, int>();
+
                 var minute = 0;
                 foreach (var t in templates)
                 {
                     var id = Guid.NewGuid();
                     var uploader = ResolveSeedAuthor(t.Uploader, admin, alice, support, marketer);
+                    var version = chains.TryGetValue(t.FileName, out var previous) ? previous + 1 : 1;
+                    chains[t.FileName] = version;
 
                     // seed a small textual placeholder payload so the download endpoint
                     // returns a real (if tiny) file for every seeded attachment instead of
@@ -76,6 +84,7 @@ namespace KleeneStar.Model
                         // icon, but the browser renders the placeholder cleanly on download
                         // instead of failing to parse it as a binary of the declared type.
                         ContentType = "text/plain",
+                        Version = version,
                         Size = t.Size,
                         // nominal on-disk location; the payload itself lives in Content.
                         StoragePath = $"attachments/{obj.Key}/{id}/{t.FileName}",

@@ -43,6 +43,21 @@ namespace KleeneStar.Model.Entities
         public string ContentType { get; set; }
 
         /// <summary>
+        /// Gets or sets the version this row holds among the attachments that share its
+        /// <see cref="FileName"/> on the same <see cref="Object"/>. The first upload of a name is
+        /// version 1, every further upload of the same name continues the chain.
+        /// </summary>
+        /// <remarks>
+        /// The name is the identity of a file across its versions: attaching a name that is
+        /// already there is a new version of that file rather than a second file, and the file
+        /// surfaces fold the rows of one name into a single entry with the highest version at the
+        /// head. The number is stored rather than derived from <see cref="Created"/>, so the order
+        /// of a chain survives two uploads that arrive in the same instant and stays stable when a
+        /// version is removed. Zero means the row predates versioning.
+        /// </remarks>
+        public int Version { get; set; }
+
+        /// <summary>
         /// Gets or sets the size of the file in bytes.
         /// </summary>
         public long Size { get; set; }

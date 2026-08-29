@@ -18,6 +18,8 @@ namespace KleeneStar.Model.Configure
         /// identities must not be hard-deleted while they still own attachments).</item>
         /// <item>Composite index on (Object, Created) so the file-list query can retrieve
         /// attachments per object in chronological order without a full scan.</item>
+        /// <item>Composite index on (Object, FileName, Version) so the version chain of a file is
+        /// resolved without a scan — it is read on every upload to assign the next number.</item>
         /// </list>
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -42,6 +44,9 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.ContentType)
                 .HasColumnName("ContentType");
+
+            builder.Property(x => x.Version)
+                .HasColumnName("Version");
 
             builder.Property(x => x.Size)
                 .HasColumnName("Size");
@@ -86,6 +91,10 @@ namespace KleeneStar.Model.Configure
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(x => new { x.ObjectId, x.Created });
+
+            // the version chain of a file is looked up by its name on every upload, and the file
+            // surfaces group by the same pair - without this the next version number costs a scan
+            builder.HasIndex(x => new { x.ObjectId, x.FileName, x.Version });
         }
     }
 }
