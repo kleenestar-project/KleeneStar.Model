@@ -1522,6 +1522,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     FileName = table.Column<string>(type: "TEXT", nullable: false),
                     ContentType = table.Column<string>(type: "TEXT", nullable: true),
+                    Version = table.Column<int>(type: "INTEGER", nullable: false),
                     Size = table.Column<long>(type: "INTEGER", nullable: false),
                     StoragePath = table.Column<string>(type: "TEXT", nullable: true),
                     Content = table.Column<byte[]>(type: "BLOB", nullable: true),
@@ -1952,6 +1953,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_Attachment_Object_Created",
                 table: "Attachment",
                 columns: new[] { "Object", "Created" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Attachment_Object_FileName_Version",
+                table: "Attachment",
+                columns: new[] { "Object", "FileName", "Version" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attachment_Uploader",

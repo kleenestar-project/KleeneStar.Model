@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260828210511_InitialCreate")]
+    [Migration("20260829205409_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -168,11 +168,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Uploader");
 
+                    b.Property<int>("Version")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Version");
+
                     b.HasKey("RawId");
 
                     b.HasIndex("UploaderId");
 
                     b.HasIndex("ObjectId", "Created");
+
+                    b.HasIndex("ObjectId", "FileName", "Version");
 
                     b.ToTable("Attachment", (string)null);
                 });
