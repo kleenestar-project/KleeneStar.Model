@@ -17,8 +17,17 @@ namespace KleeneStar.Model
         /// tree (the first three objects become roots, the rest are nested beneath
         /// them), blog classes get creation dates staggered across recent months
         /// (feeding the year/month timeline of the blog overview), and issue classes
-        /// keep plain work items.
+        /// get one small parent/child group each on top of otherwise plain work items.
         /// </summary>
+        /// <remarks>
+        /// The issue group exists so the tree the overview draws is exercised out of the box:
+        /// without a single issue owning another, the expander of the table has nothing to
+        /// draw and the feature looks broken rather than unused. It is deliberately one group
+        /// per class rather than a deep tree, so the overview still shows mostly flat rows —
+        /// and it is built from the *last* three items of a class, which carry the newest
+        /// timestamps and therefore sort to the top of the default "recently updated" order,
+        /// where it is seen without paging.
+        /// </remarks>
         /// <param name="db">The database context used for adding the new objects.</param>
         private static void SeedObjects(KleeneStarDbContext db)
         {
@@ -33,9 +42,15 @@ namespace KleeneStar.Model
                 .Include(c => c.Workspace)
                 .ToList();
 
+            // the item of an issue class that owns the class's small parent/child group, and the
+            // two items that are hung beneath it
+            const int IssueParentIndex = 17;
+            const int IssueFirstChildIndex = 18;
+
             foreach (var cls in classes)
             {
                 var roots = new List<Entities.Object>();
+                Entities.Object issueParent = null;
 
                 // creates exactly 20 distinct items per class based on the extended seeding logic
                 for (int i = 0; i < 20; i++)
@@ -75,6 +90,20 @@ namespace KleeneStar.Model
                         else
                         {
                             entity.ParentId = roots[i % roots.Count].Id;
+                        }
+                    }
+
+                    // issues get one containment group per class, so the overview shows both a
+                    // parent with children and plenty of standalone work items
+                    if (cls.Kind == ObjectKind.Issue)
+                    {
+                        if (i == IssueParentIndex)
+                        {
+                            issueParent = entity;
+                        }
+                        else if (i >= IssueFirstChildIndex && issueParent is not null)
+                        {
+                            entity.ParentId = issueParent.Id;
                         }
                     }
 

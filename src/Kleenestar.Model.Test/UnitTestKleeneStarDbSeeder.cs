@@ -610,6 +610,37 @@ namespace KleeneStar.Model.Test
             Assert.Contains(documents, o => o.ParentId.HasValue);
             Assert.All(documents.Where(o => o.ParentId.HasValue), o => Assert.Contains(o.ParentId!.Value, documentIds));
 
+            // every issue class owns one small containment group, so the tree the issue
+            // overview draws is exercised out of the box rather than only where a user
+            // happened to nest something. without it the expander has nothing to draw and
+            // the feature is indistinguishable from a broken one
+            var issueClassIds = db.Classes
+                .Where(c => c.Kind == Entities.ObjectKind.Issue)
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            Assert.NotEmpty(issueClassIds);
+
+            var issues = db.Objects.Where(o => issueClassIds.Contains(o.ClassId)).ToList();
+            var issueIds = issues.Select(o => o.Id).ToHashSet();
+
+            Assert.Contains(issues, o => o.ParentId.HasValue);
+            Assert.All(issues.Where(o => o.ParentId.HasValue), o => Assert.Contains(o.ParentId!.Value, issueIds));
+
+            // the group is one parent with children per class, and the parent is itself a
+            // root — a chain would page differently than the overview assumes
+            foreach (var classId in issueClassIds)
+            {
+                var owned = issues.Where(o => o.ClassId == classId).ToList();
+                var parents = owned.Where(o => o.ParentId.HasValue).Select(o => o.ParentId!.Value).Distinct().ToList();
+
+                Assert.Single(parents);
+                Assert.Contains(owned, o => o.Id == parents[0] && o.ParentId == null);
+
+                // most of the class stays flat, so the overview is not a wall of nested rows
+                Assert.True(owned.Count(o => o.ParentId == null) > owned.Count(o => o.ParentId.HasValue));
+            }
+
             // validation — blog posts: every Release object is a blog post and the
             // staggered creation dates span more than one month (feeding the timeline)
             var blogClassIds = db.Classes
