@@ -2041,6 +2041,52 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Object", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectDraft", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Summary");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid?>("UpdaterId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updater");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ObjectId")
+                        .IsUnique();
+
+                    b.HasIndex("UpdaterId");
+
+                    b.ToTable("ObjectDraft", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelation", b =>
                 {
                     b.Property<int>("RawId")
@@ -4076,6 +4122,26 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Updater");
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectDraft", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Object", "Object")
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Updater")
+                        .WithMany()
+                        .HasForeignKey("UpdaterId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Object");
+
+                    b.Navigation("Updater");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelation", b =>

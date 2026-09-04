@@ -144,6 +144,12 @@ namespace KleeneStar.Model
         public DbSet<ObjectTag> ObjectTags { get; set; }
 
         /// <summary>
+        /// Gets or sets the unpublished working copies of the prose attributes of objects.
+        /// At most one row per object.
+        /// </summary>
+        public DbSet<ObjectDraft> ObjectDrafts { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of dashboards.
         /// </summary>
         public DbSet<Dashboard> Dashboards { get; set; }

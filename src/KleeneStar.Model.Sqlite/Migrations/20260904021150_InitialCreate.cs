@@ -1593,6 +1593,37 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectDraft",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Summary = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updater = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectDraft", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectDraft_Identity_Updater",
+                        column: x => x.Updater,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ObjectDraft_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ObjectRelation",
                 columns: table => new
                 {
@@ -2294,6 +2325,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 columns: new[] { "Workspace", "Kind" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ObjectDraft_Object",
+                table: "ObjectDraft",
+                column: "Object",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectDraft_Updater",
+                table: "ObjectDraft",
+                column: "Updater");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ObjectRelation_CreatedBy",
                 table: "ObjectRelation",
                 column: "CreatedBy");
@@ -2628,6 +2670,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "NavigatorLink");
+
+            migrationBuilder.DropTable(
+                name: "ObjectDraft");
 
             migrationBuilder.DropTable(
                 name: "ObjectRelation");
