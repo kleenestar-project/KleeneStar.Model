@@ -32,6 +32,11 @@ namespace KleeneStar.Model
         public DbSet<Field> Fields { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of security levels.
+        /// </summary>
+        public DbSet<SecurityLevel> SecurityLevels { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of templates.
         /// </summary>
         public DbSet<Template> Templates { get; set; }

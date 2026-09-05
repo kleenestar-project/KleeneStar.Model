@@ -86,6 +86,18 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.ClassId)
                 .HasPrincipalKey(w => w.Id);
 
+            builder.Property(x => x.SecurityLevelId)
+                .HasColumnName("SecurityLevel");
+
+            // an object keeps its classification when the level is archived; deleting the level
+            // is what declassifies the objects that carried it, and that is a decision an
+            // administrator makes deliberately rather than one a cascade makes for them
+            builder.HasOne(x => x.SecurityLevel)
+                .WithMany()
+                .HasForeignKey(x => x.SecurityLevelId)
+                .HasPrincipalKey(s => s.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Property(x => x.ParentId)
                 .HasColumnName("Parent");
 

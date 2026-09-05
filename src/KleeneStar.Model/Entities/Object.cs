@@ -91,6 +91,23 @@ namespace KleeneStar.Model.Entities
         public Class Class { get; set; }
 
         /// <summary>
+        /// Gets or sets the unique identifier of the security level the object is classified
+        /// with, or <c>null</c> when the object is unclassified.
+        /// </summary>
+        /// <remarks>
+        /// The level is one of the levels defined on the object's class. An unclassified object
+        /// is visible to everyone; a classified one is visible only to the identities cleared
+        /// for its level through one of the level's groups. The rule is enforced centrally by
+        /// the object manager, so every list, overview and detail view obeys it.
+        /// </remarks>
+        public Guid? SecurityLevelId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the security level the object is classified with.
+        /// </summary>
+        public SecurityLevel SecurityLevel { get; set; }
+
+        /// <summary>
         /// Gets or sets the unique identifier of the parent object, if any. The parent
         /// expresses a containment relationship inside the same workspace (e.g. an
         /// "Epic" object owning child "Story" objects).

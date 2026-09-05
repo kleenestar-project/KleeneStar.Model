@@ -105,6 +105,14 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            // SecurityLevels must be seeded AFTER Classes and Groups — a level belongs to a
+            // class and names the groups cleared for it.
+            if (!db.SecurityLevels.Any())
+            {
+                SeedSecurityLevels(db);
+                await db.SaveChangesAsync();
+            }
+
             // Templates must be seeded AFTER Classes — each template is bound to the class
             // its objects are created from (Template.ClassId references Class.Id).
             if (!db.Templates.Any())
@@ -174,6 +182,24 @@ namespace KleeneStar.Model
                 {
                     // log the exception or handle it as needed
                     Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
+                    throw;
+                }
+            }
+
+            // Classifying the seeded objects needs both the objects and the levels, so it runs
+            // after both. It is guarded the way every other seed is: once a single object
+            // carries a classification, the installation has been administered and the seeder
+            // must not put one back on the records somebody deliberately declassified.
+            if (!db.Objects.Any(x => x.SecurityLevelId != null))
+            {
+                try
+                {
+                    SeedObjectSecurityLevels(db);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error seeding object security levels: {ex.InnerException?.Message ?? ex.Message}");
                     throw;
                 }
             }

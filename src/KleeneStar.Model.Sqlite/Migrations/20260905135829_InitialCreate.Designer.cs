@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260905111111_InitialCreate")]
+    [Migration("20260905135829_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1988,6 +1988,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Parent");
 
+                    b.Property<Guid?>("SecurityLevelId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("SecurityLevel");
+
                     b.Property<Guid?>("SprintId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Sprint");
@@ -2034,6 +2038,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("SecurityLevelId");
 
                     b.HasIndex("SprintId");
 
@@ -2653,6 +2659,69 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("SavedSearch", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SecurityLevel", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("IsDefault");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("PermittedGroupIds")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PermittedGroupIds");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Rank");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ClassId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("SecurityLevel", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
@@ -4099,6 +4168,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("KleeneStar.Model.Entities.SecurityLevel", "SecurityLevel")
+                        .WithMany()
+                        .HasForeignKey("SecurityLevelId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("KleeneStar.Model.Entities.Sprint", "Sprint")
                         .WithMany()
                         .HasForeignKey("SprintId")
@@ -4125,6 +4200,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("SecurityLevel");
 
                     b.Navigation("Sprint");
 
@@ -4302,6 +4379,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.SecurityLevel", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.SlaEscalationLevel", b =>
