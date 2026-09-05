@@ -30,12 +30,21 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the key of the workspace.
         /// </summary>
+        [ValidateRequired]
         [ValidateMinLength(2)]
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the workspace.
         /// </summary>
+        /// <remarks>
+        /// The name is what every list, breadcrumb and dropdown addresses the workspace by, so
+        /// an unnamed one is not a workspace with a field left blank - it is a row nobody can
+        /// find again. The attribute is what makes the create and update endpoints refuse it:
+        /// the form marks the field required, but a marked field is only a promise until
+        /// something checks it.
+        /// </remarks>
+        [ValidateRequired]
         public string Name { get; set; }
 
         /// <summary>
@@ -71,6 +80,20 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [JsonIgnore]
         public Workspace Inherited { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the document shown as the home page of the
+        /// workspace, or <c>null</c> when nobody has chosen one.
+        /// </summary>
+        /// <remarks>
+        /// It is a choice, not a rule: unset, the document overview falls back to the first root
+        /// of the page tree, which is an accident of alphabetical order and was the only
+        /// behaviour there used to be. A workspace whose chosen document has since been deleted
+        /// or moved to another workspace falls back the same way rather than showing nothing -
+        /// the id is not a foreign key with a cascade, because a home page is a piece of
+        /// presentation and deleting a document must not be blocked by it.
+        /// </remarks>
+        public Guid? HomeId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the workspace is sealed

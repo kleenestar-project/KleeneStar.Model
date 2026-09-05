@@ -69,6 +69,22 @@ namespace KleeneStar.Model.Entities
         public bool Favorite { get; set; }
 
         /// <summary>
+        /// Gets or sets whether the owner has liked the object.
+        /// </summary>
+        /// <remarks>
+        /// A like is not a star. The star is private and says "I want to find this again"; the
+        /// like is public and says "this was worth writing" - what is counted under a post and
+        /// shown to everybody. They live on the same row because both are one flag of one
+        /// identity about one object, which is what this row already is.
+        /// <para>
+        /// It is deliberately not a <c>CommentLike</c>: that one belongs to a single remark
+        /// inside a discussion, and summing them says how lively the discussion was, not what the
+        /// post was worth.
+        /// </para>
+        /// </remarks>
+        public bool Liked { get; set; }
+
+        /// <summary>
         /// Gets or sets the date and time when the visit was created.
         /// </summary>
         public DateTime Created { get; set; }

@@ -281,6 +281,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Inherited = table.Column<Guid>(type: "TEXT", nullable: true),
+                    HomeId = table.Column<Guid>(type: "TEXT", nullable: true),
                     Sealed = table.Column<bool>(type: "INTEGER", nullable: false),
                     AccessModifier = table.Column<int>(type: "INTEGER", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -1729,6 +1730,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Object = table.Column<Guid>(type: "TEXT", nullable: false),
                     LastVisited = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Favorite = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    Liked = table.Column<bool>(type: "INTEGER", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },

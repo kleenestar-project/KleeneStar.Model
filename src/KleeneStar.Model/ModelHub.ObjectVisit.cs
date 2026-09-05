@@ -76,8 +76,13 @@ namespace KleeneStar.Model
         /// When <see langword="true"/>, the last-visited timestamp is advanced to now (used by
         /// "record visit"); when <see langword="false"/>, it is left untouched.
         /// </param>
+        /// <param name="liked">
+        /// When set, the new liked state; when <see langword="null"/>, the liked state is left
+        /// untouched. Every caller that is not the like itself passes null, which is why it is
+        /// optional: recording a visit must not silently take somebody's like away.
+        /// </param>
         /// <returns>The persisted visit, or <see langword="null"/>.</returns>
-        public static ObjectVisit UpsertObjectVisit(Guid ownerId, Guid objectId, bool? favorite, bool recordVisit)
+        public static ObjectVisit UpsertObjectVisit(Guid ownerId, Guid objectId, bool? favorite, bool recordVisit, bool? liked = null)
         {
             using var db = CreateDbContext();
 
@@ -99,6 +104,7 @@ namespace KleeneStar.Model
                     OwnerId = ownerId,
                     ObjectId = objectId,
                     Favorite = favorite ?? false,
+                    Liked = liked ?? false,
                     LastVisited = recordVisit ? now : default,
                     Created = now,
                     Updated = now
@@ -111,6 +117,11 @@ namespace KleeneStar.Model
                 if (favorite.HasValue)
                 {
                     visit.Favorite = favorite.Value;
+                }
+
+                if (liked.HasValue)
+                {
+                    visit.Liked = liked.Value;
                 }
 
                 if (recordVisit)
