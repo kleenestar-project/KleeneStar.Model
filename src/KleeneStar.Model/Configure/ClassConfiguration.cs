@@ -91,6 +91,12 @@ namespace KleeneStar.Model.Configure
                 .HasMaxLength(64)
                 .HasDefaultValue(ObjectKind.Default);
 
+            // no default value and nullable on purpose: an unset renderer is the state
+            // "follow the kind", which is not the same as any one renderer key
+            builder.Property(x => x.Renderer)
+                .HasColumnName("Renderer")
+                .HasMaxLength(64);
+
             builder.Property(x => x.PortalVisible)
                 .HasColumnName("PortalVisible")
                 .HasDefaultValue(false);

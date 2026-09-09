@@ -15,7 +15,7 @@ namespace KleeneStar.Model
         /// <param name="db">The database context.</param>
         private static void SeedClasses(KleeneStarDbContext db)
         {
-            void add(string id, string name, string description, string icon, string workspaceId, bool isAbstract = false, bool isSealed = false, AccessModifier accessModifier = AccessModifier.Public, bool portalVisible = false, string kind = ObjectKind.Issue)
+            void add(string id, string name, string description, string icon, string workspaceId, bool isAbstract = false, bool isSealed = false, AccessModifier accessModifier = AccessModifier.Public, bool portalVisible = false, string kind = ObjectKind.Issue, string renderer = null)
                 => db.Classes.Add(new Class
                 {
                     Id = Guid.Parse(id),
@@ -23,6 +23,7 @@ namespace KleeneStar.Model
                     Description = description,
                     Icon = ImageIcon.FromString(icon),
                     Kind = kind,
+                    Renderer = renderer,
                     WorkspaceId = Guid.Parse(workspaceId),
                     IsAbstract = isAbstract,
                     Sealed = isSealed,
@@ -48,6 +49,10 @@ namespace KleeneStar.Model
             add("0657665A-051F-4DB5-A782-265A1FE373DD", "Task", "Development tasks and work items.", "/kleenestar/assets/icons/task.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
             add("C43355BF-2EE1-4B0C-8632-9F9C17FDCAF4", "Bug", "Bug tracking and issue management.", "/kleenestar/assets/icons/bug.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
             add("1CF19C71-6FFA-4006-8014-929D3D0079F8", "Documentation", "Technical documentation and specs.", "/kleenestar/assets/icons/doc.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748", kind: ObjectKind.Document);
+            // the same kind as Documentation - it stands in the same page tree - but filed
+            // through the input mask of its forms instead of written as prose, so the seed
+            // carries one class of every renderer the core ships
+            add("7B2F91C4-3A65-4E0D-9C87-15D4E8A6032B", "Specification", "Specification sheets captured through a structured input mask.", "/kleenestar/assets/icons/requirement.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748", kind: ObjectKind.Document, renderer: ObjectRenderer.Form);
             add("D3F7D136-F214-4E4C-8CB5-9F43659F46A7", "Sprint", "Agile sprint planning and tracking.", "/kleenestar/assets/icons/sprint.svg", "660E9B11-2D54-4A36-84F9-F3BF5C78B748");
 
             // workspace: Finance and Controlling (FIN)

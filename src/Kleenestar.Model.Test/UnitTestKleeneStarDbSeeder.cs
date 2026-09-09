@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace KleeneStar.Model.Test
 {
@@ -586,7 +586,7 @@ namespace KleeneStar.Model.Test
             // classes are document classes, the release class is a blog class, and
             // every other class keeps the default issue kind
             var documentClassIds = db.Classes
-                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge")
+                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge" || c.Name == "Specification")
                 .Select(c => c.Id)
                 .ToHashSet();
 
@@ -597,8 +597,17 @@ namespace KleeneStar.Model.Test
                 c => Assert.Equal(Entities.ObjectKind.Blog, c.Kind));
             Assert.All(db.Classes.Where(c => c.Name == "Asset").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Asset, c.Kind));
-            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset").ToList(),
+            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Specification" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Issue, c.Kind));
+
+            // the renderer is the other half of the presentation: the seed carries one
+            // document class of each, so both surfaces of the document kind are reachable
+            // without an administrator having configured anything first. Everything else
+            // names none and follows the default of its kind.
+            Assert.All(db.Classes.Where(c => c.Name == "Specification").ToList(),
+                c => Assert.Equal(Entities.ObjectRenderer.Form, c.Renderer));
+            Assert.All(db.Classes.Where(c => c.Name != "Specification").ToList(),
+                c => Assert.Null(c.Renderer));
 
             var documents = db.Objects.Where(o => documentClassIds.Contains(o.ClassId)).ToList();
             Assert.NotEmpty(documents);

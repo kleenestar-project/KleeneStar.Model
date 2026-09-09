@@ -616,6 +616,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("PortalVisible");
 
+                    b.Property<string>("Renderer")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Renderer");
+
                     b.Property<bool>("Sealed")
                         .HasColumnType("INTEGER")
                         .HasColumnName("Sealed");

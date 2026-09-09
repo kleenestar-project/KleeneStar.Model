@@ -593,6 +593,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     AccessModifier = table.Column<int>(type: "INTEGER", nullable: false),
                     PortalVisible = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
+                    Renderer = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     Workspace = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>

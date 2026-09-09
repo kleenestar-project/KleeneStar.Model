@@ -116,6 +116,25 @@ namespace KleeneStar.Model.Entities
         public string Kind { get; set; } = ObjectKind.Default;
 
         /// <summary>
+        /// Gets or sets the renderer key of the class, e.g.
+        /// <see cref="ObjectRenderer.Prose"/> or <see cref="ObjectRenderer.Form"/>. Where
+        /// <see cref="Kind"/> decides in which overview the objects of the class appear,
+        /// the renderer decides how a single one of them is read and written: as prose in
+        /// the WYSIWYG editor, or through the structured input mask the class's forms
+        /// describe. The set of renderers is open per kind — plugins may contribute
+        /// further ones.
+        /// </summary>
+        /// <remarks>
+        /// <see langword="null"/> means "follow the kind": the renderer the kind
+        /// descriptor names as its default is used, so a class that was never configured
+        /// keeps behaving the way its kind always has, and follows along when the kind is
+        /// changed. Unlike <see cref="Kind"/>, the renderer is <em>not</em> stamped onto
+        /// the objects of the class — it is presentation, not data, and is read live from
+        /// the class on every request.
+        /// </remarks>
+        public string Renderer { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of classes allowed as children of this class.
         /// </summary>
         [JsonIgnore]
