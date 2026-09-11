@@ -301,6 +301,12 @@ namespace KleeneStar.Model
         public DbSet<UserSession> UserSessions { get; set; }
 
         /// <summary>
+        /// Gets or sets the WQL queries each identity has run, which the query prompts
+        /// offer back as their history.
+        /// </summary>
+        public DbSet<WqlHistory> WqlHistories { get; set; }
+
+        /// <summary>
         /// Gets or sets the devices and browsers currently signed in with an identity.
         /// </summary>
         public DbSet<IdentitySession> IdentitySessions { get; set; }

@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20260909112600_InitialCreate")]
+    [Migration("20260910142401_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
             modelBuilder.Entity("ClassAllowedChild", b =>
                 {
@@ -3679,6 +3679,59 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("WorkspaceBookmark", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.WqlHistory", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<DateTime>("LastUsed")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastUsed");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Owner");
+
+                    b.Property<string>("Query")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Query");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Subject");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<int>("UseCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1)
+                        .HasColumnName("UseCount");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("OwnerId", "Subject");
+
+                    b.ToTable("WqlHistory", (string)null);
+                });
+
             modelBuilder.Entity("WorkspaceCategory", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -4673,6 +4726,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.WqlHistory", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("WorkspaceCategory", b =>

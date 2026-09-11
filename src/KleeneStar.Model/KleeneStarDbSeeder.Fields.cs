@@ -74,9 +74,13 @@ namespace KleeneStar.Model
             // The shared default set covers every FieldType so any class's standard form
             // contains at least one field of each kind. Workflow fields are linked to the
             // class workflow later, in SeedWorkflows.
+            //
+            // There is deliberately no "Title" field: every object already carries a summary,
+            // the edit mask titles itself with it, and a field repeating it would have shown
+            // the same text twice in one dialog - once as the title and once as an answer that
+            // nothing keeps in step with it.
             var defaults = new List<(string Name, string Description, string Icon, FieldType Type, string[] Options)>
             {
-                ("Title",          "Short human-readable title of the entry.",  "/kleenestar/assets/icons/field/title.svg",       FieldType.Text,       null),
                 ("Description",    "Detailed description of the entry.",         "/kleenestar/assets/icons/field/description.svg", FieldType.Text,       null),
                 ("Status",         "Lifecycle status of the entry.",            "/kleenestar/assets/icons/field/status.svg",      FieldType.Workflow,   null),
                 ("Priority",       "Priority or urgency classification.",       "/kleenestar/assets/icons/field/priority.svg",    FieldType.Priority,   null),

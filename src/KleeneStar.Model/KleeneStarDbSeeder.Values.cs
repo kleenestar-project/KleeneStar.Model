@@ -107,9 +107,6 @@ namespace KleeneStar.Model
             // seeded data lines up with what the user would expect to see for that field.
             switch (field.Name)
             {
-                case "Title":
-                    return entity.Summary;
-
                 case "Description":
                     return entity.Description;
 

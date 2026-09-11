@@ -96,6 +96,61 @@ namespace KleeneStar.Model.Entities
         public Status Target { get; set; }
 
         /// <summary>
+        /// Gets or sets the condition under which the transition may be taken at all, written as
+        /// a disjunctive normal form over the keys of the registered guards -
+        /// <c>a;b|c</c> reads as <em>(a and b) or c</em>. Empty means unconditional.
+        /// </summary>
+        /// <remarks>
+        /// The expression is stored rather than a list of rows because it is one statement about
+        /// this transition, always read as a whole, and because that is exactly the shape the
+        /// administering control produces: a disjunction of conjunctions. Which keys exist is not
+        /// modelled here - the guards are registered at runtime, and a key naming one that is no
+        /// longer installed simply fails to hold rather than breaking the workflow.
+        /// </remarks>
+        public string GuardExpression { get; set; }
+
+        /// <summary>
+        /// Gets or sets what has to be true of the object for the transition to be accepted,
+        /// written as a disjunctive normal form over the keys of the registered validators.
+        /// Empty means the transition validates nothing.
+        /// </summary>
+        /// <remarks>
+        /// A guard says whether the move may be offered, a validator whether the move as
+        /// submitted is acceptable - the distinction is what lets a transition be visible and
+        /// still refuse an object that has not been filled in. Both are the same shape because
+        /// both are conditions; only the moment they are asked and the message they leave differ.
+        /// </remarks>
+        public string ValidatorExpression { get; set; }
+
+        /// <summary>
+        /// Gets or sets the keys of the post functions the transition runs once it has been
+        /// applied, in the order they run.
+        /// </summary>
+        /// <remarks>
+        /// A list rather than an expression: post functions are actions, and actions are not
+        /// combined with and/or - they are performed, one after another, and the order is part
+        /// of what the administrator decided.
+        /// </remarks>
+        public List<string> PostFunctionKeys { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets the form shown before the transition runs - the screen a person fills in
+        /// while making the move - or <see langword="null"/> when the move needs no input.
+        /// </summary>
+        /// <remarks>
+        /// It is an ordinary <see cref="Form"/> of the class rather than a screen type of its
+        /// own: what a transition asks for is the same kind of mask an object is edited through,
+        /// and modelling it twice would mean two form designers, two renderers and two ways for
+        /// a field to end up on a page.
+        /// </remarks>
+        public Guid? ScreenFormId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the form shown before the transition runs.
+        /// </summary>
+        public Form ScreenForm { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Transition()

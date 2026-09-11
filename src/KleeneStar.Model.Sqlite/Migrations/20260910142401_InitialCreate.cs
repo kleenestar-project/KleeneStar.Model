@@ -1004,6 +1004,32 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WqlHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Subject = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Query = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
+                    UseCount = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 1),
+                    LastUsed = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WqlHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WqlHistory_Identity_Owner",
+                        column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Calendar",
                 columns: table => new
                 {
@@ -2654,6 +2680,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_WorkspaceTenant_WorkspaceId",
                 table: "WorkspaceTenant",
                 column: "WorkspaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WqlHistory_Owner_Subject",
+                table: "WqlHistory",
+                columns: new[] { "Owner", "Subject" });
         }
 
         /// <inheritdoc />
@@ -2793,6 +2824,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkspaceTenant");
+
+            migrationBuilder.DropTable(
+                name: "WqlHistory");
 
             migrationBuilder.DropTable(
                 name: "AuditEvent");

@@ -134,6 +134,47 @@ namespace KleeneStar.Model
                     seeded++;
                 }
 
+                // a chain, so the impact analysis has something to walk: the pairs above are one
+                // hop each and read the same at every depth, while what the analysis is for is
+                // the consequence that arrives through an object nobody related to the first.
+                // The first blocks the second, the second blocks the third, and the fourth is a
+                // duplicate of the third - three steps out and two effects, which is what the
+                // depth chooser on the impact page is worth having for
+                if (objects.Count >= 4)
+                {
+                    void chain(string type, Model.Entities.Object source, Model.Entities.Object target, string comment) => db.ObjectRelations.Add(new ObjectRelation
+                    {
+                        Id = Guid.NewGuid(),
+                        System = RelationSystem.Object,
+                        TypeKey = type,
+                        Direction = RelationDirection.Bidirectional,
+                        Status = RelationStatus.Active,
+                        SourceObjectId = source.Id,
+                        TargetObjectId = target.Id,
+                        Comment = comment,
+                        CreatedById = author?.Id,
+                        Created = DateTime.UtcNow,
+                        Updated = DateTime.UtcNow
+                    });
+
+                    chain(RelationType.Blocks, objects[0], objects[2], "Nothing downstream moves before this is done.");
+                    chain(RelationType.Blocks, objects[2], objects[4 % objects.Count], "Waits on the step before it.");
+                    chain(RelationType.Duplicate, objects[3], objects[4 % objects.Count], "Reported a second time - settled with the original.");
+
+                    seeded += 3;
+
+                    // ...and one object that reports the progress of others, so the rollup has
+                    // something to roll up: without a single aggregating relation the progress
+                    // card never appears and the feature reads as missing rather than as unused
+                    if (objects.Count >= 7)
+                    {
+                        chain(RelationType.Parent, objects[1], objects[5], "Part of this piece of work.");
+                        chain(RelationType.Parent, objects[1], objects[6], "Part of this piece of work.");
+
+                        seeded += 2;
+                    }
+                }
+
                 // one external relation per workspace, so both categories of the hybrid model are
                 // visible on a fresh installation
                 if (objects.Count > 0)

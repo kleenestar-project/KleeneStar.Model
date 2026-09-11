@@ -84,7 +84,6 @@ namespace KleeneStar.Model
         /// </summary>
         private static readonly HashSet<string> GeneralTabFieldNames = new(StringComparer.OrdinalIgnoreCase)
         {
-            "Title",
             "Description",
             "Status",
             "Priority",
