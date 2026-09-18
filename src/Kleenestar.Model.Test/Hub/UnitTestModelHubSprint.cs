@@ -20,7 +20,7 @@ namespace Kleenestar.Model.Test.Hub
         /// <returns>The workspace id and the ids of the three seeded objects in rank order.</returns>
         private static (Guid WorkspaceId, Guid First, Guid Second, Guid Third) Seed(string connectionString)
         {
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = connectionString,
                 Assembly = "KleeneStar.Model.Test"

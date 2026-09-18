@@ -18,7 +18,7 @@ namespace Kleenestar.Model.Test.Hub
         /// <param name="connectionString">The per-test in-memory database name.</param>
         private static void Configure(string connectionString)
         {
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = connectionString,
                 Assembly = "KleeneStar.Model.Test"

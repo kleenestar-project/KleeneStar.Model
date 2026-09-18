@@ -25,7 +25,7 @@ namespace Kleenestar.Model.Test.Hub
         /// <param name="connectionString">The name of the isolated database.</param>
         private static void SeedIdentities(string connectionString)
         {
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings
             {
                 ConnectionString = connectionString,
                 Assembly = "KleeneStar.Model.Test"

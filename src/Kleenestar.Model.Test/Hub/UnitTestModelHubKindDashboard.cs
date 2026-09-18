@@ -17,7 +17,7 @@ namespace Kleenestar.Model.Test.Hub
         public void GetBoardWhenNoneExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "GetKindDashboardWhenNoneExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -38,7 +38,7 @@ namespace Kleenestar.Model.Test.Hub
         public void EnsureBoardCreatesOnlyOnce()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "EnsureKindDashboardCreatesOnlyOnce",
                 Assembly = "KleeneStar.Model.Test"
@@ -66,7 +66,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetColumns_SurvivesReloadAndKeepsWidgets()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetKindDashboardColumns_SurvivesReloadAndKeepsWidgets",
                 Assembly = "KleeneStar.Model.Test"
@@ -114,7 +114,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetBoard_WidgetSettingsSurviveReload()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetKindDashboardBoard_WidgetSettingsSurviveReload",
                 Assembly = "KleeneStar.Model.Test"
@@ -160,7 +160,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetColumns_DeleteRemovesColumnAndWidgets()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetKindDashboardColumns_DeleteRemovesColumnAndWidgets",
                 Assembly = "KleeneStar.Model.Test"

@@ -17,7 +17,7 @@ namespace Kleenestar.Model.Test.Hub
         public void GetBoardWhenNoneExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "GetBoardWhenNoneExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -38,7 +38,7 @@ namespace Kleenestar.Model.Test.Hub
         public void EnsureBoardCreatesOnlyOnce()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "EnsureBoardCreatesOnlyOnce",
                 Assembly = "KleeneStar.Model.Test"
@@ -65,7 +65,7 @@ namespace Kleenestar.Model.Test.Hub
         public void EnsureBoardIsScopedByKind()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "EnsureBoardIsScopedByKind",
                 Assembly = "KleeneStar.Model.Test"
@@ -92,7 +92,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetColumnsCreatesColumns()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetColumnsCreatesColumns",
                 Assembly = "KleeneStar.Model.Test"
@@ -130,7 +130,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetColumnsReconcilesByIdAndDeletesOmitted()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetColumnsReconcilesByIdAndDeletesOmitted",
                 Assembly = "KleeneStar.Model.Test"
@@ -169,7 +169,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetSwimlanesCreatesSwimlanes()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetSwimlanesCreatesSwimlanes",
                 Assembly = "KleeneStar.Model.Test"
@@ -204,7 +204,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetSwimlanesRecolorsByIdAndClears()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetSwimlanesRecolorsByIdAndClears",
                 Assembly = "KleeneStar.Model.Test"
@@ -248,7 +248,7 @@ namespace Kleenestar.Model.Test.Hub
         public void SetFilterUpdatesBoard()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "SetFilterUpdatesBoard",
                 Assembly = "KleeneStar.Model.Test"

@@ -18,7 +18,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllFields()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllFields",
                 Assembly = "KleeneStar.Model.Test"
@@ -46,7 +46,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredFields()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredFields",
                 Assembly = "KleeneStar.Model.Test"
@@ -75,7 +75,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddFieldWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddFieldWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -99,7 +99,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddFieldWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddFieldWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -125,7 +125,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingField()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingField",
                 Assembly = "KleeneStar.Model.Test"
@@ -154,7 +154,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenFieldNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenFieldNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -177,7 +177,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingField()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingField",
                 Assembly = "KleeneStar.Model.Test"

@@ -17,7 +17,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllCategories()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllCategories",
                 Assembly = "KleeneStar.Model.Test"
@@ -45,7 +45,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredCategories()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredCategories",
                 Assembly = "KleeneStar.Model.Test"
@@ -74,7 +74,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddCategoryWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddCategoryWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -98,7 +98,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddCategoryWhenNameExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddCategoryWhenKeyExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -124,7 +124,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenCategoryNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenCategoryNotExists",
                 Assembly = "KleeneStar.Model.Test"

@@ -18,7 +18,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllClasses()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllClasses",
                 Assembly = "KleeneStar.Model.Test"
@@ -67,7 +67,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredClasses()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredClasses",
                 Assembly = "KleeneStar.Model.Test"
@@ -117,7 +117,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddClassWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddClassWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -141,7 +141,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddClassWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddClassWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -167,7 +167,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingClass()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingClass",
                 Assembly = "KleeneStar.Model.Test"
@@ -196,7 +196,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenClassNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenClassNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -219,7 +219,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingClass()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingClass",
                 Assembly = "KleeneStar.Model.Test"
@@ -246,7 +246,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddClassCreatesStandardForm()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddClassCreatesStandardForm",
                 Assembly = "KleeneStar.Model.Test"

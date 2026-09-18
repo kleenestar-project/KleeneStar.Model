@@ -19,7 +19,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllWorkspaces()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllWorkspaces",
                 Assembly = "KleeneStar.Model.Test"
@@ -47,7 +47,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredWorkspaces()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredWorkspaces",
                 Assembly = "KleeneStar.Model.Test"
@@ -83,7 +83,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddWorkspaceWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddWorkspaceWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -117,7 +117,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddWorkspaceWhenKeyExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddWorkspaceWhenKeyExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -142,7 +142,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingWorkspace()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingWorkspace",
                 Assembly = "KleeneStar.Model.Test"
@@ -171,7 +171,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenWorkspaceNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenWorkspaceNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -194,7 +194,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingWorkspace()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingWorkspace",
                 Assembly = "KleeneStar.Model.Test"
@@ -231,7 +231,7 @@ namespace Kleenestar.Model.Test.Hub
         public void PersistSealedProperty()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "PersistSealedProperty",
                 Assembly = "KleeneStar.Model.Test"
@@ -269,7 +269,7 @@ namespace Kleenestar.Model.Test.Hub
         {
             // arrange
             var dbName = $"PersistAccessModifier_{accessModifier}";
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = dbName,
                 Assembly = "KleeneStar.Model.Test"
@@ -302,7 +302,7 @@ namespace Kleenestar.Model.Test.Hub
         public void PersistInheritedWorkspace()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "PersistInheritedWorkspace",
                 Assembly = "KleeneStar.Model.Test"
@@ -346,7 +346,7 @@ namespace Kleenestar.Model.Test.Hub
         public void PersistWorkspaceWithTenants()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "PersistWorkspaceWithTenants",
                 Assembly = "KleeneStar.Model.Test"
@@ -394,7 +394,7 @@ namespace Kleenestar.Model.Test.Hub
         //public void PersistWorkspaceWithPermissionProfiles()
         //{
         //    // arrange
-        //    ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+        //    ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
         //    {
         //        ConnectionString = "PersistWorkspaceWithPermissionProfiles",
         //        Assembly = "KleeneStar.Model.Test"

@@ -18,7 +18,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllForms()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllForms",
                 Assembly = "KleeneStar.Model.Test"
@@ -78,7 +78,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredForms()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredForms",
                 Assembly = "KleeneStar.Model.Test"
@@ -139,7 +139,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddFormWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddFormWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -163,7 +163,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddFormWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddFormWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -189,7 +189,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingForm()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingForm",
                 Assembly = "KleeneStar.Model.Test"
@@ -218,7 +218,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenFormNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenFormNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -241,7 +241,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingForm()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingForm",
                 Assembly = "KleeneStar.Model.Test"
@@ -268,7 +268,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveStandardFormThrows()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveStandardFormThrows",
                 Assembly = "KleeneStar.Model.Test"
@@ -296,7 +296,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveAdditionalForm()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveAdditionalForm",
                 Assembly = "KleeneStar.Model.Test"

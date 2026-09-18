@@ -19,7 +19,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllDashboards()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllDashboards",
                 Assembly = "KleeneStar.Model.Test"
@@ -47,7 +47,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredDashboards()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredDashboards",
                 Assembly = "KleeneStar.Model.Test"
@@ -82,7 +82,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddDashboardWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddDashboardWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -106,7 +106,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddDashboardWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddDashboardWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -132,7 +132,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingDashboard()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingDashboard",
                 Assembly = "KleeneStar.Model.Test"
@@ -161,7 +161,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenDashboardNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenDashboardNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -184,7 +184,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingDashboard()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingDashboard",
                 Assembly = "KleeneStar.Model.Test"

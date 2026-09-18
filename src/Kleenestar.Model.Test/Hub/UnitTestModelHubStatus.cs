@@ -18,7 +18,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllWorkflowStates()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllWorkflowStates",
                 Assembly = "KleeneStar.Model.Test"
@@ -66,7 +66,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredWorkflowStates()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredWorkflowStates",
                 Assembly = "KleeneStar.Model.Test"
@@ -115,7 +115,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddWorkflowStateWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddWorkflowStateWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -139,7 +139,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddWorkflowStateWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddWorkflowStateWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -165,7 +165,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingWorkflowState()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingWorkflowState",
                 Assembly = "KleeneStar.Model.Test"
@@ -192,7 +192,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingWorkflowState()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingWorkflowState",
                 Assembly = "KleeneStar.Model.Test"
@@ -219,7 +219,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenWorkflowStateNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenWorkflowStateNotExists",
                 Assembly = "KleeneStar.Model.Test"
