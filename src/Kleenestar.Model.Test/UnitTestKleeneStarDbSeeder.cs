@@ -870,5 +870,62 @@ namespace KleeneStar.Model.Test
 
             Assert.False(sharedObjects.SetEquals(watchedObjects));
         }
+
+        /// <summary>
+        /// Verifies that every preset a seeded template carries names a field of the
+        /// template's class, and a value that field offers where it offers a fixed set - a
+        /// priority of the class for a priority field, one of the options for a selection.
+        /// A preset on a field the class lacks is dropped on creation, and one naming a value
+        /// the input does not offer selects nothing in the create form; either way the object
+        /// comes out without the value the template was picked for.
+        /// </summary>
+        [Fact]
+        public async Task SeedTemplatePresetsNameFieldsAndValuesOfTheirClass()
+        {
+            // arrange
+            var connectionString = $"SeedTemplatePresetsNameFieldsAndValuesOfTheirClass_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var templates = db.Templates
+                .Where(x => x.Presets != null)
+                .ToList();
+
+            Assert.NotEmpty(templates);
+
+            foreach (var template in templates)
+            {
+                var fields = db.Fields
+                    .Where(x => x.ClassId == template.ClassId)
+                    .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+                var priorities = db.Priorities
+                    .Where(x => x.ClassId == template.ClassId)
+                    .Select(x => x.Name)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                var presets = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(template.Presets);
+
+                Assert.NotNull(presets);
+
+                foreach (var (name, value) in presets!)
+                {
+                    Assert.True(fields.TryGetValue(name, out var field), $"{template.Name}: presets '{name}', which its class has no field for.");
+
+                    switch (field!.FieldType)
+                    {
+                        case Entities.FieldType.Priority:
+                            Assert.True(priorities.Contains(value), $"{template.Name}: presets priority '{value}', which its class does not define.");
+                            break;
+
+                        case Entities.FieldType.Selection:
+                            Assert.Contains(value, field.Options);
+                            break;
+                    }
+                }
+            }
+        }
     }
 }

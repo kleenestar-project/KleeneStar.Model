@@ -3,19 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebUI.WebIcon;
+// the framework's own identity lives in the namespace this file imports for IIdentity, so the
+// stored one is named explicitly rather than by the name both of them carry
+using IdentityEntity = KleeneStar.Model.Entities.Identity;
 
 namespace KleeneStar.Model.Configure
 {
     /// <summary>
     /// Provides the Entity Framework Core configuration for the Identity entity type.
     /// </summary>
-    internal class IdentityConfiguration : IEntityTypeConfiguration<Identity>
+    internal class IdentityConfiguration : IEntityTypeConfiguration<IdentityEntity>
     {
         /// <summary>
         /// Configuration of the field entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<Identity> builder)
+        public void Configure(EntityTypeBuilder<IdentityEntity> builder)
         {
             builder.ToTable("Identity");
 

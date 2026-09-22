@@ -138,10 +138,12 @@ namespace KleeneStar.Model
             {
                 ("SD", "Incident") =>
                 [
+                    // a preset names a value the field offers: the incident priorities are the
+                    // P1..P4 scale, not the default one, so "Medium" would select nothing
                     new("Software Issue", "Report a bug or software problem with an application or service.", "IT Support", "/kleenestar/assets/icons/incident.svg",
-                        Presets: """{"Priority":"Medium","Impact":"Medium","Urgency":"Medium"}"""),
+                        Presets: """{"Priority":"P3 - Moderate","Impact":"Medium","Urgency":"Medium"}"""),
                     new("Outage Report", "Report a service that is unreachable or degraded for multiple users.", "IT Support", "/kleenestar/assets/icons/incident.svg",
-                        Presets: """{"Priority":"Critical","Impact":"High","Urgency":"High"}""")
+                        Presets: """{"Priority":"P1 - Critical","Impact":"High","Urgency":"High"}""")
                 ],
                 ("SD", "ServiceRequest") =>
                 [
@@ -154,10 +156,12 @@ namespace KleeneStar.Model
                 ],
                 ("SD", "Change") =>
                 [
+                    // a change carries a risk, not an impact and urgency; those are the triage
+                    // fields of the incident-like classes
                     new("Standard Change", "A pre-approved, low-risk change following an established procedure.", "Operations", "/kleenestar/assets/icons/change.svg",
-                        Presets: """{"Priority":"Low","Impact":"Low"}"""),
+                        Presets: """{"Priority":"Low","Risk":"Low"}"""),
                     new("Emergency Change", "An urgent change required to restore or protect a service.", "Operations", "/kleenestar/assets/icons/change.svg",
-                        Presets: """{"Priority":"Critical","Impact":"High","Urgency":"High"}""")
+                        Presets: """{"Priority":"Critical","Risk":"High"}""")
                 ],
                 ("SD", "Problem") =>
                 [
@@ -172,8 +176,9 @@ namespace KleeneStar.Model
                 ("DEV", "Bug") =>
                 [
                     new("Bug Report", "Report a defect with steps to reproduce, expected and actual behaviour.", "Engineering", "/kleenestar/assets/icons/bug.svg"),
+                    // the bug priorities are the blocker..trivial scale, so "High" is "Major" here
                     new("Regression", "A defect in behaviour that worked in an earlier release.", "Engineering", "/kleenestar/assets/icons/bug.svg",
-                        Presets: """{"Priority":"High"}""")
+                        Presets: """{"Priority":"Major"}""")
                 ],
                 ("DEV", "Task") =>
                 [
