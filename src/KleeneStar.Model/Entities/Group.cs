@@ -15,6 +15,19 @@ namespace KleeneStar.Model.Entities
     public class Group : IEntity, IIdentityGroup
     {
         /// <summary>
+        /// The id of the group whose members administer the installation - the accounts, and
+        /// the one-time links that set their passwords.
+        /// </summary>
+        /// <remarks>
+        /// The permission model administers workspaces and classes; nothing on its resource
+        /// chain stands above a workspace, so "who may administer the accounts" has no grant to
+        /// be read from. Until it has, the answer is the membership of this one group, which the
+        /// seeder creates as <c>Admin</c>. The check fails closed: an installation without the
+        /// group has no account administrator.
+        /// </remarks>
+        public static readonly Guid AdministratorsId = Guid.Parse("7F57823B-8B94-4284-8DA1-39C49E152C8C");
+
+        /// <summary>
         /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]
@@ -56,13 +69,24 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets the collection of policies associated with the identity group.
         /// </summary>
+        /// <remarks>
+        /// The administrators group (<see cref="AdministratorsId"/>) always holds WebExpress's
+        /// <c>SystemAccessPolicy</c>, whatever is stored: it is the installation's administration,
+        /// and the framework shows its own system pages (plugins, sitemap, monitor, ...) only to
+        /// an identity whose groups carry that policy. Stored assignments come on top.
+        /// </remarks>
         IEnumerable<IIdentityPolicy> IIdentityGroup.Policies => GroupPolicies
             .Select(x => x.Policy)
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(ResolvePolicyType)
             .Where(x => x is not null)
             .Select(x => Activator.CreateInstance(x!) as IIdentityPolicy)
-            .Where(x => x is not null)!;
+            .Where(x => x is not null)
+            .Concat(Id == AdministratorsId && State == GroupState.Active
+                ? [new WebExpress.WebCore.WebPolicies.SystemAccessPolicy()]
+                : [])
+            .GroupBy(x => x.GetType())
+            .Select(x => x.First())!;
 
         private static readonly Lazy<Dictionary<string, Type>> PolicyTypes = new(() =>
         {

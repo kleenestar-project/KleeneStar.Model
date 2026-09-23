@@ -67,9 +67,20 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("LastActive")
                 .IsRequired();
 
-            builder.Property(x => x.Current)
-                .HasColumnName("Current")
+            // which login is "this one" depends on who is looking - set per request, never stored
+            builder.Ignore(x => x.Current);
+
+            builder.Property(x => x.GrantId)
+                .HasColumnName("Grant")
+                .IsRequired()
+                .HasMaxLength(64);
+
+            builder.Property(x => x.Expires)
+                .HasColumnName("Expires")
                 .IsRequired();
+
+            builder.HasIndex(x => x.GrantId)
+                .IsUnique();
 
             builder.HasIndex(x => x.OwnerId);
         }

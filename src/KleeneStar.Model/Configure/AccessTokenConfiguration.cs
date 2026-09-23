@@ -48,6 +48,13 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(32);
 
+            builder.Property(x => x.TokenId)
+                .HasColumnName("TokenId")
+                .HasMaxLength(64);
+
+            builder.HasIndex(x => x.TokenId)
+                .IsUnique();
+
             builder.Property(x => x.TokenHash)
                 .HasColumnName("TokenHash")
                 .HasMaxLength(512);

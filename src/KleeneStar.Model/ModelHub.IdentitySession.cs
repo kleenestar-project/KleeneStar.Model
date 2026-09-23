@@ -29,9 +29,8 @@ namespace KleeneStar.Model
 
             return [.. db.IdentitySessions
                 .AsNoTracking()
-                .Where(x => x.OwnerId == ownerId)
-                .OrderByDescending(x => x.Current)
-                .ThenByDescending(x => x.LastActive)];
+                .Where(x => x.OwnerId == ownerId && x.Expires > DateTime.UtcNow)
+                .OrderByDescending(x => x.LastActive)];
         }
 
         /// <summary>
@@ -96,29 +95,129 @@ namespace KleeneStar.Model
         /// to, signing the account out everywhere else.
         /// </summary>
         /// <param name="ownerId">The signed-in identity.</param>
-        /// <returns>The number of sessions that were ended.</returns>
-        public static int RemoveOtherIdentitySessions(Guid ownerId)
+        /// <param name="currentGrantId">The grant of the login that is kept.</param>
+        /// <returns>The sessions that were removed, whose grants the caller revokes.</returns>
+        public static IReadOnlyList<IdentitySession> RemoveOtherIdentitySessions(Guid ownerId, string currentGrantId)
         {
             if (ownerId == Guid.Empty)
             {
-                return 0;
+                return [];
             }
 
             using var db = CreateDbContext();
 
             var others = db.IdentitySessions
-                .Where(x => x.OwnerId == ownerId && !x.Current)
+                .Where(x => x.OwnerId == ownerId && x.GrantId != currentGrantId)
                 .ToList();
 
             if (others.Count == 0)
             {
-                return 0;
+                return [];
             }
 
             db.IdentitySessions.RemoveRange(others);
             db.SaveChanges();
 
-            return others.Count;
+            return others;
+        }
+
+        /// <summary>
+        /// Returns the session of a grant, or <see langword="null"/> when none was recorded.
+        /// </summary>
+        /// <param name="grantId">The grant.</param>
+        /// <returns>The session, or <see langword="null"/>.</returns>
+        public static IdentitySession GetIdentitySessionByGrant(string grantId)
+        {
+            if (string.IsNullOrEmpty(grantId))
+            {
+                return null;
+            }
+
+            using var db = CreateDbContext();
+
+            return db.IdentitySessions
+                .AsNoTracking()
+                .FirstOrDefault(x => x.GrantId == grantId);
+        }
+
+        /// <summary>
+        /// Records that a grant made a request: creates its session the first time, moves its
+        /// last activity forward afterwards.
+        /// </summary>
+        /// <param name="session">The session as the request describes it.</param>
+        /// <returns>The stored session.</returns>
+        public static IdentitySession TouchIdentitySession(IdentitySession session)
+        {
+            ArgumentNullException.ThrowIfNull(session);
+
+            using var db = CreateDbContext();
+
+            var existing = db.IdentitySessions.FirstOrDefault(x => x.GrantId == session.GrantId);
+
+            if (existing is null)
+            {
+                db.IdentitySessions.Add(session);
+                db.SaveChanges();
+
+                return session;
+            }
+
+            existing.LastActive = session.LastActive;
+            existing.IpAddress = session.IpAddress ?? existing.IpAddress;
+            db.SaveChanges();
+
+            return existing;
+        }
+
+        /// <summary>
+        /// Removes the session of a grant.
+        /// </summary>
+        /// <param name="grantId">The grant.</param>
+        /// <returns>The removed session, or <see langword="null"/> when none was recorded.</returns>
+        public static IdentitySession RemoveIdentitySessionByGrant(string grantId)
+        {
+            if (string.IsNullOrEmpty(grantId))
+            {
+                return null;
+            }
+
+            using var db = CreateDbContext();
+
+            var existing = db.IdentitySessions.FirstOrDefault(x => x.GrantId == grantId);
+
+            if (existing is null)
+            {
+                return null;
+            }
+
+            db.IdentitySessions.Remove(existing);
+            db.SaveChanges();
+
+            return existing;
+        }
+
+        /// <summary>
+        /// Removes the sessions whose grant has ended - they sign nobody in any more and only
+        /// clutter the list.
+        /// </summary>
+        /// <returns>The number of sessions removed.</returns>
+        public static int RemoveExpiredIdentitySessions()
+        {
+            using var db = CreateDbContext();
+
+            var expired = db.IdentitySessions
+                .Where(x => x.Expires <= DateTime.UtcNow)
+                .ToList();
+
+            if (expired.Count == 0)
+            {
+                return 0;
+            }
+
+            db.IdentitySessions.RemoveRange(expired);
+            db.SaveChanges();
+
+            return expired.Count;
         }
     }
 }

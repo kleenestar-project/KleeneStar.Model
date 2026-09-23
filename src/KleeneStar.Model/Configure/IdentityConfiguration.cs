@@ -58,10 +58,28 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("State")
                 .IsRequired();
 
+            // optional: an external account keeps no password here, and an internal one has
+            // none until its first reset link is used
             builder.Property(x => x.PasswordHash)
                 .HasColumnName("PasswordHash")
-                .IsRequired()
                 .HasMaxLength(512);
+
+            builder.Property(x => x.PasswordChanged)
+                .HasColumnName("PasswordChanged");
+
+            // null is the internal source, see IdentitySource
+            builder.Property(x => x.AuthenticationSource)
+                .HasColumnName("AuthenticationSource")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.ExternalSubject)
+                .HasColumnName("ExternalSubject")
+                .HasMaxLength(256);
+
+            // one stored account per external subject; the internal accounts carry no subject
+            // and a null never collides
+            builder.HasIndex(x => new { x.AuthenticationSource, x.ExternalSubject })
+                .IsUnique();
 
             // profile page — publicly visible inside the tenant
             builder.Property(x => x.UserName)

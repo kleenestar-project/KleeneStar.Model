@@ -52,7 +52,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
                     Title = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    WelcomeText = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -553,7 +554,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     PersonnelNumber = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     Deputy = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
                     Tenant = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
-                    PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
+                    PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                    PasswordChanged = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    AuthenticationSource = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    ExternalSubject = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -787,6 +791,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Owner = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     Prefix = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    TokenId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     TokenHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
                     Scopes = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -872,7 +877,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     IpAddress = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LastActive = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Current = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Grant = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Expires = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -880,6 +886,31 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     table.ForeignKey(
                         name: "FK_IdentitySession_Identity_Owner",
                         column: x => x.Owner,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PasswordReset",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Identity = table.Column<Guid>(type: "TEXT", nullable: false),
+                    IssuedBy = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                    TokenHash = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Expires = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Used = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PasswordReset", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PasswordReset_Identity_Identity",
+                        column: x => x.Identity,
                         principalTable: "Identity",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
@@ -1525,11 +1556,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Workflow = table.Column<Guid>(type: "TEXT", nullable: false),
                     SourceId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TargetId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    TargetId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    GuardExpression = table.Column<string>(type: "TEXT", nullable: true),
+                    ValidatorExpression = table.Column<string>(type: "TEXT", nullable: true),
+                    PostFunctions = table.Column<string>(type: "TEXT", nullable: true),
+                    ScreenForm = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transition", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transition_Form_ScreenForm",
+                        column: x => x.ScreenForm,
+                        principalTable: "Form",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Transition_Status_SourceId",
                         column: x => x.SourceId,
@@ -2047,6 +2088,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Owner");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccessToken_TokenId",
+                table: "AccessToken",
+                column: "TokenId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Attachment_Object_Created",
                 table: "Attachment",
                 columns: new[] { "Object", "Created" });
@@ -2281,6 +2328,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 columns: new[] { "Calendar", "Date" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Identity_AuthenticationSource_ExternalSubject",
+                table: "Identity",
+                columns: new[] { "AuthenticationSource", "ExternalSubject" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Identity_Deputy",
                 table: "Identity",
                 column: "Deputy");
@@ -2299,6 +2352,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_IdentityGroupMembership_GroupId",
                 table: "IdentityGroupMembership",
                 column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdentitySession_Grant",
+                table: "IdentitySession",
+                column: "Grant",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentitySession_Owner",
@@ -2479,6 +2538,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PasswordReset_Identity",
+                table: "PasswordReset",
+                column: "Identity");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PasswordReset_TokenHash",
+                table: "PasswordReset",
+                column: "TokenHash",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PermissionAssignment_Group",
                 table: "PermissionAssignment",
                 column: "Group");
@@ -2583,6 +2653,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "Tenant",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transition_ScreenForm",
+                table: "Transition",
+                column: "ScreenForm");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transition_SourceId",
@@ -2776,6 +2851,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "ObjectWatcher");
+
+            migrationBuilder.DropTable(
+                name: "PasswordReset");
 
             migrationBuilder.DropTable(
                 name: "PermissionAssignment");

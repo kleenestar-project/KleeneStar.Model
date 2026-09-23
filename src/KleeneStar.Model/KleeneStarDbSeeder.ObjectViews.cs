@@ -14,8 +14,10 @@ namespace KleeneStar.Model
         /// Table, List, Dashboard, Kanban, ScrumSprint, ScrumBacklog. The seventh id
         /// (index 6) belongs to the issues view, which was appended after the original six
         /// and leads the display order. Index 5 — the former backlog tab — is no longer
-        /// seeded since the sprint and the backlog were merged into one scrum view, but the
-        /// id stays listed: it is well-known and still present in existing databases.
+        /// seeded since the sprint and the backlog were merged into one scrum view, and
+        /// indexes 0 and 1 — the table and list tabs — no longer are either: the issues view
+        /// is the table of the overview already. The ids stay listed: they are well-known and
+        /// still present in existing databases.
         /// </summary>
         private static readonly Dictionary<Guid, Guid[]> _objectViewIds = new()
         {
@@ -105,11 +107,12 @@ namespace KleeneStar.Model
         };
 
         /// <summary>
-        /// Per-workspace deterministic ids for the five default asset tabs, in display
-        /// order Assets, Table, List, Dashboard, Kanban. The asset overview offers the
-        /// same layouts as the issue overview except the two Scrum boards, which do not
-        /// apply to configuration items. The ids mirror the issue ids of the same
-        /// workspace with a distinct leading block so the two tab sets never collide.
+        /// Per-workspace deterministic ids for the default asset tabs, in the original order
+        /// Assets, Table, List, Dashboard, Kanban. The asset overview offers the same layouts
+        /// as the issue overview except the Scrum board, which does not apply to configuration
+        /// items; like there, the table and list tabs (indexes 1 and 2) are no longer seeded
+        /// but their ids stay listed. The ids mirror the issue ids of the same workspace with
+        /// a distinct leading block so the two tab sets never collide.
         /// </summary>
         private static readonly Dictionary<Guid, Guid[]> _assetObjectViewIds = new()
         {
@@ -186,8 +189,8 @@ namespace KleeneStar.Model
 
         /// <summary>
         /// Creates the default <see cref="ObjectView"/> tabs for every seeded workspace:
-        /// the issue tab set (Issues, Table, List, Dashboard, Kanban, Scrum) and the asset
-        /// tab set (Assets, Table, List, Dashboard, Kanban).
+        /// the issue tab set (Issues, Dashboard, Kanban, Scrum) and the asset tab set
+        /// (Assets, Dashboard, Kanban).
         /// Each kind keeps its own tab set; the curated view of each kind leads because it
         /// is the default entry of that kind's overview page hosting the tab control.
         /// </summary>
@@ -220,21 +223,15 @@ namespace KleeneStar.Model
                         $"Most recently updated issues of {workspace.Name} with personal filters.",
                         ObjectViewType.Issues, 0);
 
-                    add(ids[0], workspace.Id, ObjectKind.Issue, "Table",
-                        $"Tabular view of {workspace.Name} issues.",
-                        ObjectViewType.Table, 1);
-
-                    add(ids[1], workspace.Id, ObjectKind.Issue, "List",
-                        $"Compact list view of {workspace.Name} issues.",
-                        ObjectViewType.List, 2);
-
+                    // ids[0] and ids[1] - the former table and list tabs - are left unused
+                    // like ids[5]: the issues view is the table of the overview already
                     add(ids[2], workspace.Id, ObjectKind.Issue, "Dashboard",
                         $"Aggregated dashboard for {workspace.Name}.",
-                        ObjectViewType.Dashboard, 3);
+                        ObjectViewType.Dashboard, 1);
 
                     add(ids[3], workspace.Id, ObjectKind.Issue, "Kanban",
                         $"Kanban board of {workspace.Name} issues grouped by status.",
-                        ObjectViewType.Kanban, 4);
+                        ObjectViewType.Kanban, 2);
 
                     // the sprint board and the backlog share one view now, so only one tab
                     // is seeded. ids[5] — the former backlog tab — is deliberately left
@@ -242,7 +239,7 @@ namespace KleeneStar.Model
                     // would collide with the row an existing database still carries.
                     add(ids[4], workspace.Id, ObjectKind.Issue, "Scrum",
                         $"Active Scrum sprint and product backlog for {workspace.Name}.",
-                        ObjectViewType.ScrumSprint, 5);
+                        ObjectViewType.ScrumSprint, 3);
                 }
 
                 if (_assetObjectViewIds.TryGetValue(workspace.Id, out var assetIds))
@@ -251,21 +248,15 @@ namespace KleeneStar.Model
                         $"Most recently updated assets of {workspace.Name} with personal filters.",
                         ObjectViewType.Assets, 0);
 
-                    add(assetIds[1], workspace.Id, ObjectKind.Asset, "Table",
-                        $"Tabular view of {workspace.Name} assets.",
-                        ObjectViewType.Table, 1);
-
-                    add(assetIds[2], workspace.Id, ObjectKind.Asset, "List",
-                        $"Compact list view of {workspace.Name} assets.",
-                        ObjectViewType.List, 2);
-
+                    // assetIds[1] and assetIds[2] - the former table and list tabs - are left
+                    // unused, as on the issue side
                     add(assetIds[3], workspace.Id, ObjectKind.Asset, "Dashboard",
                         $"Aggregated dashboard for {workspace.Name} assets.",
-                        ObjectViewType.Dashboard, 3);
+                        ObjectViewType.Dashboard, 1);
 
                     add(assetIds[4], workspace.Id, ObjectKind.Asset, "Kanban",
                         $"Kanban board of {workspace.Name} assets grouped by status.",
-                        ObjectViewType.Kanban, 4);
+                        ObjectViewType.Kanban, 2);
                 }
             }
         }

@@ -33,6 +33,10 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Title")
                 .HasMaxLength(64);
 
+            // an editor document; no length limit - a greeting may carry a picture
+            builder.Property(x => x.WelcomeText)
+                .HasColumnName("WelcomeText");
+
             builder.Property(x => x.Icon)
                 .HasColumnName("Icon")
                 .HasMaxLength(256)

@@ -35,6 +35,70 @@ namespace KleeneStar.Model.Test
         }
 
         /// <summary>
+        /// Verifies that every seeded account is internal and signs in with the demo password.
+        /// </summary>
+        [Fact]
+        public async Task SeedIdentitiesSignInWithTheDemoPassword()
+        {
+            // arrange
+            var connectionString = $"SeedIdentitiesSignInWithTheDemoPassword_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            foreach (var identity in db.Identities.ToList())
+            {
+                Assert.Null(identity.AuthenticationSource);
+                Assert.NotNull(identity.PasswordChanged);
+                Assert.NotEqual(Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed, IdentityPassword.Verify(identity, KleeneStarDbSeeder.DemoPassword));
+                Assert.Equal(Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed, IdentityPassword.Verify(identity, "not the demo password"));
+            }
+        }
+
+        /// <summary>
+        /// Verifies that a database seeded before passwords were checked gets the demo password
+        /// in place of its placeholders, while a password somebody set is left alone.
+        /// </summary>
+        [Fact]
+        public async Task SeedReplacesPasswordPlaceholders()
+        {
+            // arrange
+            var connectionString = $"SeedReplacesPasswordPlaceholders_{Guid.NewGuid()}";
+
+            await using (var db = InMemoryDbContextFactory.Create(connectionString))
+            {
+                await KleeneStarDbSeeder.SeedAsync(db);
+
+                var admin = db.Identities.Single(x => x.UserName == "admin");
+                var alice = db.Identities.Single(x => x.UserName == "alice.engineer");
+                admin.PasswordHash = "$seed$v1$fb4e111dbf8b4c1cb95e0f6579f7f72f";
+                alice.PasswordHash = IdentityPassword.Hash(alice, "alice's own password");
+                await db.SaveChangesAsync();
+            }
+
+            // act
+            await using (var db = InMemoryDbContextFactory.Create(connectionString))
+            {
+                await KleeneStarDbSeeder.SeedAsync(db);
+            }
+
+            // validation
+            await using (var db = InMemoryDbContextFactory.Create(connectionString))
+            {
+                var admin = db.Identities.Single(x => x.UserName == "admin");
+                var alice = db.Identities.Single(x => x.UserName == "alice.engineer");
+
+                Assert.True(IdentityPassword.IsUsable(admin.PasswordHash));
+                Assert.NotEqual(Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed, IdentityPassword.Verify(admin, KleeneStarDbSeeder.DemoPassword));
+                Assert.NotEqual(Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed, IdentityPassword.Verify(alice, "alice's own password"));
+                Assert.Equal(Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed, IdentityPassword.Verify(alice, KleeneStarDbSeeder.DemoPassword));
+            }
+        }
+
+        /// <summary>
         /// Verifies that seeding remains idempotent for identity entities.
         /// </summary>
         [Fact]
@@ -429,9 +493,9 @@ namespace KleeneStar.Model.Test
 
         /// <summary>
         /// Verifies that the objects tab views are seeded per kind: every workspace that
-        /// receives views gets one issue tab set (Issues, Table, List, Dashboard, Kanban,
-        /// ScrumSprint, ScrumBacklog) and one asset tab set (Assets, Table, List, Dashboard,
-        /// Kanban) — the asset set omits the two Scrum boards — each in its own display
+        /// receives views gets one issue tab set (Issues, Dashboard, Kanban, Scrum) and one
+        /// asset tab set (Assets, Dashboard, Kanban) — no table or list tab, the asset set
+        /// omits the Scrum board — each in its own display
         /// order starting at zero, and that all of them are active.
         /// </summary>
         [Fact]
@@ -451,8 +515,6 @@ namespace KleeneStar.Model.Test
             var expectedIssueOrder = new[]
             {
                 Entities.ObjectViewType.Issues,
-                Entities.ObjectViewType.Table,
-                Entities.ObjectViewType.List,
                 Entities.ObjectViewType.Dashboard,
                 Entities.ObjectViewType.Kanban,
 
@@ -464,8 +526,6 @@ namespace KleeneStar.Model.Test
             var expectedAssetOrder = new[]
             {
                 Entities.ObjectViewType.Assets,
-                Entities.ObjectViewType.Table,
-                Entities.ObjectViewType.List,
                 Entities.ObjectViewType.Dashboard,
                 Entities.ObjectViewType.Kanban
             };

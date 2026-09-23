@@ -10,6 +10,14 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
+        /// The password every seeded account signs in with.
+        /// </summary>
+        /// <remarks>
+        /// Demo data, published with the source - see <see cref="SeedIdentities"/>.
+        /// </remarks>
+        public const string DemoPassword = "kleenestar";
+
+        /// <summary>
         /// Adds a predefined set of group entities to the specified database context.
         /// </summary>
         /// <param name="db">The database context to which the group entities will be added. Cannot be null.</param>
@@ -22,7 +30,7 @@ namespace KleeneStar.Model
                 Description = description
             });
 
-            addGroup("7F57823B-8B94-4284-8DA1-39C49E152C8C", "Admin", "Administrators with full system access.");
+            addGroup(Group.AdministratorsId.ToString(), "Admin", "Administrators with full system access.");
             addGroup("7420A9F7-F23A-4EC2-91E4-EDDB2E3172BD", "Engineering", "Software engineering team members.");
             addGroup("4D3739DF-EBB0-4113-A40D-EEEBF9B26182", "Marketing", "Marketing department members.");
             addGroup("7EEB5E9D-87E6-4017-A94A-884F03DF129A", "Support", "Customer support team members.");
@@ -36,19 +44,21 @@ namespace KleeneStar.Model
         /// channels, regional formats and the business data of its tenant — so the profile
         /// settings pages show a realistic account from the first run rather than a set of
         /// empty inputs.
+        /// <para>
+        /// Every seeded account is internal and signs in with <see cref="DemoPassword"/>. The
+        /// seeded identities are demo data, like the workspaces beside them; an installation
+        /// that keeps them past a demonstration has to give them passwords of their own (or
+        /// retire them), because the demo password is published with the source.
+        /// </para>
         /// </remarks>
         /// <param name="db">The database context to which the identity entities will be added. Cannot be null.</param>
         private static void SeedIdentities(KleeneStarDbContext db)
         {
-            // WARNING: Placeholder non-production hash values for development/test seed identities only.
-            // These values must never be used as real credential hashes in production environments.
-            const string adminHash = "$seed$v1$fb4e111dbf8b4c1cb95e0f6579f7f72f";
-            const string aliceHash = "$seed$v1$7d47a268f7df4d31bc8a32f8f60f8124";
-            const string marketerHash = "$seed$v1$903d043655ff45119a3d1ec0f7bc6f16";
-            const string supportHash = "$seed$v1$9b5ddb23be9945039f8d2bf8ff5b81c5";
-
             void addIdentity(Identity identity, string tenantName, params string[] groups)
             {
+                identity.PasswordHash = IdentityPassword.Hash(identity, DemoPassword);
+                identity.PasswordChanged = DateTime.UtcNow;
+
                 identity.Tenant = tenantName is null
                     ? null
                     : db.Tenants.FirstOrDefault(x => x.Name == tenantName);
@@ -72,7 +82,6 @@ namespace KleeneStar.Model
                 UserName = "admin",
                 Email = "admin@kleenestar.org",
                 EmailVerified = true,
-                PasswordHash = adminHash,
                 Bio = "Senior Product Designerin · arbeitet an Workflow-Tools im Bereich SaaS. Berlin → Lissabon → Wien.",
                 PhoneCountry = "+49",
                 Phone = "151 23456789",
@@ -98,7 +107,6 @@ namespace KleeneStar.Model
                 UserName = "alice.engineer",
                 Email = "alice.engineer@kleenestar.org",
                 EmailVerified = true,
-                PasswordHash = aliceHash,
                 Bio = "Backend-Entwicklerin · Plattform und Integrationen.",
                 PhoneCountry = "+49",
                 Phone = "170 9876543",
@@ -121,7 +129,6 @@ namespace KleeneStar.Model
                 Name = "Marketing User",
                 UserName = "marketing.user",
                 Email = "marketer@kleenestar.org",
-                PasswordHash = marketerHash,
                 Location = "München, Deutschland",
                 Position = "Marketing Manager",
                 Language = "de",
@@ -138,7 +145,6 @@ namespace KleeneStar.Model
                 Name = "Support User",
                 UserName = "support.user",
                 Email = "support@kleenestar.org",
-                PasswordHash = supportHash,
                 Location = "Wien, Österreich",
                 Position = "Service Desk Agent",
                 Language = "de",
@@ -166,6 +172,34 @@ namespace KleeneStar.Model
             }
 
             profile.DeputyId = deputy.Id;
+        }
+
+        /// <summary>
+        /// Gives the demo password to every account an earlier seeder left with a
+        /// <c>$seed$</c> placeholder.
+        /// </summary>
+        /// <remarks>
+        /// Before passwords were checked, the seeder wrote placeholders that no password
+        /// produces; with the check in place those accounts could never sign in again, and
+        /// nothing in the application could let them. Only the placeholders are touched - an
+        /// account whose password somebody set keeps it - so the step is safe to run on every
+        /// start, and does nothing once the placeholders are gone.
+        /// </remarks>
+        /// <param name="db">The database context holding the identities. Cannot be null.</param>
+        /// <returns><see langword="true"/> when an account was changed.</returns>
+        private static bool UpgradeSeedPasswords(KleeneStarDbContext db)
+        {
+            var placeholders = db.Identities
+                .Where(x => x.PasswordHash != null && x.PasswordHash.StartsWith(IdentityPassword.SeedPlaceholderPrefix))
+                .ToList();
+
+            foreach (var identity in placeholders)
+            {
+                identity.PasswordHash = IdentityPassword.Hash(identity, DemoPassword);
+                identity.PasswordChanged = DateTime.UtcNow;
+            }
+
+            return placeholders.Count > 0;
         }
     }
 }

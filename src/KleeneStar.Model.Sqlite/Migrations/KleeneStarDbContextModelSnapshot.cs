@@ -101,9 +101,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("TokenHash");
 
+                    b.Property<string>("TokenId")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TokenId");
+
                     b.HasKey("RawId");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("TokenId")
+                        .IsUnique();
 
                     b.ToTable("AccessToken", (string)null);
                 });
@@ -366,6 +374,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("TEXT")
                         .HasColumnName("Title");
+
+                    b.Property<string>("WelcomeText")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("WelcomeText");
 
                     b.HasKey("RawId");
 
@@ -1390,6 +1402,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("AuthenticationSource")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("AuthenticationSource");
+
                     b.Property<string>("Avatar")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT")
@@ -1430,6 +1447,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("EmailVerified");
 
+                    b.Property<string>("ExternalSubject")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ExternalSubject");
+
                     b.Property<Guid>("Id")
                         .HasMaxLength(36)
                         .HasColumnType("TEXT")
@@ -1451,8 +1473,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<DateTime?>("PasswordChanged")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PasswordChanged");
+
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("TEXT")
                         .HasColumnName("PasswordHash");
@@ -1522,6 +1547,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasIndex("UserName");
 
+                    b.HasIndex("AuthenticationSource", "ExternalSubject")
+                        .IsUnique();
+
                     b.ToTable("Identity", (string)null);
                 });
 
@@ -1558,15 +1586,21 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
 
-                    b.Property<bool>("Current")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("Current");
-
                     b.Property<string>("Device")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
                         .HasColumnName("Device");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Expires");
+
+                    b.Property<string>("GrantId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Grant");
 
                     b.Property<Guid>("Id")
                         .HasMaxLength(36)
@@ -1596,6 +1630,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Owner");
 
                     b.HasKey("RawId");
+
+                    b.HasIndex("GrantId")
+                        .IsUnique();
 
                     b.HasIndex("OwnerId");
 
@@ -2496,6 +2533,55 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("ObjectWatcher", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.PasswordReset", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Expires");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<Guid?>("IssuedById")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("IssuedBy");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TokenHash");
+
+                    b.Property<DateTime?>("Used")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Used");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("IdentityId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("PasswordReset", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.PermissionAssignment", b =>
@@ -4416,6 +4502,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Identity");
 
                     b.Navigation("Object");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.PasswordReset", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Identity")
+                        .WithMany()
+                        .HasForeignKey("IdentityId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Identity");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.PermissionAssignment", b =>

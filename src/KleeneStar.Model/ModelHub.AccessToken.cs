@@ -52,6 +52,45 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the token whose WebExpress token id is the supplied one.
+        /// </summary>
+        /// <param name="tokenId">The token id (<c>jti</c>).</param>
+        /// <returns>The token, or <see langword="null"/>.</returns>
+        public static AccessToken GetAccessTokenByTokenId(string tokenId)
+        {
+            if (string.IsNullOrEmpty(tokenId))
+            {
+                return null;
+            }
+
+            using var db = CreateDbContext();
+
+            return db.AccessTokens
+                .AsNoTracking()
+                .FirstOrDefault(x => x.TokenId == tokenId);
+        }
+
+        /// <summary>
+        /// Records that a token authenticated a request.
+        /// </summary>
+        /// <param name="tokenId">The id of the row.</param>
+        /// <param name="lastUsed">The point in time.</param>
+        public static void TouchAccessToken(Guid tokenId, DateTime lastUsed)
+        {
+            using var db = CreateDbContext();
+
+            var existing = db.AccessTokens.FirstOrDefault(x => x.Id == tokenId);
+
+            if (existing is null)
+            {
+                return;
+            }
+
+            existing.LastUsed = lastUsed;
+            db.SaveChanges();
+        }
+
+        /// <summary>
         /// Adds the specified token to the database if it does not already exist.
         /// </summary>
         /// <param name="token">The token to add.</param>

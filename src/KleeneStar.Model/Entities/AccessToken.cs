@@ -55,6 +55,13 @@ namespace KleeneStar.Model.Entities
         public string Prefix { get; set; }
 
         /// <summary>
+        /// Gets or sets the id (<c>jti</c>) of the WebExpress personal access token this row
+        /// describes. The token is revoked in the framework's token store under this id, and a
+        /// request carrying it is matched back to this row by it.
+        /// </summary>
+        public string TokenId { get; set; }
+
+        /// <summary>
         /// Gets or sets the hash of the token secret. The secret itself is never persisted.
         /// </summary>
         [JsonIgnore]

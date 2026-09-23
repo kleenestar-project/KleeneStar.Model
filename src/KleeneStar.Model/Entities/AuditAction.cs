@@ -154,7 +154,21 @@ namespace KleeneStar.Model.Entities
         /// An endpoint outside the installation boundary was called. Used for API traffic that
         /// is worth recording as access even when it changed nothing.
         /// </summary>
-        Invoked
+        Invoked,
+
+        /// <summary>
+        /// The password of an internal account was set - by its owner, or through a reset link.
+        /// The actor says which (the owner, or nobody for a link); the password reaches the log
+        /// in no form.
+        /// </summary>
+        PasswordChanged,
+
+        /// <summary>
+        /// A one-time link that sets the password of an internal account was issued. The event
+        /// names the account and, as its actor, the administrator who issued it; the secret the
+        /// link carries is not recorded.
+        /// </summary>
+        PasswordResetIssued
     }
 
     /// <summary>
@@ -196,6 +210,8 @@ namespace KleeneStar.Model.Entities
                 AuditAction.Imported => "imported",
                 AuditAction.Exported => "exported",
                 AuditAction.Invoked => "invoked",
+                AuditAction.PasswordChanged => "passwordchanged",
+                AuditAction.PasswordResetIssued => "passwordresetissued",
                 _ => "updated"
             };
         }

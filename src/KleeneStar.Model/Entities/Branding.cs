@@ -65,6 +65,18 @@ namespace KleeneStar.Model.Entities
         public ImageIcon Icon { get; set; }
 
         /// <summary>
+        /// Gets or sets the text a visitor who is not signed in reads on the start page, beside
+        /// the sign-in. An editor document, written with the prose editor on the branding page;
+        /// an empty value shows a built-in greeting.
+        /// </summary>
+        /// <remarks>
+        /// It is the one thing the installation says to somebody it does not know yet - who runs
+        /// it, what it is for, whom to ask for an account - so it belongs to the installation's
+        /// identity rather than to any workspace.
+        /// </remarks>
+        public string WelcomeText { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public Branding()

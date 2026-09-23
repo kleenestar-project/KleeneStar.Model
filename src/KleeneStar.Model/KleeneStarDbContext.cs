@@ -322,6 +322,11 @@ namespace KleeneStar.Model
         public DbSet<AccessToken> AccessTokens { get; set; }
 
         /// <summary>
+        /// Gets or sets the one-time links that set the password of an internal account.
+        /// </summary>
+        public DbSet<PasswordReset> PasswordResets { get; set; }
+
+        /// <summary>
         /// Gets or sets the per-identity saved searches over the object model.
         /// </summary>
         public DbSet<SavedSearch> SavedSearches { get; set; }

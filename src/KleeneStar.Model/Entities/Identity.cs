@@ -193,11 +193,54 @@ namespace KleeneStar.Model.Entities
         IEnumerable<IIdentityGroup> IIdentity.Groups => GroupMemberships.Select(x => x.Group);
 
         /// <summary>
-        /// Gets or sets the hashed representation of the user's password.
+        /// Gets or sets the hashed representation of the user's password, or
+        /// <see langword="null"/> when the account has none.
         /// </summary>
+        /// <remarks>
+        /// Only an internal account (<see cref="AuthenticationSource"/> unset) ever carries one:
+        /// the password of an external account lives with the source that authenticates it.
+        /// An internal account without a hash cannot sign in with a password until one is set
+        /// through a reset link. The format is that of ASP.NET's <c>PasswordHasher</c>, the one
+        /// WebExpress's own <c>LocalIdentityProvider</c> verifies, so both read the same column.
+        /// </remarks>
         [JsonIgnore]
         [AuditRedacted]
         public string PasswordHash { get; set; }
+
+        /// <summary>
+        /// Gets or sets the point in time the password was last set, or <see langword="null"/>
+        /// when it never was (or the account is external).
+        /// </summary>
+        public DateTime? PasswordChanged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the key of the authentication source that owns the account's
+        /// credentials, or <see langword="null"/> for an internal account whose password this
+        /// installation keeps.
+        /// </summary>
+        /// <remarks>
+        /// There is no enum of sources: the key names an entry of the core's
+        /// <c>AuthenticationSourceCatalog</c>, which a plugin extends (OpenID Connect, LDAP, ...).
+        /// A key that names no registered source - its plugin was uninstalled - signs nobody in:
+        /// unlike a renderer, an authentication source does not fall back to a default, because
+        /// the fallback would be the local password check of an account that never had one
+        /// here. See <see cref="IdentitySource"/>.
+        /// </remarks>
+        [RestConverter<AuthenticationSourceConverter>]
+        public string AuthenticationSource { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier the external source knows the account by (the OpenID
+        /// Connect subject, an LDAP distinguished name, ...), or <see langword="null"/> for an
+        /// internal account - and for an external one that has not signed in yet.
+        /// </summary>
+        /// <remarks>
+        /// Together with <see cref="AuthenticationSource"/> this is the one link between a
+        /// stored account and an external sign-in. It is deliberately not the user name or the
+        /// e-mail address: those are claims the external directory may hand to anybody, and
+        /// matching on them would let an external account take over an internal one.
+        /// </remarks>
+        public string ExternalSubject { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the Identity class.

@@ -67,19 +67,16 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
-            // IdentitySessions and AccessTokens must be seeded AFTER Identities — both are
-            // owned by the identity whose profile pages list them.
-            if (!db.IdentitySessions.Any())
+            // a database seeded before passwords were checked carries placeholders no password
+            // matches; without this its accounts could never sign in again
+            if (UpgradeSeedPasswords(db))
             {
-                SeedIdentitySessions(db);
                 await db.SaveChangesAsync();
             }
 
-            if (!db.AccessTokens.Any())
-            {
-                SeedAccessTokens(db);
-                await db.SaveChangesAsync();
-            }
+            // no sessions and no access tokens are seeded: both are credentials the WebExpress
+            // token store knows about - a session is a sign-in grant, a token a personal access
+            // token - and a seeded row would describe a credential that does not exist
 
             if (!db.Workspaces.Any())
             {

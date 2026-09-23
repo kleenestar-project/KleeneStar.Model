@@ -11,8 +11,17 @@ namespace KleeneStar.Model.Entities
     /// they do not recognize.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// A login is a WebExpress <em>grant</em>: the signed access and refresh tokens a sign-in
+    /// issues all carry its id (<see cref="GrantId"/>), and a refresh renews the tokens without
+    /// changing it. The row is written the first time a request carries the grant, so every way
+    /// of signing in is listed, and ending the row revokes the grant in the framework's token
+    /// store - which every request is checked against.
+    /// </para>
+    /// <para>
     /// Not to be confused with <see cref="UserSession"/>, which is the generic per-identity
     /// key/value store for UI preferences. This entity describes a login, not a setting.
+    /// </para>
     /// </remarks>
     public class IdentitySession : IEntity
     {
@@ -77,9 +86,23 @@ namespace KleeneStar.Model.Entities
         public DateTime LastActive { get; set; }
 
         /// <summary>
+        /// Gets or sets the id of the WebExpress grant the login is.
+        /// </summary>
+        public string GrantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the point in time the grant ends however often it is refreshed.
+        /// </summary>
+        public DateTime Expires { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this is the session the page is being served to. The current
         /// session carries a badge instead of a sign-out button.
         /// </summary>
+        /// <remarks>
+        /// Not stored: which login is "this one" depends on who is looking, so it is set per
+        /// request by the manager that lists the sessions.
+        /// </remarks>
         public bool Current { get; set; }
 
         /// <summary>
