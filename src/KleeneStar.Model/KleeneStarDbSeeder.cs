@@ -56,6 +56,11 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
+            if (EnsureBuiltInGroups(db))
+            {
+                await db.SaveChangesAsync();
+            }
+
             if (!db.Identities.Any())
             {
                 SeedIdentities(db);
@@ -81,6 +86,12 @@ namespace KleeneStar.Model
             if (!db.Workspaces.Any())
             {
                 SeedWorkspaces(db);
+                await db.SaveChangesAsync();
+
+                // the demo workspaces start administered, the way a workspace created from a
+                // template does - only in the run that seeds them: a store seeded earlier keeps
+                // the grants (or the lack of them) its administrators left it with
+                SeedWorkspacePermissions(db);
                 await db.SaveChangesAsync();
             }
 

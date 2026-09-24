@@ -23,7 +23,10 @@ namespace KleeneStar.Model.Test
             await KleeneStarDbSeeder.SeedAsync(db);
 
             // validation
-            Assert.Equal(4, db.Groups.Count());
+            // the four demo groups and the two built-in ones whose membership is implicit
+            Assert.Equal(6, db.Groups.Count());
+            Assert.Contains(db.Groups, x => x.Id == Entities.Group.AuthenticatedId);
+            Assert.Contains(db.Groups, x => x.Id == Entities.Group.AnonymousId);
             Assert.Equal(4, db.Identities.Count());
 
             var admin = db.Identities
@@ -121,7 +124,7 @@ namespace KleeneStar.Model.Test
             // validation
             await using (var db = InMemoryDbContextFactory.Create(connectionString))
             {
-                Assert.Equal(4, db.Groups.Count());
+                Assert.Equal(6, db.Groups.Count());
                 Assert.Equal(4, db.Identities.Count());
                 Assert.Equal(4, db.Identities.Include(x => x.GroupMemberships).Sum(x => x.GroupMemberships.Count));
             }
@@ -985,6 +988,76 @@ namespace KleeneStar.Model.Test
                             break;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Verifies that every seeded workspace starts administered the way a workspace created
+        /// from a template does: the administrators administer it, every signed-in account edits
+        /// it, and nothing is granted to the anonymous group - which is what leaves a visitor who
+        /// is not signed in out.
+        /// </summary>
+        [Fact]
+        public async Task SeedWorkspacePermissions()
+        {
+            // arrange
+            var connectionString = $"SeedWorkspacePermissions_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var grants = db.PermissionAssignments.ToList();
+
+            Assert.NotEmpty(db.Workspaces);
+
+            foreach (var workspace in db.Workspaces.ToList())
+            {
+                var mine = grants.Where(x => x.Scope == WorkspacePermissionDefaults.Scope && x.ScopeId == workspace.Id.ToString()).ToList();
+
+                Assert.Contains(mine, x => x.GroupId == Entities.Group.AdministratorsId && x.Policy == WorkspacePermissionDefaults.AdminPolicy);
+                Assert.Contains(mine, x => x.GroupId == Entities.Group.AuthenticatedId && x.Policy == WorkspacePermissionDefaults.EditPolicy);
+            }
+
+            Assert.DoesNotContain(grants, x => x.GroupId == Entities.Group.AnonymousId);
+        }
+
+        /// <summary>
+        /// Verifies that a store seeded earlier gets the built-in groups on the next start - a
+        /// template needs them to grant to - but keeps the grants (or the lack of them) its
+        /// administrators left it with: the defaults are written only in the run that seeds the
+        /// workspaces.
+        /// </summary>
+        [Fact]
+        public async Task SeedBuiltInGroupsIntoAnEarlierStoreWithoutGranting()
+        {
+            // arrange
+            var connectionString = $"SeedBuiltInGroupsIntoAnEarlierStore_{Guid.NewGuid()}";
+
+            await using (var db = InMemoryDbContextFactory.Create(connectionString))
+            {
+                await KleeneStarDbSeeder.SeedAsync(db);
+
+                // the state of a store seeded before either existed
+                db.PermissionAssignments.RemoveRange(db.PermissionAssignments);
+                db.Groups.RemoveRange(db.Groups.Where(x => x.Id == Entities.Group.AuthenticatedId || x.Id == Entities.Group.AnonymousId));
+                await db.SaveChangesAsync();
+            }
+
+            // act
+            await using (var db = InMemoryDbContextFactory.Create(connectionString))
+            {
+                await KleeneStarDbSeeder.SeedAsync(db);
+            }
+
+            // validation
+            await using (var db = InMemoryDbContextFactory.Create(connectionString))
+            {
+                Assert.Contains(db.Groups, x => x.Id == Entities.Group.AuthenticatedId);
+                Assert.Contains(db.Groups, x => x.Id == Entities.Group.AnonymousId);
+                Assert.Empty(db.PermissionAssignments);
             }
         }
     }

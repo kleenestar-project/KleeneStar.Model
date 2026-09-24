@@ -28,6 +28,39 @@ namespace KleeneStar.Model.Entities
         public static readonly Guid AdministratorsId = Guid.Parse("7F57823B-8B94-4284-8DA1-39C49E152C8C");
 
         /// <summary>
+        /// The id of the built-in group every signed-in, active account belongs to.
+        /// </summary>
+        /// <remarks>
+        /// Its membership is implicit - no row names it, and the permission evaluation adds it
+        /// to the groups of every caller it can resolve to an account. It is what a workspace
+        /// template grants its everyday access to, because "everybody who signed in" has no
+        /// other group to be named by, and a grant to it deliberately leaves out a caller who
+        /// is not signed in. See <see cref="IsImplicit"/>.
+        /// </remarks>
+        public static readonly Guid AuthenticatedId = Guid.Parse("0A741FBC-F2BB-4E40-975A-B00B215EE1DF");
+
+        /// <summary>
+        /// The id of the built-in group every caller belongs to, signed in or not.
+        /// </summary>
+        /// <remarks>
+        /// A grant to it opens a resource to anonymous visitors, which is why nothing grants to it
+        /// by default: an administrator who wants a public workspace says so explicitly. Its
+        /// membership is implicit like <see cref="AuthenticatedId"/>'s.
+        /// </remarks>
+        public static readonly Guid AnonymousId = Guid.Parse("7D45AE88-F1C1-40C1-825A-57FA8712A952");
+
+        /// <summary>
+        /// Determines whether a group's membership is implicit - decided by whether and how the
+        /// caller signed in, not by rows - so it can neither be joined, left nor deleted.
+        /// </summary>
+        /// <param name="groupId">The id of the group.</param>
+        /// <returns><see langword="true"/> for the built-in signed-in and anonymous groups.</returns>
+        public static bool IsImplicit(Guid groupId)
+        {
+            return groupId == AuthenticatedId || groupId == AnonymousId;
+        }
+
+        /// <summary>
         /// Gets or sets the database id.
         /// </summary>
         [IndexIgnore]

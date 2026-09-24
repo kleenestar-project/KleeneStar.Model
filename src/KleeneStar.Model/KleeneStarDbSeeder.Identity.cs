@@ -37,6 +37,38 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Adds the built-in groups whose membership is implicit - every signed-in account, every
+        /// caller - where the store does not carry them yet.
+        /// </summary>
+        /// <remarks>
+        /// Runs on every start, not only on a fresh store: a grant has to name a stored group, and
+        /// a workspace created from a template on a database seeded before these groups existed
+        /// would otherwise have nobody to grant its everyday access to.
+        /// </remarks>
+        /// <param name="db">The database context. Cannot be null.</param>
+        /// <returns><see langword="true"/> when a group was added and the context needs saving.</returns>
+        private static bool EnsureBuiltInGroups(KleeneStarDbContext db)
+        {
+            var added = false;
+
+            void ensure(Guid id, string name, string description)
+            {
+                if (db.Groups.Any(x => x.Id == id))
+                {
+                    return;
+                }
+
+                db.Groups.Add(new Group(id) { Name = name, Description = description });
+                added = true;
+            }
+
+            ensure(Group.AuthenticatedId, "Signed-in users", "Every signed-in account. Membership is implicit.");
+            ensure(Group.AnonymousId, "Anonymous", "Every caller, including visitors who are not signed in. Membership is implicit.");
+
+            return added;
+        }
+
+        /// <summary>
         /// Adds a predefined set of identity entities and group memberships to the specified database context.
         /// </summary>
         /// <remarks>
