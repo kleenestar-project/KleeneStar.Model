@@ -39,6 +39,9 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Query)
                 .HasColumnName("Query");
 
+            builder.Property(x => x.Columns)
+                .HasColumnName("Columns");
+
             builder.Property(x => x.OwnerId)
                 .HasColumnName("Owner")
                 .IsRequired();

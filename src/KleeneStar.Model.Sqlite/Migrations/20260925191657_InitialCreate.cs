@@ -926,6 +926,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Query = table.Column<string>(type: "TEXT", nullable: true),
+                    Columns = table.Column<string>(type: "TEXT", nullable: true),
                     Owner = table.Column<Guid>(type: "TEXT", nullable: false),
                     Starred = table.Column<bool>(type: "INTEGER", nullable: false),
                     LastUsed = table.Column<DateTime>(type: "TEXT", nullable: false),
