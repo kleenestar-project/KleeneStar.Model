@@ -9,8 +9,9 @@ namespace KleeneStar.Model.Entities
     /// Represents a board-owned column of a <see cref="KanbanBoard"/>. The column's display
     /// name and accent color are owned by the board and edited independently of the linked
     /// <see cref="StatusCategory"/> (renaming or recoloring a board column never rewrites the
-    /// shared category row). The optional <see cref="CategoryId"/> is what places cards: a
-    /// card whose resolved status category matches this column's category lands here.
+    /// shared category row). What places cards is the column's statuses: the ones named in
+    /// <see cref="Statuses"/> when an administrator assigned some, otherwise every status of the
+    /// optional <see cref="CategoryId"/>. Dropping a card here moves it into one of them.
     /// </summary>
     public class KanbanBoardColumn : IEntity
     {
@@ -51,6 +52,18 @@ namespace KleeneStar.Model.Entities
         /// card automatically.
         /// </summary>
         public Guid? CategoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the workflow statuses assigned to the column, as a comma-separated list
+        /// of normalized status names (letters and digits, lower case - so a list separator
+        /// never occurs inside one), or <c>null</c> when the column follows its
+        /// <see cref="CategoryId"/> and holds every status of that category.
+        /// </summary>
+        /// <remarks>
+        /// Statuses are defined per class and a board spans the classes of a workspace, so a
+        /// status is named here the way the board addresses it: by name, across classes.
+        /// </remarks>
+        public string Statuses { get; set; }
 
         /// <summary>
         /// Gets or sets the transient client key of a column that was added on the board but not

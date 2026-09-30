@@ -1713,6 +1713,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Position");
 
+                    b.Property<string>("Statuses")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Statuses");
+
                     b.HasKey("RawId");
 
                     b.HasIndex("BoardId");

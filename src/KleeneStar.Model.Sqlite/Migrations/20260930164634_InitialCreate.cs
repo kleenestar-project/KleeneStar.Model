@@ -458,6 +458,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
                     Position = table.Column<int>(type: "INTEGER", nullable: false),
                     Category = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Statuses = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
                     Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     Board = table.Column<Guid>(type: "TEXT", nullable: false)
                 },

@@ -44,6 +44,10 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.CategoryId)
                 .HasColumnName("Category");
 
+            builder.Property(x => x.Statuses)
+                .HasColumnName("Statuses")
+                .HasMaxLength(2048);
+
             builder.Property(x => x.Key)
                 .HasColumnName("Key")
                 .HasMaxLength(64);

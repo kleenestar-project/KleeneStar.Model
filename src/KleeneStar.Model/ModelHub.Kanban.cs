@@ -134,6 +134,7 @@ namespace KleeneStar.Model
                 column.Name = desired.Name;
                 column.Color = desired.Color;
                 column.CategoryId = desired.CategoryId;
+                column.Statuses = desired.Statuses;
                 column.Position = index;
                 keep.Add(column.Id);
             }
