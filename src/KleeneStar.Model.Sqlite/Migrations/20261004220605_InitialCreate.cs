@@ -100,26 +100,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dashboard",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    State = table.Column<int>(type: "INTEGER", nullable: false),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dashboard", x => x.Id);
-                    table.UniqueConstraint("AK_Dashboard_Guid", x => x.Guid);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Group",
                 columns: table => new
                 {
@@ -134,6 +114,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 {
                     table.PrimaryKey("PK_Group", x => x.Id);
                     table.UniqueConstraint("AK_Group_Guid", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Insight",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dashboard"),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Insight", x => x.Id);
+                    table.UniqueConstraint("AK_Insight_Guid", x => x.Guid);
                 });
 
             migrationBuilder.CreateTable(
@@ -353,56 +354,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DashboardCategory",
-                columns: table => new
-                {
-                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DashboardId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DashboardCategory", x => new { x.CategoryId, x.DashboardId });
-                    table.ForeignKey(
-                        name: "FK_DashboardCategory_Category_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Category",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DashboardCategory_Dashboard_DashboardId",
-                        column: x => x.DashboardId,
-                        principalTable: "Dashboard",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DashboardColumn",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
-                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
-                    Position = table.Column<int>(type: "INTEGER", nullable: false),
-                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
-                    Dashboard = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DashboardColumn", x => x.Id);
-                    table.UniqueConstraint("AK_DashboardColumn_Guid", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_DashboardColumn_Dashboard_Dashboard",
-                        column: x => x.Dashboard,
-                        principalTable: "Dashboard",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GroupPolicy",
                 columns: table => new
                 {
@@ -444,6 +395,56 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         column: x => x.Group,
                         principalTable: "Group",
                         principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DashboardColumn",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    Insight = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DashboardColumn", x => x.Id);
+                    table.UniqueConstraint("AK_DashboardColumn_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_DashboardColumn_Insight_Insight",
+                        column: x => x.Insight,
+                        principalTable: "Insight",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InsightCategory",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                    InsightId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InsightCategory", x => new { x.CategoryId, x.InsightId });
+                    table.ForeignKey(
+                        name: "FK_InsightCategory_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InsightCategory_Insight_InsightId",
+                        column: x => x.InsightId,
+                        principalTable: "Insight",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -2266,20 +2267,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 columns: new[] { "ViewKey", "ContextKey" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dashboard_Name",
-                table: "Dashboard",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DashboardCategory_DashboardId",
-                table: "DashboardCategory",
-                column: "DashboardId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DashboardColumn_Dashboard",
+                name: "IX_DashboardColumn_Insight",
                 table: "DashboardColumn",
-                column: "Dashboard");
+                column: "Insight");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Field_Class_Name",
@@ -2365,6 +2355,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "IX_IdentitySession_Owner",
                 table: "IdentitySession",
                 column: "Owner");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Insight_Name",
+                table: "Insight",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InsightCategory_InsightId",
+                table: "InsightCategory",
+                column: "InsightId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_KanbanBoard_Workspace_Kind",
@@ -2798,9 +2799,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "CustomQuickfilter");
 
             migrationBuilder.DropTable(
-                name: "DashboardCategory");
-
-            migrationBuilder.DropTable(
                 name: "FormElement");
 
             migrationBuilder.DropTable(
@@ -2814,6 +2812,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "IdentitySession");
+
+            migrationBuilder.DropTable(
+                name: "InsightCategory");
 
             migrationBuilder.DropTable(
                 name: "KanbanBoardColumn");
@@ -2960,7 +2961,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "Calendar");
 
             migrationBuilder.DropTable(
-                name: "Dashboard");
+                name: "Insight");
 
             migrationBuilder.DropTable(
                 name: "StatusCategory");

@@ -7,7 +7,8 @@ using WebExpress.WebIndex.WebAttribute;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a column within a dashboard, used to arrange widgets in a structured layout.
+    /// Represents a column within a dashboard - the content of an insight of the dashboard type -
+    /// used to arrange widgets in a structured layout.
     /// </summary>
     public class DashboardColumn : IEntity
     {
@@ -55,15 +56,15 @@ namespace KleeneStar.Model.Entities
         public string Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the dashboard that contains this column.
+        /// Gets or sets the unique identifier of the insight whose dashboard contains this column.
         /// </summary>
-        public Guid DashboardId { get; set; }
+        public Guid InsightId { get; set; }
 
         /// <summary>
-        /// Gets or sets the dashboard that contains this column.
+        /// Gets or sets the insight whose dashboard contains this column.
         /// </summary>
         [JsonIgnore]
-        public Dashboard Dashboard { get; set; }
+        public Insight Insight { get; set; }
 
         /// <summary>
         /// Returns the collection of widgets arranged in this column.

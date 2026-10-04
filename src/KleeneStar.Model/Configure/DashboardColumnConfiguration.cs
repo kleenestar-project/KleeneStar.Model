@@ -49,13 +49,13 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Key")
                 .HasMaxLength(64);
 
-            builder.Property(x => x.DashboardId)
-                .HasColumnName("Dashboard")
+            builder.Property(x => x.InsightId)
+                .HasColumnName("Insight")
                 .IsRequired();
 
-            builder.HasOne(x => x.Dashboard)
+            builder.HasOne(x => x.Insight)
                 .WithMany(d => d.Columns)
-                .HasForeignKey(x => x.DashboardId)
+                .HasForeignKey(x => x.InsightId)
                 .HasPrincipalKey(d => d.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -68,7 +68,7 @@ namespace KleeneStar.Model.Configure
 
             // Column names are not unique: the board "…" menu can add several columns that share
             // the default "New column" name, so only a non-unique lookup index is kept.
-            builder.HasIndex(x => x.DashboardId);
+            builder.HasIndex(x => x.InsightId);
         }
     }
 }

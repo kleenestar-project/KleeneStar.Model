@@ -12,25 +12,27 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Adds default dashboards to the specified database context if none already exist.
+        /// Adds the default insights - dashboards, the one insight type the core ships - to the
+        /// specified database context if none already exist.
         /// </summary>
         /// <param name="db">
-        /// The database context to which the default dashboards will be added. Cannot be null.
+        /// The database context to which the default insights will be added. Cannot be null.
         /// </param>
-        private static void SeedDashboards(KleeneStarDbContext db)
+        private static void SeedInsights(KleeneStarDbContext db)
         {
             void add(string id, string name, string description, string icon,
              IEnumerable<DashboardColumn> columns, params string[] categories)
             {
                 AttachWidgetsToColumns(columns);
 
-                db.Dashboards.Add(new Dashboard
+                db.Insights.Add(new Insight
                 {
                     Id = Guid.Parse(id),
                     Name = name,
+                    Type = Insight.DashboardType,
                     Description = description,
                     Icon = ImageIcon.FromString(icon),
-                    State = DashboardState.Active,
+                    State = InsightState.Active,
                     Categories = [.. db.Categories.Where(x => categories.Contains(x.Name))],
                     Columns = [.. columns],
                     Created = DateTime.UtcNow,

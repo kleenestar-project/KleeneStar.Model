@@ -7,17 +7,17 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Configure
 {
     /// <summary>
-    /// Provides the Entity Framework Core configuration for the dashboard entity type.
+    /// Provides the Entity Framework Core configuration for the insight entity type.
     /// </summary>
-    internal class DashboardConfiguration : IEntityTypeConfiguration<Dashboard>
+    internal class InsightConfiguration : IEntityTypeConfiguration<Insight>
     {
         /// <summary>
-        /// Configuration of the dashboard entity.
+        /// Configuration of the insight entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<Dashboard> builder)
+        public void Configure(EntityTypeBuilder<Insight> builder)
         {
-            builder.ToTable("Dashboard");
+            builder.ToTable("Insight");
 
             builder.HasKey(x => x.RawId);
 
@@ -30,24 +30,32 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(64);
 
+            // the key of the open type catalog; the default is what every insight that was a
+            // dashboard carries, so the migration fills existing rows with it
+            builder.Property(x => x.Type)
+                .HasColumnName("Type")
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue(Insight.DashboardType);
+
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
 
-            // MANY-TO-MANY: Dashboard <-> Category
+            // MANY-TO-MANY: Insight <-> Category
             builder.HasMany(d => d.Categories)
-                .WithMany(c => c.Dashboards)
+                .WithMany(c => c.Insights)
                 .UsingEntity<Dictionary<string, object>>
                 (
-                    "DashboardCategory",
+                    "InsightCategory",
                     j => j
                         .HasOne<Category>()
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade),
                     j => j
-                        .HasOne<Dashboard>()
+                        .HasOne<Insight>()
                         .WithMany()
-                        .HasForeignKey("DashboardId")
+                        .HasForeignKey("InsightId")
                         .OnDelete(DeleteBehavior.Cascade)
                 );
 
@@ -79,10 +87,10 @@ namespace KleeneStar.Model.Configure
             builder.HasIndex(x => x.Name)
                 .IsUnique();
 
-            // ONE-TO-MANY: Dashboard -> DashboardColumn
+            // ONE-TO-MANY: Insight -> DashboardColumn (the content of the dashboard type)
             builder.HasMany(d => d.Columns)
-                .WithOne(c => c.Dashboard)
-                .HasForeignKey(c => c.DashboardId)
+                .WithOne(c => c.Insight)
+                .HasForeignKey(c => c.InsightId)
                 .HasPrincipalKey(d => d.Id)
                 .OnDelete(DeleteBehavior.Cascade);
         }

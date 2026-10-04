@@ -155,9 +155,9 @@ namespace KleeneStar.Model
         public DbSet<ObjectDraft> ObjectDrafts { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of dashboards.
+        /// Gets or sets the collection of insights.
         /// </summary>
-        public DbSet<Dashboard> Dashboards { get; set; }
+        public DbSet<Insight> Insights { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of dashboard columns.

@@ -39,7 +39,7 @@ namespace KleeneStar.Model.Converters
                            .Select(g => g.Value);
 
                 //return ids
-                //    .Select(id => CoreHub.DashboardManager?.GetDashboard(id))
+                //    .Select(id => CoreHub.InsightManager?.GetInsight(id))
                 //    .Where(entity => entity is not null)
                 //    .ToList();
             }

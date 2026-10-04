@@ -292,17 +292,17 @@ namespace KleeneStar.Model
                 throw;
             }
 
-            if (!db.Dashboards.Any())
+            if (!db.Insights.Any())
             {
                 try
                 {
-                    SeedDashboards(db);
+                    SeedInsights(db);
                     await db.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
                     // log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
+                    Console.WriteLine($"Error seeding insights: {ex.InnerException?.Message ?? ex.Message}");
                     throw;
                 }
             }

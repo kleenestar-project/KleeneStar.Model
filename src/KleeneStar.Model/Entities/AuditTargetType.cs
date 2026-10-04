@@ -148,9 +148,12 @@ namespace KleeneStar.Model.Entities
         Calendar,
 
         /// <summary>
-        /// A dashboard.
+        /// An insight (a user-defined view such as a dashboard). It took the place of the
+        /// former dashboard member and keeps its stored value, but not its token: events sealed
+        /// before the rename carry <c>dashboard</c> in their canonical form and no longer
+        /// verify (accepted with the rename, 2026-10-04).
         /// </summary>
-        Dashboard,
+        Insight,
 
         /// <summary>
         /// A persisted object view.
@@ -193,6 +196,11 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Returns the wire token the REST API and the quickfilters exchange the target type as.
         /// </summary>
+        /// <remarks>
+        /// The token is part of the canonical form every audit event is sealed with
+        /// (<c>AuditSeal</c>): renaming a member that has recorded events makes those events
+        /// fail verification.
+        /// </remarks>
         /// <param name="type">The target type.</param>
         /// <returns>The lower-case wire token.</returns>
         public static string Token(this AuditTargetType type)

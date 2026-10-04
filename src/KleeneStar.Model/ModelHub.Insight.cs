@@ -13,45 +13,45 @@ namespace KleeneStar.Model
     internal static partial class ModelHub
     {
         /// <summary>
-        /// Returns a queryable collection of dashboards from the database, optionally filtered 
+        /// Returns a queryable collection of insights from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
         /// <remarks>
         /// The returned query is not executed until enumerated. Multiple predicates are combined
-        /// using logical AND. The query includes related category and widget data for each dashboard.
+        /// using logical AND. The query includes related category and widget data for each insight.
         /// </remarks>
         /// <param name="query">
-        /// The query criteria used to filter the returned dashboards. Must not be null.
+        /// The query criteria used to filter the returned insights. Must not be null.
         /// </param>
         /// <returns>
-        /// An enumeration representing the filtered collection of dashboards. The query
+        /// An enumeration representing the filtered collection of insights. The query
         /// includes related categories and widgets and is not tracked by the context.
         /// </returns>
-        public static IEnumerable<Dashboard> GetDashboards(IQuery<Dashboard> query)
+        public static IEnumerable<Insight> GetInsights(IQuery<Insight> query)
         {
             using var db = CreateDbContext();
 
-            return [.. GetDashboards(query, db)]; // materialize query
+            return [.. GetInsights(query, db)]; // materialize query
         }
 
         /// <summary>
-        /// Returns a queryable collection of dashboards from the database, optionally filtered 
+        /// Returns a queryable collection of insights from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
         /// <param name="query">
-        /// The query criteria used to filter the returned dashboards. Must not be null.
+        /// The query criteria used to filter the returned insights. Must not be null.
         /// </param>
         /// <param name="context">
         /// The context in which the query is executed. Provides additional information or constraints 
         /// for the retrieval operation. Cannot be null.
         /// </param>
         /// <returns>
-        /// An enumeration representing the filtered collection of dashboards. The query
+        /// An enumeration representing the filtered collection of insights. The query
         /// includes related categories and widgets and is not tracked by the context.
         /// </returns>
-        public static IEnumerable<Dashboard> GetDashboards(IQuery<Dashboard> query, KleeneStarDbContext context)
+        public static IEnumerable<Insight> GetInsights(IQuery<Insight> query, KleeneStarDbContext context)
         {
-            var data = context.Dashboards
+            var data = context.Insights
                 .AsNoTracking()
                 .Include(d => d.Categories)
                 .Include(d => d.Columns)
@@ -61,66 +61,66 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Adds the specified dashboard to the database if it does not already exist.
+        /// Adds the specified insight to the database if it does not already exist.
         /// </summary>
         /// <remarks>
-        /// If a dashboard with the same identifier already exists in the database, this method does nothing.
+        /// If an insight with the same identifier already exists in the database, this method does nothing.
         /// </remarks>
-        /// <param name="dashboard">
-        /// The dashboard to add. The dashboard's Id property is used to determine uniqueness. 
+        /// <param name="insight">
+        /// The insight to add. The insight's Id property is used to determine uniqueness. 
         /// Cannot be null.
         /// </param>
-        public static void Add(Dashboard dashboard)
+        public static void Add(Insight insight)
         {
-            ArgumentNullException.ThrowIfNull(dashboard);
+            ArgumentNullException.ThrowIfNull(insight);
 
             using var db = CreateDbContext();
 
-            var query = new Query<Dashboard>()
-                .WhereEquals(x => x.Id, dashboard.Id);
+            var query = new Query<Insight>()
+                .WhereEquals(x => x.Id, insight.Id);
 
-            if (query.Apply(db.Dashboards).Any())
+            if (query.Apply(db.Insights).Any())
             {
                 return;
             }
 
-            db.AddEntity(dashboard, ["Categories"]);
+            db.AddEntity(insight, ["Categories"]);
 
             // persist changes
             db.SaveChanges();
         }
 
         /// <summary>
-        /// Updates the specified dashboard in the database.
+        /// Updates the specified insight in the database.
         /// </summary>
-        /// <param name="dashboard">
-        /// The dashboard to update. Cannot be null.
+        /// <param name="insight">
+        /// The insight to update. Cannot be null.
         /// </param>
-        public static void Update(Dashboard dashboard)
+        public static void Update(Insight insight)
         {
-            ArgumentNullException.ThrowIfNull(dashboard);
+            ArgumentNullException.ThrowIfNull(insight);
 
             using var db = CreateDbContext();
 
-            db.UpdateEntity(dashboard, ["Categories"]);
+            db.UpdateEntity(insight, ["Categories"]);
 
             // persist changes
             db.SaveChanges();
         }
 
         /// <summary>
-        /// Removes the specified dashboard from the data store if it exists.
+        /// Removes the specified insight from the data store if it exists.
         /// </summary>
-        /// <param name="dashboard">
-        /// The dashboard entity to remove.
+        /// <param name="insight">
+        /// The insight entity to remove.
         /// </param>
-        public static void Remove(Dashboard dashboard)
+        public static void Remove(Insight insight)
         {
-            ArgumentNullException.ThrowIfNull(dashboard);
+            ArgumentNullException.ThrowIfNull(insight);
 
             using var db = CreateDbContext();
 
-            db.RemoveEntity(dashboard, ["Categories"]);
+            db.RemoveEntity(insight, ["Categories"]);
 
             // persist changes
             db.SaveChanges();
@@ -137,28 +137,30 @@ namespace KleeneStar.Model
         /// removed together with its widgets. The list order defines the persisted
         /// <see cref="DashboardColumn.Position"/>.
         /// </remarks>
-        /// <param name="dashboardId">The business id of the dashboard to update.</param>
+        /// <param name="insightId">The business id of the insight whose dashboard is updated.</param>
         /// <param name="columns">
         /// The desired columns in their target order. Widgets on these instances are ignored; only the
         /// column meta is applied. Must not be null.
         /// </param>
-        public static void SetDashboardColumns(Guid dashboardId, IReadOnlyList<DashboardColumn> columns)
+        public static void SetDashboardColumns(Guid insightId, IReadOnlyList<DashboardColumn> columns)
         {
             ArgumentNullException.ThrowIfNull(columns);
 
             using var db = CreateDbContext();
 
-            var dashboard = db.Dashboards
+            var insight = db.Insights
                 .Include(d => d.Columns)
                     .ThenInclude(c => c.Widgets)
-                .FirstOrDefault(d => d.Id == dashboardId);
+                .FirstOrDefault(d => d.Id == insightId);
 
-            if (dashboard is null)
+            // columns and widgets are the content of the dashboard type; an insight of another
+            // type has none, and a board posted against it is not turned into one
+            if (insight is null || !string.Equals(insight.Type, Insight.DashboardType, StringComparison.Ordinal))
             {
                 return;
             }
 
-            ReconcileColumns(db, dashboard, columns, rebuildWidgets: false);
+            ReconcileColumns(db, insight, columns, rebuildWidgets: false);
 
             db.SaveChanges();
         }
@@ -174,46 +176,48 @@ namespace KleeneStar.Model
         /// params), so they are recreated with fresh ids and the list order becomes their
         /// <see cref="Widget.Position"/>.
         /// </remarks>
-        /// <param name="dashboardId">The business id of the dashboard to update.</param>
+        /// <param name="insightId">The business id of the insight whose dashboard is updated.</param>
         /// <param name="columns">
         /// The desired columns, each carrying the widgets it should hold, in their target order. Must
         /// not be null.
         /// </param>
-        public static void SetDashboardBoard(Guid dashboardId, IReadOnlyList<DashboardColumn> columns)
+        public static void SetDashboardBoard(Guid insightId, IReadOnlyList<DashboardColumn> columns)
         {
             ArgumentNullException.ThrowIfNull(columns);
 
             using var db = CreateDbContext();
 
-            var dashboard = db.Dashboards
+            var insight = db.Insights
                 .Include(d => d.Columns)
                     .ThenInclude(c => c.Widgets)
-                .FirstOrDefault(d => d.Id == dashboardId);
+                .FirstOrDefault(d => d.Id == insightId);
 
-            if (dashboard is null)
+            // columns and widgets are the content of the dashboard type; an insight of another
+            // type has none, and a board posted against it is not turned into one
+            if (insight is null || !string.Equals(insight.Type, Insight.DashboardType, StringComparison.Ordinal))
             {
                 return;
             }
 
-            ReconcileColumns(db, dashboard, columns, rebuildWidgets: true);
+            ReconcileColumns(db, insight, columns, rebuildWidgets: true);
 
             db.SaveChanges();
         }
 
         /// <summary>
-        /// Reconciles the columns of a tracked dashboard against a desired ordered set, optionally
+        /// Reconciles the dashboard columns of a tracked insight against a desired ordered set, optionally
         /// rebuilding the widgets of each column.
         /// </summary>
         /// <param name="db">The tracking database context.</param>
-        /// <param name="dashboard">The tracked dashboard whose columns are loaded.</param>
+        /// <param name="insight">The tracked insight whose dashboard columns are loaded.</param>
         /// <param name="columns">The desired columns in their target order.</param>
         /// <param name="rebuildWidgets">
         /// When true, the widgets of every surviving or created column are replaced by the desired
         /// widgets; when false, the widgets of surviving columns are left untouched.
         /// </param>
-        private static void ReconcileColumns(KleeneStarDbContext db, Dashboard dashboard, IReadOnlyList<DashboardColumn> columns, bool rebuildWidgets)
+        private static void ReconcileColumns(KleeneStarDbContext db, Insight insight, IReadOnlyList<DashboardColumn> columns, bool rebuildWidgets)
         {
-            var existing = dashboard.Columns.ToDictionary(c => c.Id);
+            var existing = insight.Columns.ToDictionary(c => c.Id);
             var keep = new HashSet<Guid>();
 
             for (var index = 0; index < columns.Count; index++)
@@ -231,17 +235,17 @@ namespace KleeneStar.Model
                 }
                 else if (!string.IsNullOrEmpty(desired.Key))
                 {
-                    column = dashboard.Columns.FirstOrDefault(c => c.Key == desired.Key);
+                    column = insight.Columns.FirstOrDefault(c => c.Key == desired.Key);
                 }
 
                 if (column is null)
                 {
                     column = new DashboardColumn(Guid.NewGuid())
                     {
-                        DashboardId = dashboard.Id,
+                        InsightId = insight.Id,
                         Key = desired.Key
                     };
-                    dashboard.Columns.Add(column);
+                    insight.Columns.Add(column);
                 }
 
                 column.Name = desired.Name;
@@ -256,14 +260,14 @@ namespace KleeneStar.Model
                 }
             }
 
-            foreach (var column in dashboard.Columns.Where(c => !keep.Contains(c.Id)).ToList())
+            foreach (var column in insight.Columns.Where(c => !keep.Contains(c.Id)).ToList())
             {
                 if (column.Widgets is { Count: > 0 })
                 {
                     db.Widgets.RemoveRange(column.Widgets);
                 }
 
-                dashboard.Columns.Remove(column);
+                insight.Columns.Remove(column);
                 db.DashboardColumns.Remove(column);
             }
         }

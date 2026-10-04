@@ -158,7 +158,7 @@ namespace KleeneStar.Model.Test
             var workflows = db.Workflows.Count();
             var objects = db.Objects.Count();
             var sprints = db.Sprints.Count();
-            var dashboards = db.Dashboards.Count();
+            var insights = db.Insights.Count();
             var slaPolicies = db.SlaPolicies.Count();
             var slaTargets = db.SlaTargets.Count();
             var slaScope = db.SlaScopeRules.Count();
@@ -194,7 +194,7 @@ namespace KleeneStar.Model.Test
             Assert.Equal(workflows, db.Workflows.Count());
             Assert.Equal(objects, db.Objects.Count());
             Assert.Equal(sprints, db.Sprints.Count());
-            Assert.Equal(dashboards, db.Dashboards.Count());
+            Assert.Equal(insights, db.Insights.Count());
             Assert.Equal(slaPolicies, db.SlaPolicies.Count());
             Assert.Equal(slaTargets, db.SlaTargets.Count());
             Assert.Equal(slaScope, db.SlaScopeRules.Count());
