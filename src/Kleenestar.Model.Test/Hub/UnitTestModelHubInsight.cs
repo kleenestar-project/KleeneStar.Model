@@ -234,16 +234,16 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
-        /// Verifies that columns and widgets - the content of the dashboard type - are not written
-        /// into an insight of another type.
+        /// Verifies that the board belongs to the insight whatever type it was created as: the
+        /// type moved to the tabs, and every dashboard tab of an insight shows its one board.
         /// </summary>
         [Fact]
-        public void SetDashboardBoardIgnoresOtherTypes()
+        public void SetDashboardBoardOnAnyInsight()
         {
             // arrange
             ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
-                ConnectionString = "SetDashboardBoardIgnoresOtherTypes",
+                ConnectionString = "SetDashboardBoardOnAnyInsight",
                 Assembly = "KleeneStar.Model.Test"
             };
 
@@ -252,10 +252,71 @@ namespace Kleenestar.Model.Test.Hub
 
             // act
             ModelHub.SetDashboardBoard(insight.Id, [new DashboardColumn { Name = "A" }]);
-            ModelHub.SetDashboardColumns(insight.Id, [new DashboardColumn { Name = "B" }]);
 
             // validation
-            Assert.Empty(ModelHub.GetInsights(new Query<Insight>()).Single().Columns);
+            Assert.Equal("A", Assert.Single(ModelHub.GetInsights(new Query<Insight>()).Single().Columns).Name);
+        }
+
+        /// <summary>
+        /// Verifies that the tabs of an insight are read back in the order they were given, and
+        /// that a tab the order does not name keeps its place behind the named ones.
+        /// </summary>
+        [Fact]
+        public void SetInsightViewOrder()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "SetInsightViewOrder",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var insight = new Insight { Id = Guid.NewGuid(), Name = "Tabs" };
+            ModelHub.Add(insight);
+
+            var a = new InsightView { Name = "A", ViewType = InsightViewTypes.Objects, Order = 0, InsightId = insight.Id };
+            var b = new InsightView { Name = "B", ViewType = InsightViewTypes.Reports, Order = 1, InsightId = insight.Id };
+            var c = new InsightView { Name = "C", ViewType = InsightViewTypes.Kanban, Order = 2, InsightId = insight.Id };
+            ModelHub.Add(a);
+            ModelHub.Add(b);
+            ModelHub.Add(c);
+
+            // act
+            var applied = ModelHub.SetInsightViewOrder(insight.Id, [c.Id, a.Id]);
+
+            // validation
+            Assert.True(applied);
+            Assert.Equal
+            (
+                ["C", "A", "B"],
+                ModelHub.GetInsightViews(new Query<InsightView>().WhereEquals(x => x.InsightId, insight.Id))
+                    .OrderBy(x => x.Order)
+                    .Select(x => x.Name)
+            );
+        }
+
+        /// <summary>
+        /// Verifies that an order naming no tab of the insight changes nothing.
+        /// </summary>
+        [Fact]
+        public void SetInsightViewOrderIgnoresForeignIds()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "SetInsightViewOrderIgnoresForeignIds",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var insight = new Insight { Id = Guid.NewGuid(), Name = "Tabs" };
+            ModelHub.Add(insight);
+            ModelHub.Add(new InsightView { Name = "A", ViewType = InsightViewTypes.Objects, InsightId = insight.Id });
+
+            // act
+            var applied = ModelHub.SetInsightViewOrder(insight.Id, [Guid.NewGuid()]);
+
+            // validation
+            Assert.False(applied);
         }
     }
 }

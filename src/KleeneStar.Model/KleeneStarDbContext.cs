@@ -160,6 +160,11 @@ namespace KleeneStar.Model
         public DbSet<Insight> Insights { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of insight tabs.
+        /// </summary>
+        public DbSet<InsightView> InsightViews { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of dashboard columns.
         /// </summary>
         public DbSet<DashboardColumn> DashboardColumns { get; set; }

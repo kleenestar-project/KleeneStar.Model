@@ -10,21 +10,21 @@ using WebExpress.WebUI.WebIcon;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents an insight: a user-defined view on the data of the installation. What the view
-    /// is - a dashboard of widgets today, a calendar, a Gantt chart, a list, a table or a Kanban
-    /// board tomorrow - is its <see cref="Type"/>; everything an insight has regardless of its
-    /// type (name, description, categories, state, permissions) lives here.
+    /// Represents an insight: a user-defined view on the data of the installation. An insight
+    /// is a set of objects - the ones its <see cref="Query"/> selects, across workspaces - shown
+    /// through tabs (<see cref="InsightView"/>) the way a workspace overview shows its issues:
+    /// tables and lists, a dashboard, Kanban, Scrum, Gantt, calendar and reports.
     /// </summary>
     /// <remarks>
     /// Insights replaced the dashboards; every dashboard that existed carries on as an insight
-    /// of the type <see cref="DashboardType"/>, and its columns and widgets are the content of
-    /// that type (<see cref="Columns"/>).
+    /// with one dashboard tab, and its columns and widgets (<see cref="Columns"/>) are what
+    /// every dashboard tab of the insight shows.
     /// </remarks>
     public class Insight : IEntity
     {
         /// <summary>
-        /// The key of the dashboard type - the type every insight that was a dashboard carries,
-        /// and the one a create that names no type falls back to.
+        /// The key of the dashboard view type - the type the tab of every insight that was a
+        /// dashboard carries.
         /// </summary>
         public const string DashboardType = "dashboard";
 
@@ -46,13 +46,20 @@ namespace KleeneStar.Model.Entities
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the key of the insight type, which says what kind of view the insight
-        /// is (for example <see cref="DashboardType"/>). The key is resolved against the open
-        /// type catalog of the core; there is deliberately no enum, so a plugin can contribute
-        /// a type without a schema change. The type is chosen when the insight is created and
-        /// does not change afterwards, because the content of one type means nothing to another.
+        /// Gets or sets the type the insight was created as before an insight hosted tabs. It is
+        /// kept only as a record of that: the type moved to the tabs
+        /// (<see cref="InsightView.ViewType"/>), the migration that introduced them turned every
+        /// insight into one with a tab of this type, and nothing reads the column since.
         /// </summary>
         public string Type { get; set; } = DashboardType;
+
+        /// <summary>
+        /// Gets or sets the WQL expression that selects the objects the insight is about, across
+        /// workspaces - <c>Workspace.Key = "SD" and Kind = "issue"</c>, say. Every tab of the
+        /// insight shows these objects, narrowed as every read is to what the reader may see.
+        /// Blank selects every object the reader may see.
+        /// </summary>
+        public string Query { get; set; }
 
         /// <summary>
         /// Gets or sets the icon associated with this insight.

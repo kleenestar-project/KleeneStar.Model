@@ -153,9 +153,8 @@ namespace KleeneStar.Model
                     .ThenInclude(c => c.Widgets)
                 .FirstOrDefault(d => d.Id == insightId);
 
-            // columns and widgets are the content of the dashboard type; an insight of another
-            // type has none, and a board posted against it is not turned into one
-            if (insight is null || !string.Equals(insight.Type, Insight.DashboardType, StringComparison.Ordinal))
+            // the board belongs to the insight, and every dashboard tab of it shows this one
+            if (insight is null)
             {
                 return;
             }
@@ -192,9 +191,8 @@ namespace KleeneStar.Model
                     .ThenInclude(c => c.Widgets)
                 .FirstOrDefault(d => d.Id == insightId);
 
-            // columns and widgets are the content of the dashboard type; an insight of another
-            // type has none, and a board posted against it is not turned into one
-            if (insight is null || !string.Equals(insight.Type, Insight.DashboardType, StringComparison.Ordinal))
+            // the board belongs to the insight, and every dashboard tab of it shows this one
+            if (insight is null)
             {
                 return;
             }

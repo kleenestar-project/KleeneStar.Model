@@ -12,24 +12,27 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Adds the default insights - dashboards, the one insight type the core ships - to the
-        /// specified database context if none already exist.
+        /// Adds the default insights - each with the objects of one demo workspace, its
+        /// dashboard and a set of tabs - to the specified database context if none exist.
         /// </summary>
         /// <param name="db">
         /// The database context to which the default insights will be added. Cannot be null.
         /// </param>
         private static void SeedInsights(KleeneStarDbContext db)
         {
-            void add(string id, string name, string description, string icon,
+            void add(string id, string name, string description, string icon, string query, string[] views,
              IEnumerable<DashboardColumn> columns, params string[] categories)
             {
                 AttachWidgetsToColumns(columns);
 
+                var insightId = Guid.Parse(id);
+
                 db.Insights.Add(new Insight
                 {
-                    Id = Guid.Parse(id),
+                    Id = insightId,
                     Name = name,
                     Type = Insight.DashboardType,
+                    Query = query,
                     Description = description,
                     Icon = ImageIcon.FromString(icon),
                     State = InsightState.Active,
@@ -38,6 +41,8 @@ namespace KleeneStar.Model
                     Created = DateTime.UtcNow,
                     Updated = DateTime.UtcNow
                 });
+
+                SeedInsightViews(db, insightId, views);
             }
 
             add
@@ -46,6 +51,8 @@ namespace KleeneStar.Model
                 "Operations Overview",
                 "Dashboard for monitoring key operational metrics and service health.",
                 "/kleenestar/assets/icons/dashboard-ops.svg",
+                "Workspace.Key = \"SD\"",
+                [InsightViewTypes.Dashboard, InsightViewTypes.Objects, InsightViewTypes.Kanban, InsightViewTypes.Calendar, InsightViewTypes.Reports],
                 [
                     new DashboardColumn
                     {
@@ -75,6 +82,8 @@ namespace KleeneStar.Model
                 "Engineering Insights",
                 "Dashboard for tracking development progress, build pipelines, and code quality.",
                 "/kleenestar/assets/icons/dashboard-dev.svg",
+                "Workspace.Key = \"DEV\"",
+                [InsightViewTypes.Dashboard, InsightViewTypes.Objects, InsightViewTypes.Kanban, InsightViewTypes.Scrum, InsightViewTypes.Gantt, InsightViewTypes.Reports],
                 [
                     new DashboardColumn
                     {
@@ -104,6 +113,8 @@ namespace KleeneStar.Model
                 "Finance Summary",
                 "Dashboard for visualizing budget, costs, and financial KPIs.",
                 "/kleenestar/assets/icons/dashboard-fin.svg",
+                "Workspace.Key = \"FIN\"",
+                [InsightViewTypes.Dashboard, InsightViewTypes.Objects, InsightViewTypes.Calendar, InsightViewTypes.Reports],
                 [
                     new DashboardColumn
                     {
@@ -126,6 +137,56 @@ namespace KleeneStar.Model
                 ],
                 "Finance"
             );
+        }
+
+        /// <summary>
+        /// Adds the tabs of a seeded insight, in the order given, each named after its type.
+        /// </summary>
+        /// <remarks>
+        /// The ids are derived from the insight and the type, so a seeded tab has the same id in
+        /// every installation - the way the seeded workspace views do.
+        /// </remarks>
+        /// <param name="db">The database context.</param>
+        /// <param name="insightId">The insight the tabs belong to.</param>
+        /// <param name="types">The view type keys, in tab order.</param>
+        private static void SeedInsightViews(KleeneStarDbContext db, Guid insightId, IReadOnlyList<string> types)
+        {
+            for (var i = 0; i < types.Count; i++)
+            {
+                var type = types[i];
+                var seed = System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes($"{insightId:N}:{type}"));
+
+                db.InsightViews.Add(new InsightView(new Guid(seed))
+                {
+                    Name = InsightViewName(type),
+                    ViewType = type,
+                    Order = i,
+                    State = ObjectViewState.Active,
+                    InsightId = insightId,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
+                });
+            }
+        }
+
+        /// <summary>
+        /// Returns the name a seeded tab of a view type carries.
+        /// </summary>
+        /// <param name="type">The view type key.</param>
+        /// <returns>The tab name.</returns>
+        private static string InsightViewName(string type)
+        {
+            return type switch
+            {
+                InsightViewTypes.Objects => "Objects",
+                InsightViewTypes.Dashboard => "Dashboard",
+                InsightViewTypes.Kanban => "Kanban",
+                InsightViewTypes.Scrum => "Scrum",
+                InsightViewTypes.Gantt => "Gantt",
+                InsightViewTypes.Calendar => "Calendar",
+                InsightViewTypes.Reports => "Reports",
+                _ => type
+            };
         }
 
         /// <summary>

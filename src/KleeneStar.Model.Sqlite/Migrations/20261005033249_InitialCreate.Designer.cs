@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20261004220605_InitialCreate")]
+    [Migration("20261005033249_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1626,6 +1626,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
+                    b.Property<string>("Query")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Query");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER")
                         .HasColumnName("State");
@@ -1648,6 +1652,65 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Insight", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.InsightView", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Configuration")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Configuration");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("InsightId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Insight");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Order");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<string>("ViewType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ViewType");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("InsightId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("InsightView", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoard", b =>
@@ -4270,6 +4333,18 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.InsightView", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Insight", "Insight")
+                        .WithMany()
+                        .HasForeignKey("InsightId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Insight");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.KanbanBoardColumn", b =>

@@ -30,13 +30,17 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(64);
 
-            // the key of the open type catalog; the default is what every insight that was a
-            // dashboard carries, so the migration fills existing rows with it
+            // the type an insight was created as before it hosted tabs; kept, not dropped -
+            // dropping a column rebuilds the table in sqlite, which is not worth a record
             builder.Property(x => x.Type)
                 .HasColumnName("Type")
                 .IsRequired()
                 .HasMaxLength(64)
                 .HasDefaultValue(Insight.DashboardType);
+
+            // the WQL expression selecting the objects of the insight
+            builder.Property(x => x.Query)
+                .HasColumnName("Query");
 
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
