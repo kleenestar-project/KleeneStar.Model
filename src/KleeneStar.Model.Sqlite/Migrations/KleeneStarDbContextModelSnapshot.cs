@@ -1662,6 +1662,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(7)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
+
                     b.Property<string>("Configuration")
                         .HasColumnType("TEXT")
                         .HasColumnName("Configuration");
@@ -2478,6 +2483,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(7)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Color");
 
                     b.Property<string>("Configuration")
                         .HasColumnType("TEXT")

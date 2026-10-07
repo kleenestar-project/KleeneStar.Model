@@ -79,6 +79,7 @@ namespace KleeneStar.Model
             entry.Name = view.Name;
             entry.ViewType = view.ViewType;
             entry.Configuration = view.Configuration;
+            entry.Color = view.Color;
             entry.Order = view.Order;
             entry.State = view.State;
             entry.Updated = DateTime.UtcNow;

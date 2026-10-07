@@ -49,6 +49,10 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Configuration)
                 .HasColumnName("Configuration");
 
+            builder.Property(x => x.Color)
+                .HasColumnName("Color")
+                .HasMaxLength(7);
+
             builder.Property(x => x.Order)
                 .HasColumnName("Order")
                 .IsRequired();

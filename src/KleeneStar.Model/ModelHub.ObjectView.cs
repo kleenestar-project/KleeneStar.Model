@@ -88,6 +88,7 @@ namespace KleeneStar.Model
             dbEntry.Description = viewEntry.Description;
             dbEntry.ViewType = viewEntry.ViewType;
             dbEntry.Configuration = viewEntry.Configuration;
+            dbEntry.Color = viewEntry.Color;
             dbEntry.Order = viewEntry.Order;
             dbEntry.State = viewEntry.State;
             dbEntry.Updated = DateTime.UtcNow;
@@ -118,6 +119,54 @@ namespace KleeneStar.Model
             RemoveBoardViews(db, dbEntry.WorkspaceId, dbEntry.Id);
             db.Remove(dbEntry);
             db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Puts the tabs of one overview of a workspace - its views of one object kind - into
+        /// the given order in one transaction. A tab the list does not name keeps its place
+        /// behind the named ones; an id that names no tab of the overview is ignored.
+        /// </summary>
+        /// <param name="workspaceId">The workspace whose tabs are ordered.</param>
+        /// <param name="kind">The object kind of the overview.</param>
+        /// <param name="order">The tab ids in their new order. Cannot be null.</param>
+        /// <returns><see langword="true"/> when at least one tab of the overview was named.</returns>
+        public static bool SetObjectViewOrder(Guid workspaceId, string kind, IReadOnlyList<Guid> order)
+        {
+            ArgumentNullException.ThrowIfNull(order);
+
+            using var db = CreateDbContext();
+
+            var views = db.ObjectViews
+                .Where(x => x.WorkspaceId == workspaceId && x.Kind == kind)
+                .ToList();
+
+            var position = order
+                .Select((id, index) => (id, index))
+                .GroupBy(x => x.id)
+                .ToDictionary(g => g.Key, g => g.First().index);
+
+            if (!views.Any(x => position.ContainsKey(x.Id)))
+            {
+                return false;
+            }
+
+            var ordered = views
+                .OrderBy(x => position.TryGetValue(x.Id, out var index) ? index : int.MaxValue)
+                .ThenBy(x => x.Order)
+                .ToList();
+
+            for (var i = 0; i < ordered.Count; i++)
+            {
+                if (ordered[i].Order != i)
+                {
+                    ordered[i].Order = i;
+                    ordered[i].Updated = DateTime.UtcNow;
+                }
+            }
+
+            db.SaveChanges();
+
+            return true;
         }
     }
 }

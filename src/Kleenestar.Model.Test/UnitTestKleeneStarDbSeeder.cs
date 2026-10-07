@@ -79,7 +79,7 @@ namespace KleeneStar.Model.Test
                 var alice = db.Identities.Single(x => x.UserName == "alice.engineer");
                 admin.PasswordHash = "$seed$v1$fb4e111dbf8b4c1cb95e0f6579f7f72f";
                 alice.PasswordHash = IdentityPassword.Hash(alice, "alice's own password");
-                await db.SaveChangesAsync();
+                await db.SaveChangesAsync(TestContext.Current.CancellationToken);
             }
 
             // act
@@ -1043,7 +1043,7 @@ namespace KleeneStar.Model.Test
                 // the state of a store seeded before either existed
                 db.PermissionAssignments.RemoveRange(db.PermissionAssignments);
                 db.Groups.RemoveRange(db.Groups.Where(x => x.Id == Entities.Group.AuthenticatedId || x.Id == Entities.Group.AnonymousId));
-                await db.SaveChangesAsync();
+                await db.SaveChangesAsync(TestContext.Current.CancellationToken);
             }
 
             // act

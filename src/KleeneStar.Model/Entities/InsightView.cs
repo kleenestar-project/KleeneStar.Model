@@ -47,6 +47,12 @@ namespace KleeneStar.Model.Entities
         public string Configuration { get; set; }
 
         /// <summary>
+        /// Gets or sets the optional color of the tab as a <c>#rrggbb</c> value, chosen from
+        /// the tab menu and shown as an underline of the tab header; <c>null</c> for none.
+        /// </summary>
+        public string Color { get; set; }
+
+        /// <summary>
         /// Gets or sets the position of the tab among the tabs of its insight.
         /// </summary>
         public int Order { get; set; }
