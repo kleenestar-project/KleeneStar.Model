@@ -17,8 +17,9 @@ namespace KleeneStar.Model
         /// </summary>
         /// <param name="workspaceId">The workspace the board belongs to.</param>
         /// <param name="kind">The object kind the board is scoped to.</param>
+        /// <param name="viewId">The owning tab identifier, or the legacy board when empty.</param>
         /// <returns>The board, or <see langword="null"/> when none is persisted.</returns>
-        public static KanbanBoard GetKanbanBoard(Guid workspaceId, string kind)
+        public static KanbanBoard GetKanbanBoard(Guid workspaceId, string kind, Guid viewId = default)
         {
             using var db = CreateDbContext();
 
@@ -26,7 +27,7 @@ namespace KleeneStar.Model
                 .AsNoTracking()
                 .Include(b => b.Columns)
                 .Include(b => b.Swimlanes)
-                .FirstOrDefault(b => b.WorkspaceId == workspaceId && b.Kind == kind);
+                .FirstOrDefault(b => b.WorkspaceId == workspaceId && b.Kind == kind && b.ViewId == viewId);
         }
 
         /// <summary>
@@ -52,13 +53,14 @@ namespace KleeneStar.Model
         /// </summary>
         /// <param name="workspaceId">The workspace the board belongs to.</param>
         /// <param name="kind">The object kind the board is scoped to.</param>
+        /// <param name="viewId">The owning tab identifier, or the legacy board when empty.</param>
         /// <returns>The existing or newly created board.</returns>
-        public static KanbanBoard EnsureKanbanBoard(Guid workspaceId, string kind)
+        public static KanbanBoard EnsureKanbanBoard(Guid workspaceId, string kind, Guid viewId = default)
         {
             using var db = CreateDbContext();
 
             var board = db.KanbanBoards
-                .FirstOrDefault(b => b.WorkspaceId == workspaceId && b.Kind == kind);
+                .FirstOrDefault(b => b.WorkspaceId == workspaceId && b.Kind == kind && b.ViewId == viewId);
 
             if (board is not null)
             {
@@ -68,6 +70,7 @@ namespace KleeneStar.Model
             board = new KanbanBoard(Guid.NewGuid())
             {
                 WorkspaceId = workspaceId,
+                ViewId = viewId,
                 Kind = kind
             };
 

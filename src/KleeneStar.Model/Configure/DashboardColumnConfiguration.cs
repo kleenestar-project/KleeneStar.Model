@@ -19,6 +19,10 @@ namespace KleeneStar.Model.Configure
 
             builder.HasKey(x => x.RawId);
 
+            builder.Property(x => x.ViewId)
+                .HasColumnName("View")
+                .IsRequired();
+
             builder.Property(x => x.RawId)
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();

@@ -17,8 +17,7 @@ namespace KleeneStar.Model.Entities
     /// </summary>
     /// <remarks>
     /// Insights replaced the dashboards; every dashboard that existed carries on as an insight
-    /// with one dashboard tab, and its columns and widgets (<see cref="Columns"/>) are what
-    /// every dashboard tab of the insight shows.
+    /// with one dashboard tab. Each column identifies the tab whose independent board it belongs to.
     /// </remarks>
     public class Insight : IEntity
     {
@@ -94,8 +93,7 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
-        /// Gets or sets the columns of the insight's dashboard - the content of an insight of the
-        /// type <see cref="DashboardType"/>. An insight of another type has none.
+        /// Gets or sets the columns of all dashboard tabs, distinguished by their owning tab identifier.
         /// </summary>
         public List<DashboardColumn> Columns { get; set; } = [];
 

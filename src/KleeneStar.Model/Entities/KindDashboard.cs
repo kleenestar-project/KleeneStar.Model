@@ -8,9 +8,8 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents the persisted layout configuration of a workspace's object-kind dashboard
     /// (e.g. the KPI overview of the issue or asset tab): the board-owned column and widget
-    /// list. There is at most one board per workspace/kind pair. As long as no column has been
-    /// added through the board, it carries none and the REST endpoint falls back to computing
-    /// the default layout (the total/active/archived KPI tiles) dynamically.
+    /// list. There is at most one board per workspace, kind and tab. Until a board is persisted, the REST endpoint computes
+    /// the default layout (the total/active/archived KPI tiles) dynamically. A persisted empty board remains empty.
     /// </summary>
     public class KindDashboard : IEntity
     {
@@ -25,6 +24,11 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the unique identifier for the board.
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the owning tab identifier, or an empty identifier for the legacy board.
+        /// </summary>
+        public Guid ViewId { get; set; }
 
         /// <summary>
         /// Gets or sets the workspace the board belongs to.

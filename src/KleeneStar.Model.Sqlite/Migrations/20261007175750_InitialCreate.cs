@@ -145,6 +145,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    View = table.Column<Guid>(type: "TEXT", nullable: false),
                     Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
                     Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Filter = table.Column<string>(type: "TEXT", nullable: true)
@@ -162,6 +163,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    View = table.Column<Guid>(type: "TEXT", nullable: false),
                     Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
                     Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
                 },
@@ -406,6 +408,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    View = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
                     Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
@@ -2408,9 +2411,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_KanbanBoard_Workspace_Kind",
+                name: "IX_KanbanBoard_Workspace_Kind_View",
                 table: "KanbanBoard",
-                columns: new[] { "Workspace", "Kind" },
+                columns: new[] { "Workspace", "Kind", "View" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -2424,9 +2427,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Board");
 
             migrationBuilder.CreateIndex(
-                name: "IX_KindDashboard_Workspace_Kind",
+                name: "IX_KindDashboard_Workspace_Kind_View",
                 table: "KindDashboard",
-                columns: new[] { "Workspace", "Kind" },
+                columns: new[] { "Workspace", "Kind", "View" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

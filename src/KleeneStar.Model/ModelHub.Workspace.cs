@@ -125,6 +125,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
+            RemoveBoardViews(db, workspace.Id);
             db.RemoveEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
 
             // persist changes

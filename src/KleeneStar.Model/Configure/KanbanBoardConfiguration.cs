@@ -19,6 +19,10 @@ namespace KleeneStar.Model.Configure
 
             builder.HasKey(x => x.RawId);
 
+            builder.Property(x => x.ViewId)
+                .HasColumnName("View")
+                .IsRequired();
+
             builder.Property(x => x.RawId)
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();
@@ -40,8 +44,8 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Filter)
                 .HasColumnName("Filter");
 
-            // one board per workspace/kind pair
-            builder.HasIndex(x => new { x.WorkspaceId, x.Kind })
+            // one board per workspace, kind and tab
+            builder.HasIndex(x => new { x.WorkspaceId, x.Kind, x.ViewId })
                 .IsUnique();
 
             // ONE-TO-MANY: KanbanBoard -> KanbanBoardColumn

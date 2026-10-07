@@ -43,6 +43,11 @@ namespace KleeneStar.Model
                 });
 
                 SeedInsightViews(db, insightId, views);
+                var dashboardView = db.InsightViews.Local.Single(x => x.InsightId == insightId && x.ViewType == InsightViewTypes.Dashboard);
+                foreach (var column in columns)
+                {
+                    column.ViewId = dashboardView.Id;
+                }
             }
 
             add

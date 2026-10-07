@@ -115,6 +115,7 @@ namespace KleeneStar.Model
                 return;
             }
 
+            RemoveBoardViews(db, dbEntry.WorkspaceId, dbEntry.Id);
             db.Remove(dbEntry);
             db.SaveChanges();
         }

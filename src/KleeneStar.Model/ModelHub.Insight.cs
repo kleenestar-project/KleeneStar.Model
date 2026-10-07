@@ -120,6 +120,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
+            RemoveBoardViews(db, insight.Id);
             db.RemoveEntity(insight, ["Categories"]);
 
             // persist changes
@@ -138,28 +139,29 @@ namespace KleeneStar.Model
         /// <see cref="DashboardColumn.Position"/>.
         /// </remarks>
         /// <param name="insightId">The business id of the insight whose dashboard is updated.</param>
+        /// <param name="viewId">The owning tab identifier, or the legacy board when empty.</param>
         /// <param name="columns">
         /// The desired columns in their target order. Widgets on these instances are ignored; only the
         /// column meta is applied. Must not be null.
         /// </param>
-        public static void SetDashboardColumns(Guid insightId, IReadOnlyList<DashboardColumn> columns)
+        public static void SetDashboardColumns(Guid insightId, IReadOnlyList<DashboardColumn> columns, Guid viewId = default)
         {
             ArgumentNullException.ThrowIfNull(columns);
 
             using var db = CreateDbContext();
 
             var insight = db.Insights
-                .Include(d => d.Columns)
+                .Include(d => d.Columns.Where(c => c.ViewId == viewId))
                     .ThenInclude(c => c.Widgets)
                 .FirstOrDefault(d => d.Id == insightId);
 
-            // the board belongs to the insight, and every dashboard tab of it shows this one
+            // only the selected tab participates in column reconciliation
             if (insight is null)
             {
                 return;
             }
 
-            ReconcileColumns(db, insight, columns, rebuildWidgets: false);
+            ReconcileColumns(db, insight, columns, rebuildWidgets: false, viewId);
 
             db.SaveChanges();
         }
@@ -176,28 +178,29 @@ namespace KleeneStar.Model
         /// <see cref="Widget.Position"/>.
         /// </remarks>
         /// <param name="insightId">The business id of the insight whose dashboard is updated.</param>
+        /// <param name="viewId">The owning tab identifier, or the legacy board when empty.</param>
         /// <param name="columns">
         /// The desired columns, each carrying the widgets it should hold, in their target order. Must
         /// not be null.
         /// </param>
-        public static void SetDashboardBoard(Guid insightId, IReadOnlyList<DashboardColumn> columns)
+        public static void SetDashboardBoard(Guid insightId, IReadOnlyList<DashboardColumn> columns, Guid viewId = default)
         {
             ArgumentNullException.ThrowIfNull(columns);
 
             using var db = CreateDbContext();
 
             var insight = db.Insights
-                .Include(d => d.Columns)
+                .Include(d => d.Columns.Where(c => c.ViewId == viewId))
                     .ThenInclude(c => c.Widgets)
                 .FirstOrDefault(d => d.Id == insightId);
 
-            // the board belongs to the insight, and every dashboard tab of it shows this one
+            // only the selected tab participates in column reconciliation
             if (insight is null)
             {
                 return;
             }
 
-            ReconcileColumns(db, insight, columns, rebuildWidgets: true);
+            ReconcileColumns(db, insight, columns, rebuildWidgets: true, viewId);
 
             db.SaveChanges();
         }
@@ -213,7 +216,8 @@ namespace KleeneStar.Model
         /// When true, the widgets of every surviving or created column are replaced by the desired
         /// widgets; when false, the widgets of surviving columns are left untouched.
         /// </param>
-        private static void ReconcileColumns(KleeneStarDbContext db, Insight insight, IReadOnlyList<DashboardColumn> columns, bool rebuildWidgets)
+        /// <param name="viewId">The owning tab identifier.</param>
+        private static void ReconcileColumns(KleeneStarDbContext db, Insight insight, IReadOnlyList<DashboardColumn> columns, bool rebuildWidgets, Guid viewId)
         {
             var existing = insight.Columns.ToDictionary(c => c.Id);
             var keep = new HashSet<Guid>();
@@ -241,6 +245,7 @@ namespace KleeneStar.Model
                     column = new DashboardColumn(Guid.NewGuid())
                     {
                         InsightId = insight.Id,
+                        ViewId = viewId,
                         Key = desired.Key
                     };
                     insight.Columns.Add(column);

@@ -25,6 +25,11 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the owning tab identifier, or an empty identifier for the legacy board.
+        /// </summary>
+        public Guid ViewId { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the dashboard column.
         /// </summary>
         public string Name { get; set; }

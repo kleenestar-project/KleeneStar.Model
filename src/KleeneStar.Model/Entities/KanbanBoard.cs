@@ -8,7 +8,7 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents the persisted layout configuration of a workspace's Kanban board for a
     /// given object kind (e.g. issue, asset): the board-owned column and swimlane lists and
-    /// the board-level WQL filter. There is at most one board per workspace/kind pair. As
+    /// the board-level WQL filter. There is at most one board per workspace, kind and tab. As
     /// long as no column or swimlane has been added through the board, the board carries none
     /// and the REST endpoint falls back to computing the default layout (one column per
     /// workflow status category, one swimlane per populated class) dynamically.
@@ -26,6 +26,11 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the unique identifier for the board.
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the owning tab identifier, or an empty identifier for the legacy board.
+        /// </summary>
+        public Guid ViewId { get; set; }
 
         /// <summary>
         /// Gets or sets the workspace the board belongs to.

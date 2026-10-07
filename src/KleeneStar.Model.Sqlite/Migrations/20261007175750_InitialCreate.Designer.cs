@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20261005033249_InitialCreate")]
+    [Migration("20261007175750_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -975,6 +975,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Size");
 
+                    b.Property<Guid>("ViewId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("View");
+
                     b.HasKey("RawId");
 
                     b.HasIndex("InsightId");
@@ -1735,13 +1739,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Kind");
 
+                    b.Property<Guid>("ViewId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("View");
+
                     b.Property<Guid>("WorkspaceId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Workspace");
 
                     b.HasKey("RawId");
 
-                    b.HasIndex("WorkspaceId", "Kind")
+                    b.HasIndex("WorkspaceId", "Kind", "ViewId")
                         .IsUnique();
 
                     b.ToTable("KanbanBoard", (string)null);
@@ -1868,13 +1876,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Kind");
 
+                    b.Property<Guid>("ViewId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("View");
+
                     b.Property<Guid>("WorkspaceId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Workspace");
 
                     b.HasKey("RawId");
 
-                    b.HasIndex("WorkspaceId", "Kind")
+                    b.HasIndex("WorkspaceId", "Kind", "ViewId")
                         .IsUnique();
 
                     b.ToTable("KindDashboard", (string)null);
