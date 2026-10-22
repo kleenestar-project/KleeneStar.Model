@@ -41,6 +41,14 @@ namespace KleeneStar.Model.Entities
         public const string Form = "form";
 
         /// <summary>
+        /// The renderer key of the tabular surface: the workbook dialog writes it and the
+        /// reading view presents it as a read-only spreadsheet. The workbook is stored as its
+        /// JSON in <see cref="Object.Description"/>, where prose keeps its document. Offered
+        /// on the document kind only.
+        /// </summary>
+        public const string Spreadsheet = "spreadsheet";
+
+        /// <summary>
         /// Normalizes a renderer key for persistence: trims and lower-cases the supplied
         /// key, and maps null, empty, or whitespace to <see langword="null"/> - the state
         /// "follow the kind". Unknown keys pass through unchanged so the renderer of an
