@@ -98,6 +98,11 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(s => s.Id)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            builder.Property(x => x.PortalRestricted)
+                .HasColumnName("PortalRestricted")
+                .HasDefaultValue(false)
+                .IsRequired();
+
             builder.Property(x => x.ParentId)
                 .HasColumnName("Parent");
 

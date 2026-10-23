@@ -37,6 +37,21 @@ namespace KleeneStar.Model.Settings
         public string Assembly { get; set; } = "KleeneStar.Model.Sqlite";
 
         /// <summary>
+        /// Gets or sets the directory the automatic backups are written to.
+        /// </summary>
+        public string BackupDirectory { get; set; } = "data/backup";
+
+        /// <summary>
+        /// Gets or sets the hours between two automatic backups; 0 switches them off.
+        /// </summary>
+        public int BackupIntervalHours { get; set; } = 24;
+
+        /// <summary>
+        /// Gets or sets how many backups are kept; older ones are removed.
+        /// </summary>
+        public int BackupKeep { get; set; } = 14;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         public DatabaseSettings()

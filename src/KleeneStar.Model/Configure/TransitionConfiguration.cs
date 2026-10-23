@@ -21,6 +21,9 @@ namespace KleeneStar.Model.Configure
 
             builder.HasKey(x => x.RawId);
 
+            builder.Property(x => x.BlueprintSourceId)
+                .HasColumnName("BlueprintSource");
+
             builder.Property(x => x.RawId)
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();

@@ -347,6 +347,81 @@ namespace KleeneStar.Model
         public DbSet<ObjectVisit> ObjectVisits { get; set; }
 
         /// <summary>
+        /// Gets or sets the records of object creations, which make them idempotent and atomic.
+        /// </summary>
+        public DbSet<ObjectCreation> ObjectCreations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rules of the automation platform.
+        /// </summary>
+        public DbSet<AutomationRule> AutomationRules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the persistent queue of automation jobs.
+        /// </summary>
+        public DbSet<AutomationJob> AutomationJobs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the connections of the workspaces to other systems.
+        /// </summary>
+        public DbSet<Webhook> Webhooks { get; set; }
+
+        /// <summary>
+        /// Gets or sets the approval policies.
+        /// </summary>
+        public DbSet<ApprovalPolicy> ApprovalPolicies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the approvals.
+        /// </summary>
+        public DbSet<Approval> Approvals { get; set; }
+
+        /// <summary>
+        /// Gets or sets the decisions taken on approvals.
+        /// </summary>
+        public DbSet<ApprovalDecision> ApprovalDecisions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time logged on objects.
+        /// </summary>
+        public DbSet<Worklog> Worklogs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the planning figures of objects.
+        /// </summary>
+        public DbSet<ObjectPlanning> ObjectPlannings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the milestones.
+        /// </summary>
+        public DbSet<Milestone> Milestones { get; set; }
+
+        /// <summary>
+        /// Gets or sets the planning settings of the workspaces.
+        /// </summary>
+        public DbSet<WorkspacePlanning> WorkspacePlannings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weekly capacities of people.
+        /// </summary>
+        public DbSet<IdentityCapacity> IdentityCapacities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the central value catalogs.
+        /// </summary>
+        public DbSet<ValueCatalog> ValueCatalogs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the versions of the value catalogs.
+        /// </summary>
+        public DbSet<ValueCatalogVersion> ValueCatalogVersions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fields that draw their options from a catalog.
+        /// </summary>
+        public DbSet<FieldCatalogBinding> FieldCatalogBindings { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

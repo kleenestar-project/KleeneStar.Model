@@ -70,6 +70,21 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(c => c.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(x => x.IsBlueprint)
+                .HasColumnName("IsBlueprint")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            builder.Property(x => x.BlueprintId)
+                .HasColumnName("Blueprint");
+
+            // a follower whose blueprint is deleted keeps its copies and becomes a class of its own
+            builder.HasOne(x => x.Blueprint)
+                .WithMany()
+                .HasForeignKey(x => x.BlueprintId)
+                .HasPrincipalKey(c => c.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Property(x => x.Sealed)
                 .HasColumnName("Sealed");
 

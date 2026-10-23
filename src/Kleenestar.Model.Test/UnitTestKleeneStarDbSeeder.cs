@@ -649,7 +649,7 @@ namespace KleeneStar.Model.Test
             // classes are document classes, the release class is a blog class, and
             // every other class keeps the default issue kind
             var documentClassIds = db.Classes
-                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge" || c.Name == "Specification")
+                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge" || c.Name == "Specification" || c.Name == "Calculation")
                 .Select(c => c.Id)
                 .ToHashSet();
 
@@ -660,7 +660,7 @@ namespace KleeneStar.Model.Test
                 c => Assert.Equal(Entities.ObjectKind.Blog, c.Kind));
             Assert.All(db.Classes.Where(c => c.Name == "Asset").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Asset, c.Kind));
-            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Specification" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset").ToList(),
+            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Specification" && c.Name != "Calculation" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Issue, c.Kind));
 
             // the renderer is the other half of the presentation: the seed carries one
@@ -669,8 +669,23 @@ namespace KleeneStar.Model.Test
             // names none and follows the default of its kind.
             Assert.All(db.Classes.Where(c => c.Name == "Specification").ToList(),
                 c => Assert.Equal(Entities.ObjectRenderer.Form, c.Renderer));
-            Assert.All(db.Classes.Where(c => c.Name != "Specification").ToList(),
+            Assert.All(db.Classes.Where(c => c.Name == "Calculation").ToList(),
+                c => Assert.Equal(Entities.ObjectRenderer.Spreadsheet, c.Renderer));
+            Assert.All(db.Classes.Where(c => c.Name != "Specification" && c.Name != "Calculation").ToList(),
                 c => Assert.Null(c.Renderer));
+
+            // a spreadsheet document carries a workbook the framework reads back, with the
+            // sheets and the calculated totals the workbook dialog would have saved
+            var calculationIds = db.Classes.Where(c => c.Name == "Calculation").Select(c => c.Id).ToHashSet();
+            var workbooks = db.Objects.Where(o => calculationIds.Contains(o.ClassId)).ToList();
+
+            Assert.Equal(20, workbooks.Count);
+            Assert.All(workbooks, o =>
+            {
+                Assert.True(WebExpress.WebUI.WebSpreadsheet.SpreadsheetWorkbook.TryParse(o.Description, out var workbook), $"{o.Key} carries no workbook.");
+                Assert.Equal(2, workbook.Sheets.Count);
+                Assert.Contains(workbook.Sheets[0].EnumerateCells(), x => x.Cell.Formula is not null);
+            });
 
             var documents = db.Objects.Where(o => documentClassIds.Contains(o.ClassId)).ToList();
             Assert.NotEmpty(documents);

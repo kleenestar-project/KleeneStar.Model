@@ -10,8 +10,15 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents a workflow state entity.
     /// </summary>
-    public class Status : IEntity
+    public class Status : IEntity, IBlueprintManaged
     {
+        /// <summary>
+        /// Gets or sets the blueprint element this one is a copy of, or <c>null</c> for one
+        /// defined locally. A copy is kept in step by the blueprint synchronization and is not
+        /// changed locally.
+        /// </summary>
+        public Guid? BlueprintSourceId { get; set; }
+
         /// <summary>
         /// Gets or sets the database id.
         /// </summary>

@@ -58,6 +58,9 @@ namespace KleeneStar.Model
             // workspace: Finance and Controlling (FIN)
             add("9BDF73BB-9777-4FA5-9335-DA00A55D5337", "Budget", "Budget planning and allocation.", "/kleenestar/assets/icons/budget.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("EFD694A1-5E7E-4C21-BC4A-1F270A9BDE01", "Invoice", "Invoices and billing documents.", "/kleenestar/assets/icons/invoice.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
+            // calculations are kept as workbooks: the spreadsheet renderer is offered on documents, so
+            // the seed carries a class of it beside the prose and form documents
+            add("5C0B7E2A-91D4-4F3B-A8E6-2D7F4C1B9E30", "Calculation", "Budgets, cost comparisons and forecasts kept as workbooks.", "/kleenestar/assets/icons/budget.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B", kind: ObjectKind.Document, renderer: ObjectRenderer.Spreadsheet);
             add("2DC257FD-74D5-4187-B845-E36BAAC30694", "Approval", "Financial approval workflows.", "/kleenestar/assets/icons/approval.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("20C2A713-0593-4A01-8E54-44FCC8D09035", "CostCenter", "Cost center management.", "/kleenestar/assets/icons/costcenter.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");
             add("C9CF53BA-1114-463F-B053-18469914E3E6", "Contract", "Financial contracts and agreements.", "/kleenestar/assets/icons/contract.svg", "9994445E-FDBE-42E2-A3A0-65DF13CB453B");

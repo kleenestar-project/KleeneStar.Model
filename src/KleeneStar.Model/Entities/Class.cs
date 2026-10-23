@@ -76,6 +76,37 @@ namespace KleeneStar.Model.Entities
         public Class Inherited { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the class is a blueprint: a structure other
+        /// workspaces follow.
+        /// </summary>
+        /// <remarks>
+        /// Data structures that several departments share - the incident of every service desk,
+        /// the application every workspace references - are defined once in a blueprint class
+        /// and provided to the workspaces that follow it, so they stay alike without anybody
+        /// copying a field by hand. The flag offers the class as a blueprint; it changes nothing
+        /// about the class itself.
+        /// </remarks>
+        public bool IsBlueprint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blueprint class this class follows, or <c>null</c> for a class that
+        /// defines its structure alone.
+        /// </summary>
+        /// <remarks>
+        /// A follower receives the blueprint's fields, statuses, priorities and workflows as
+        /// managed copies (<see cref="IBlueprintManaged"/>), kept in step whenever the blueprint
+        /// changes. What it shows and how it works stays its own: views, boards, forms, filters,
+        /// templates and additional local fields.
+        /// </remarks>
+        public Guid? BlueprintId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blueprint class this class follows.
+        /// </summary>
+        [JsonIgnore]
+        public Class Blueprint { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the class is sealed.
         /// </summary>
         public bool Sealed { get; set; }

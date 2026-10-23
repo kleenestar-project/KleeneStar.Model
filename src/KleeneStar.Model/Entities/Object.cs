@@ -108,6 +108,20 @@ namespace KleeneStar.Model.Entities
         public SecurityLevel SecurityLevel { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the customer portal keeps the object to its
+        /// participants: the requester and the identities it was shared with.
+        /// </summary>
+        /// <remarks>
+        /// A portal issue is otherwise visible to the whole organization of the requester - every
+        /// member of a tenant the workspace serves - which is wrong for a request about a person
+        /// (a dismissal, a salary question, a complaint about a colleague). The requester
+        /// restricts it when submitting or later, the service team on the operator side. It is a
+        /// portal flag beside <see cref="Class.PortalVisible"/> and does not narrow the operator
+        /// side, where the security level is the classification.
+        /// </remarks>
+        public bool PortalRestricted { get; set; }
+
+        /// <summary>
         /// Gets or sets the unique identifier of the parent object, if any. The parent
         /// expresses a containment relationship inside the same workspace (e.g. an
         /// "Epic" object owning child "Story" objects).

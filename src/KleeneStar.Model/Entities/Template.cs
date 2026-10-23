@@ -81,6 +81,41 @@ namespace KleeneStar.Model.Entities
         public int Order { get; set; }
 
         /// <summary>
+        /// Gets or sets the identity the objects created from this template are assigned to,
+        /// or <c>null</c> to leave them unassigned.
+        /// </summary>
+        /// <remarks>
+        /// A work structure names who does each part - the onboarding's account request goes to
+        /// the IT desk, the access card to facility management - so a child of a composite
+        /// arrives in the right hands rather than in a pool somebody has to sort.
+        /// </remarks>
+        public Guid? AssigneeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity the objects created from this template are assigned to.
+        /// </summary>
+        [JsonIgnore]
+        public Identity Assignee { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sibling template whose object has to be finished before the object of
+        /// this one can be, or <c>null</c> when it depends on nothing.
+        /// </summary>
+        /// <remarks>
+        /// The dependency is created as a blocking relation between the two objects, so the
+        /// workflow refuses to close the dependent one early - the account cannot be handed
+        /// over before it exists. Only a sibling counts: the two objects are created by the same
+        /// instantiation, and a reference outside it would point at nothing.
+        /// </remarks>
+        public Guid? PredecessorId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sibling template this one depends on.
+        /// </summary>
+        [JsonIgnore]
+        public Template Predecessor { get; set; }
+
+        /// <summary>
         /// Gets or sets the unique identifier of the class this template is bound to.
         /// </summary>
         public Guid ClassId { get; set; }

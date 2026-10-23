@@ -57,6 +57,12 @@ namespace KleeneStar.Model
                 {
                     var (summary, description) = GetRandomContentForClass(cls.Name, i);
 
+                    // a spreadsheet document keeps its workbook where prose keeps its text
+                    if (cls.Renderer == ObjectRenderer.Spreadsheet)
+                    {
+                        description = SeedWorkbook(summary, i);
+                    }
+
                     // blog posts spread over several months, everything else is created "now"
                     var created = cls.Kind == ObjectKind.Blog
                         ? DateTime.UtcNow.AddDays(-11 * i).AddHours(-i)
@@ -155,6 +161,30 @@ namespace KleeneStar.Model
                         ("Anti-Money Laundering", "AML protocol verification for financial transactions."),
                         ("Environmental Audit", "ISO 14001 environmental management check."),
                         ("Safety Regulations", "OSHA workplace safety compliance review.")
+                    );
+                    break;
+                case "Calculation":
+                    (summary, descriptionPrefix) = Get(
+                        ("Budget 2026 IT Operations", "Quarterly budget of the IT operations."),
+                        ("Cloud Provider Comparison", "Total cost of ownership of the cloud offers."),
+                        ("Revenue Forecast Services", "Monthly revenue forecast of the service business."),
+                        ("Capacity Plan Q3", "Hours the teams can give in the third quarter."),
+                        ("Budget 2026 Marketing", "Quarterly budget of marketing and events."),
+                        ("Laptop Fleet Offers", "Comparison of the laptop leasing offers."),
+                        ("Revenue Forecast Licenses", "Monthly forecast of license revenue."),
+                        ("Capacity Plan Migration", "Capacity available for the data center migration."),
+                        ("Budget 2026 Facilities", "Quarterly budget of buildings and facilities."),
+                        ("Ticketing Tool Selection", "Cost comparison of the ticketing tools."),
+                        ("Revenue Forecast Consulting", "Monthly forecast of consulting revenue."),
+                        ("Capacity Plan Year End", "Capacity over the year-end closing."),
+                        ("Budget 2026 Security", "Quarterly budget of information security."),
+                        ("Printer Contract Renewal", "Comparison of the printer service contracts."),
+                        ("Revenue Forecast Training", "Monthly forecast of training revenue."),
+                        ("Capacity Plan Onboarding", "Capacity for onboarding the new hires."),
+                        ("Budget 2026 Development", "Quarterly budget of software development."),
+                        ("Backup Storage Options", "Cost comparison of the backup storage options."),
+                        ("Revenue Forecast Support", "Monthly forecast of support contract revenue."),
+                        ("Capacity Plan Audit Season", "Capacity during the audit season.")
                     );
                     break;
                 case "Asset":

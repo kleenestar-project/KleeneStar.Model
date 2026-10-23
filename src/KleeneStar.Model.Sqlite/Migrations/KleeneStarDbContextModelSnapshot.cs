@@ -116,6 +116,215 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("AccessToken", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Approval", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("AllowSelfApproval")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AllowSelfApproval");
+
+                    b.Property<DateTime?>("Completed")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Completed");
+
+                    b.Property<int>("CurrentStep")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CurrentStep");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Note");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<string>("Outcome")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Outcome");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Policy");
+
+                    b.Property<string>("PolicyName")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PolicyName");
+
+                    b.Property<DateTime>("Requested")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Requested");
+
+                    b.Property<Guid>("RequestedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RequestedBy");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("StepStarted")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("StepStarted");
+
+                    b.Property<string>("Steps")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Steps");
+
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Version");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("State");
+
+                    b.HasIndex("ObjectId", "State");
+
+                    b.ToTable("Approval", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ApprovalDecision", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("ApprovalId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Approval");
+
+                    b.Property<DateTime>("Decided")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Decided");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Reason");
+
+                    b.Property<int>("Step")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Step");
+
+                    b.Property<int>("Verdict")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Verdict");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ApprovalId", "Step", "IdentityId")
+                        .IsUnique();
+
+                    b.ToTable("ApprovalDecision", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ApprovalPolicy", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("AllowSelfApproval")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AllowSelfApproval");
+
+                    b.Property<Guid?>("ApprovedStatusId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ApprovedStatus");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<Guid?>("RejectedStatusId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RejectedStatus");
+
+                    b.Property<Guid?>("RequestStatusId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RequestStatus");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<string>("Steps")
+                        .IsRequired()
+                        .HasMaxLength(8192)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Steps");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ApprovalPolicy", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Attachment", b =>
                 {
                     b.Property<int>("RawId")
@@ -353,6 +562,175 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("AuditEvent", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.AutomationJob", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Attempts");
+
+                    b.Property<int>("CompletedActions")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CompletedActions");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Deduplication")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Deduplication");
+
+                    b.Property<int>("Depth")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Depth");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastError");
+
+                    b.Property<string>("LockedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LockedBy");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LockedUntil");
+
+                    b.Property<DateTime>("NextAttempt")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("NextAttempt");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<Guid>("RuleId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Rule");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<string>("Trigger")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Trigger");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Version");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Deduplication")
+                        .IsUnique();
+
+                    b.HasIndex("RuleId");
+
+                    b.HasIndex("State", "NextAttempt");
+
+                    b.ToTable("AutomationJob", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.AutomationRule", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Actions")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Actions");
+
+                    b.Property<Guid?>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<string>("Condition")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Condition");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<DateTime?>("NextRun")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("NextRun");
+
+                    b.Property<Guid?>("RunAsId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RunAs");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<string>("Trigger")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Trigger");
+
+                    b.Property<string>("TriggerParameter")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("TriggerParameter");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId", "Trigger");
+
+                    b.ToTable("AutomationRule", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Branding", b =>
                 {
                     b.Property<int>("RawId")
@@ -578,6 +956,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("AccessModifier");
 
+                    b.Property<Guid?>("BlueprintId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Blueprint");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT")
                         .HasColumnName("Created");
@@ -603,6 +985,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Property<bool>("IsAbstract")
                         .HasColumnType("INTEGER")
                         .HasColumnName("IsAbstract");
+
+                    b.Property<bool>("IsBlueprint")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsBlueprint");
 
                     b.Property<string>("Kind")
                         .IsRequired()
@@ -650,6 +1038,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Workspace");
 
                     b.HasKey("RawId");
+
+                    b.HasIndex("BlueprintId");
 
                     b.HasIndex("InheritedId");
 
@@ -994,6 +1384,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("AccessModifier");
 
+                    b.Property<Guid?>("BlueprintSourceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("BlueprintSource");
+
                     b.Property<int>("Cardinality")
                         .HasColumnType("INTEGER")
                         .HasColumnName("Cardinality");
@@ -1106,6 +1500,40 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Field", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FieldCatalogBinding", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("CatalogId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Catalog");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Field");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int?>("PinnedVersion")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("PinnedVersion");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("CatalogId");
+
+                    b.HasIndex("FieldId")
+                        .IsUnique();
+
+                    b.ToTable("FieldCatalogBinding", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Form", b =>
@@ -1508,6 +1936,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("Identity", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.IdentityCapacity", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<int>("WeeklyMinutes")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("WeeklyMinutes");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("IdentityId")
+                        .IsUnique();
+
+                    b.ToTable("IdentityCapacity", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.IdentityGroupMembership", b =>
@@ -2016,6 +2472,60 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Maintenance", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Milestone", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<DateTime?>("Due")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Due");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Milestone", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.NavigatorLink", b =>
                 {
                     b.Property<int>("RawId")
@@ -2120,6 +2630,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Parent");
 
+                    b.Property<bool>("PortalRestricted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false)
+                        .HasColumnName("PortalRestricted");
+
                     b.Property<Guid?>("SecurityLevelId")
                         .HasColumnType("TEXT")
                         .HasColumnName("SecurityLevel");
@@ -2182,6 +2698,71 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Object", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectCreation", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Error");
+
+                    b.Property<DateTime?>("Finished")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Finished");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid?>("IdentityId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Key");
+
+                    b.Property<string>("ObjectIds")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Objects");
+
+                    b.Property<string>("RelationIds")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Relations");
+
+                    b.Property<Guid?>("RootObjectId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RootObject");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<Guid?>("TemplateId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Template");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("ObjectCreation", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectDraft", b =>
                 {
                     b.Property<int>("RawId")
@@ -2226,6 +2807,48 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("UpdaterId");
 
                     b.ToTable("ObjectDraft", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectPlanning", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid?>("MilestoneId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Milestone");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<int?>("OriginalEstimateMinutes")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("OriginalEstimate");
+
+                    b.Property<int?>("RemainingEstimateMinutes")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RemainingEstimate");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("MilestoneId");
+
+                    b.HasIndex("ObjectId")
+                        .IsUnique();
+
+                    b.ToTable("ObjectPlanning", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelation", b =>
@@ -2742,6 +3365,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<Guid?>("BlueprintSourceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("BlueprintSource");
+
                     b.Property<Guid>("ClassId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Class");
@@ -3177,6 +3804,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<Guid?>("BlueprintSourceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("BlueprintSource");
+
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("TEXT")
                         .HasColumnName("Category");
@@ -3283,6 +3914,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<Guid?>("AssigneeId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Assignee");
+
                     b.Property<string>("Category")
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
@@ -3324,6 +3959,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Parent");
 
+                    b.Property<Guid?>("PredecessorId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Predecessor");
+
                     b.Property<string>("Presets")
                         .HasColumnType("TEXT")
                         .HasColumnName("Presets");
@@ -3338,7 +3977,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
                     b.HasKey("RawId");
 
+                    b.HasIndex("AssigneeId");
+
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("PredecessorId");
 
                     b.HasIndex("ClassId", "Name")
                         .IsUnique();
@@ -3391,6 +4034,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
+
+                    b.Property<Guid?>("BlueprintSourceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("BlueprintSource");
 
                     b.Property<string>("Color")
                         .HasMaxLength(32)
@@ -3628,6 +4275,219 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Value", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ValueCatalog", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<int>("CurrentVersion")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("CurrentVersion");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastError");
+
+                    b.Property<DateTime?>("LastRefresh")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastRefresh");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Query")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Query");
+
+                    b.Property<int?>("RefreshMinutes")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RefreshMinutes");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Source");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Url");
+
+                    b.Property<string>("ValueAttribute")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ValueAttribute");
+
+                    b.Property<Guid?>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("WorkspaceId", "Name");
+
+                    b.ToTable("ValueCatalog", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ValueCatalogVersion", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<int>("Added")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Added");
+
+                    b.Property<Guid>("CatalogId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Catalog");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Comment");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Number");
+
+                    b.Property<int>("Removed")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Removed");
+
+                    b.Property<string>("Values")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Values");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("CatalogId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("ValueCatalogVersion", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Webhook", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<int>("Direction")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Direction");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Integration")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Integration");
+
+                    b.Property<DateTime?>("LastDelivery")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastDelivery");
+
+                    b.Property<string>("LastResult")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("LastResult");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Secret")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Secret");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Url");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Webhook", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Widget", b =>
                 {
                     b.Property<int>("RawId")
@@ -3685,6 +4545,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
+
+                    b.Property<Guid?>("BlueprintSourceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("BlueprintSource");
 
                     b.Property<Guid>("ClassId")
                         .HasColumnType("TEXT")
@@ -3761,6 +4625,59 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.HasIndex("StatusId");
 
                     b.ToTable("WorkflowStatus", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Worklog", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(2048)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Comment");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("IdentityId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Identity");
+
+                    b.Property<int>("Minutes")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Minutes");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Object");
+
+                    b.Property<DateTime>("Started")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Started");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("ObjectId");
+
+                    b.HasIndex("IdentityId", "Started");
+
+                    b.ToTable("Worklog", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
@@ -3880,6 +4797,34 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkspaceBookmark", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.WorkspacePlanning", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<bool>("TimeTracking")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("TimeTracking");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("WorkspacePlanning", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.WqlHistory", b =>
@@ -4036,6 +4981,43 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Approval", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Object", null)
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ApprovalDecision", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Approval", null)
+                        .WithMany("Decisions")
+                        .HasForeignKey("ApprovalId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ApprovalPolicy", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Attachment", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Object", "Object")
@@ -4066,6 +5048,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.AutomationRule", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.BusinessHourSlot", b =>
@@ -4106,6 +5098,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Class", b =>
                 {
+                    b.HasOne("KleeneStar.Model.Entities.Class", "Blueprint")
+                        .WithMany()
+                        .HasForeignKey("BlueprintId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("KleeneStar.Model.Entities.Class", "Inherited")
                         .WithMany()
                         .HasForeignKey("InheritedId")
@@ -4124,6 +5122,8 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Blueprint");
 
                     b.Navigation("Inherited");
 
@@ -4237,6 +5237,23 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.FieldCatalogBinding", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.ValueCatalog", null)
+                        .WithMany()
+                        .HasForeignKey("CatalogId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Field", null)
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Form", b =>
@@ -4414,6 +5431,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Column");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Milestone", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Object", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Identity", "Assignee")
@@ -4501,6 +5528,22 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Object");
 
                     b.Navigation("Updater");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ObjectPlanning", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Milestone", null)
+                        .WithMany()
+                        .HasForeignKey("MilestoneId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("KleeneStar.Model.Entities.Object", null)
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.ObjectRelation", b =>
@@ -4777,6 +5820,12 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Template", b =>
                 {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Assignee")
+                        .WithMany()
+                        .HasForeignKey("AssigneeId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("KleeneStar.Model.Entities.Class", "Class")
                         .WithMany()
                         .HasForeignKey("ClassId")
@@ -4790,9 +5839,19 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasPrincipalKey("Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("KleeneStar.Model.Entities.Template", "Predecessor")
+                        .WithMany()
+                        .HasForeignKey("PredecessorId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Assignee");
+
                     b.Navigation("Class");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Predecessor");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Transition", b =>
@@ -4886,6 +5945,35 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Object");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.ValueCatalog", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.ValueCatalogVersion", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.ValueCatalog", null)
+                        .WithMany()
+                        .HasForeignKey("CatalogId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Webhook", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Widget", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.DashboardColumn", "Column")
@@ -4931,6 +6019,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Workflow");
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.Worklog", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Object", null)
+                        .WithMany()
+                        .HasForeignKey("ObjectId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Workspace", b =>
                 {
                     b.HasOne("KleeneStar.Model.Entities.Workspace", "Inherited")
@@ -4961,6 +6059,16 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.WorkspacePlanning", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.WqlHistory", b =>
@@ -5015,6 +6123,11 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.Approval", b =>
+                {
+                    b.Navigation("Decisions");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.AuditEvent", b =>
