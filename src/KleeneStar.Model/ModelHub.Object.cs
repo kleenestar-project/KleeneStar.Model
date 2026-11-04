@@ -104,6 +104,28 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the parent link of every object of the installation - id, parent, workspace
+        /// and last change - and nothing else.
+        /// </summary>
+        /// <remarks>
+        /// The hierarchy verifier walks the whole parent relation once per start. Reading it
+        /// through <see cref="GetObjects(IQuery{Object})"/> would load every object with its
+        /// workspace and parent rows; the projection reads four columns. Unnarrowed by design:
+        /// the tree is the installation's, not a caller's.
+        /// </remarks>
+        /// <returns>The links, in no particular order.</returns>
+        public static IReadOnlyList<(System.Guid Id, System.Guid? ParentId, System.Guid WorkspaceId, System.DateTime Updated)> GetObjectHierarchy()
+        {
+            using var db = CreateDbContext();
+
+            return [.. db.Objects
+                .AsNoTracking()
+                .Select(x => new { x.Id, x.ParentId, x.WorkspaceId, x.Updated })
+                .AsEnumerable()
+                .Select(x => (x.Id, x.ParentId, x.WorkspaceId, x.Updated))];
+        }
+
+        /// <summary>
         /// Adds the specified object to the database if it does not already exist.
         /// </summary>
         /// <remarks>

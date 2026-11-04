@@ -352,6 +352,28 @@ namespace KleeneStar.Model
         public DbSet<ObjectCreation> ObjectCreations { get; set; }
 
         /// <summary>
+        /// Gets or sets the materialized paths of the objects (derived from the parent relation).
+        /// </summary>
+        public DbSet<ObjectPath> ObjectPaths { get; set; }
+
+        /// <summary>
+        /// Gets or sets the recursive operation runs.
+        /// </summary>
+        public DbSet<ObjectOperation> ObjectOperations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the objects of the recursive operation runs.
+        /// </summary>
+        public DbSet<ObjectOperationItem> ObjectOperationItems { get; set; }
+
+
+
+        /// <summary>
+        /// Gets or sets the former keys of objects moved into another workspace.
+        /// </summary>
+        public DbSet<ObjectKeyAlias> ObjectKeyAliases { get; set; }
+
+        /// <summary>
         /// Gets or sets the rules of the automation platform.
         /// </summary>
         public DbSet<AutomationRule> AutomationRules { get; set; }

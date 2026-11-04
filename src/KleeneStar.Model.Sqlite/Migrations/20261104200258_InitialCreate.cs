@@ -274,6 +274,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectOperation",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Kind = table.Column<string>(type: "TEXT", maxLength: 16, nullable: false),
+                    Mode = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                    Root = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Reference = table.Column<Guid>(type: "TEXT", nullable: true),
+                    TargetWorkspace = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Options = table.Column<string>(type: "TEXT", nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Total = table.Column<int>(type: "INTEGER", nullable: false),
+                    Done = table.Column<int>(type: "INTEGER", nullable: false),
+                    Error = table.Column<string>(type: "TEXT", nullable: true),
+                    Identity = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Finished = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectOperation", x => x.Id);
+                    table.UniqueConstraint("AK_ObjectOperation_Guid", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ObjectRelationType",
                 columns: table => new
                 {
@@ -620,6 +650,30 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_KindDashboardColumn_KindDashboard_Board",
                         column: x => x.Board,
                         principalTable: "KindDashboard",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ObjectOperationItem",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Operation = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Done = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Result = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectOperationItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectOperationItem_ObjectOperation_Operation",
+                        column: x => x.Operation,
+                        principalTable: "ObjectOperation",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -2244,6 +2298,51 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ObjectKeyAlias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectKeyAlias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectKeyAlias_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ObjectPath",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Path = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
+                    Depth = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ObjectPath", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ObjectPath_Object_Object",
+                        column: x => x.Object,
+                        principalTable: "Object",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ObjectPlanning",
                 columns: table => new
                 {
@@ -3056,6 +3155,50 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Updater");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ObjectKeyAlias_Key",
+                table: "ObjectKeyAlias",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectKeyAlias_Object",
+                table: "ObjectKeyAlias",
+                column: "Object");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectOperation_Key",
+                table: "ObjectOperation",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectOperation_Root_Kind",
+                table: "ObjectOperation",
+                columns: new[] { "Root", "Kind" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectOperation_State",
+                table: "ObjectOperation",
+                column: "State");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectOperationItem_Operation_Object",
+                table: "ObjectOperationItem",
+                columns: new[] { "Operation", "Object" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectPath_Object",
+                table: "ObjectPath",
+                column: "Object",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ObjectPath_Workspace_Path",
+                table: "ObjectPath",
+                columns: new[] { "Workspace", "Path" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ObjectPlanning_Milestone",
                 table: "ObjectPlanning",
                 column: "Milestone");
@@ -3512,6 +3655,15 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "ObjectDraft");
 
             migrationBuilder.DropTable(
+                name: "ObjectKeyAlias");
+
+            migrationBuilder.DropTable(
+                name: "ObjectOperationItem");
+
+            migrationBuilder.DropTable(
+                name: "ObjectPath");
+
+            migrationBuilder.DropTable(
                 name: "ObjectPlanning");
 
             migrationBuilder.DropTable(
@@ -3621,6 +3773,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "KindDashboardColumn");
+
+            migrationBuilder.DropTable(
+                name: "ObjectOperation");
 
             migrationBuilder.DropTable(
                 name: "Milestone");

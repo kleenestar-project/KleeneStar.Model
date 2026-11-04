@@ -1,4 +1,4 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -193,6 +193,84 @@ namespace KleeneStar.Model.Test
             Refused(db => db.ValueCatalogVersions.Add(new ValueCatalogVersion { Id = Guid.NewGuid(), CatalogId = catalogId, Number = 1, Values = "[]", Created = DateTime.UtcNow }));
             Refused(db => db.AutomationJobs.Add(new AutomationJob { Id = Guid.NewGuid(), RuleId = ruleId, ObjectId = _objectId, Trigger = "object.created", Deduplication = "same", Version = Guid.NewGuid(), Created = DateTime.UtcNow, Updated = DateTime.UtcNow, NextAttempt = DateTime.UtcNow }));
             Refused(db => db.Webhooks.Add(new Webhook { Id = Guid.NewGuid(), WorkspaceId = _workspaceId, Name = "same", Created = DateTime.UtcNow, Updated = DateTime.UtcNow }));
+        }
+
+        /// <summary>
+        /// The path row of an object goes with it, the objects of a run go with the run, and a run
+        /// key is unique (container phase 3).
+        /// </summary>
+        [Fact]
+        public void ObjectPathAndOperation_CascadeAndUniqueness()
+        {
+            var operationId = Guid.NewGuid();
+
+            using (var db = Context())
+            {
+                db.ObjectPaths.Add(new ObjectPath { ObjectId = _objectId, WorkspaceId = _workspaceId, Path = "/", Depth = 0 });
+                db.ObjectOperations.Add(new ObjectOperation { Id = operationId, Key = "op-1", Kind = "archive", RootId = _objectId, WorkspaceId = _workspaceId, Created = DateTime.UtcNow, Updated = DateTime.UtcNow });
+                db.ObjectOperationItems.Add(new ObjectOperationItem { OperationId = operationId, ObjectId = _objectId, Position = 0 });
+                db.SaveChanges();
+            }
+
+            using (var db = Context())
+            {
+                db.ObjectOperations.Add(new ObjectOperation { Id = Guid.NewGuid(), Key = "op-1", Kind = "delete", RootId = _objectId, WorkspaceId = _workspaceId, Created = DateTime.UtcNow, Updated = DateTime.UtcNow });
+                Assert.Throws<DbUpdateException>(() => db.SaveChanges());
+            }
+
+            using (var db = Context())
+            {
+                db.Objects.Remove(db.Objects.Single(x => x.Id == _objectId));
+                db.ObjectOperations.Remove(db.ObjectOperations.Single(x => x.Id == operationId));
+                db.SaveChanges();
+            }
+
+            using var check = Context();
+
+            Assert.Empty(check.ObjectPaths);
+            Assert.Empty(check.ObjectOperationItems);
+        }
+
+        /// <summary>
+        /// The subtree range and the bulk rewrite of a moved subtree translate on SQLite and select
+        /// exactly the prefix - the two query shapes the path index is built on.
+        /// </summary>
+        [Fact]
+        public void ObjectPath_RangeAndRewriteTranslate()
+        {
+            var a = Guid.NewGuid().ToString("N");
+            var b = Guid.NewGuid().ToString("N");
+            var c = Guid.NewGuid().ToString("N");
+
+            using (var db = Context())
+            {
+                db.ObjectPaths.Add(new ObjectPath { ObjectId = _objectId, WorkspaceId = _workspaceId, Path = $"/{a}/{b}/", Depth = 2 });
+                db.SaveChanges();
+            }
+
+            var prefix = $"/{a}/";
+            var upper = prefix[..^1] + "0";
+
+            using (var db = Context())
+            {
+                Assert.Equal(1, db.ObjectPaths.Count(x => x.WorkspaceId == _workspaceId && x.Path.CompareTo(prefix) >= 0 && x.Path.CompareTo(upper) < 0));
+                Assert.Equal(0, db.ObjectPaths.Count(x => x.WorkspaceId == _workspaceId && x.Path.CompareTo($"/{c}/") >= 0 && x.Path.CompareTo($"/{c}0") < 0));
+
+                var newPrefix = $"/{c}/{a}/";
+                var length = prefix.Length;
+
+                Assert.Equal(1, db.ObjectPaths
+                    .Where(x => x.Path.CompareTo(prefix) >= 0 && x.Path.CompareTo(upper) < 0)
+                    .ExecuteUpdate(u => u
+                        .SetProperty(x => x.Path, x => newPrefix + x.Path.Substring(length))
+                        .SetProperty(x => x.Depth, x => x.Depth + 1)));
+            }
+
+            using var check = Context();
+            var row = check.ObjectPaths.Single();
+
+            Assert.Equal($"/{c}/{a}/{b}/", row.Path);
+            Assert.Equal(3, row.Depth);
         }
     }
 }
