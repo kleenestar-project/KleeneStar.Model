@@ -148,6 +148,10 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.CompletedActions)
                 .HasColumnName("CompletedActions");
 
+            // the script frozen when the job was queued; CompletedActions counts its lines
+            builder.Property(x => x.Actions)
+                .HasColumnName("Actions");
+
             builder.Property(x => x.NextAttempt)
                 .HasColumnName("NextAttempt")
                 .IsRequired();

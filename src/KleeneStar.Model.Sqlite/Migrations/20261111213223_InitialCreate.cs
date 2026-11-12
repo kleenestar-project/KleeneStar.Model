@@ -59,6 +59,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     State = table.Column<int>(type: "INTEGER", nullable: false),
                     Attempts = table.Column<int>(type: "INTEGER", nullable: false),
                     CompletedActions = table.Column<int>(type: "INTEGER", nullable: false),
+                    Actions = table.Column<string>(type: "TEXT", nullable: true),
                     NextAttempt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LockedBy = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
                     LockedUntil = table.Column<DateTime>(type: "TEXT", nullable: true),

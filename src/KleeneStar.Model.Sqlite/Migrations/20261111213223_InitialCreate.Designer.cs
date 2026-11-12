@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20261104200258_InitialCreate")]
+    [Migration("20261111213223_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -571,6 +571,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
+
+                    b.Property<string>("Actions")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Actions");
 
                     b.Property<int>("Attempts")
                         .HasColumnType("INTEGER")

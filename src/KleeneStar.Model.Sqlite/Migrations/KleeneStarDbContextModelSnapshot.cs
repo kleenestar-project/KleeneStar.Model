@@ -569,6 +569,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
+                    b.Property<string>("Actions")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Actions");
+
                     b.Property<int>("Attempts")
                         .HasColumnType("INTEGER")
                         .HasColumnName("Attempts");

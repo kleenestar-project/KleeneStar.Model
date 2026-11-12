@@ -220,7 +220,7 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         /// <remarks>
         /// There is no enum of sources: the key names an entry of the core's
-        /// <c>AuthenticationSourceCatalog</c>, which a plugin extends (OpenID Connect, LDAP, ...).
+        /// <c>AuthenticationSourceManager</c>, which a plugin extends (OpenID Connect, LDAP, ...).
         /// A key that names no registered source - its plugin was uninstalled - signs nobody in:
         /// unlike a renderer, an authentication source does not fall back to a default, because
         /// the fallback would be the local password check of an account that never had one

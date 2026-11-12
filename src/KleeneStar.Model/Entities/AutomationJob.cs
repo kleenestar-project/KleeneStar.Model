@@ -82,9 +82,20 @@ namespace KleeneStar.Model.Entities
         public int Attempts { get; set; }
 
         /// <summary>
-        /// Gets or sets how many of the rule's actions are done.
+        /// Gets or sets how many of the job's actions (<see cref="Actions"/>) are done.
         /// </summary>
         public int CompletedActions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the script the job runs, frozen from its rule when the job was queued.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="CompletedActions"/> counts lines of this text. Read from the rule on every
+        /// attempt instead, a rule edited between a failed attempt and its retry would shift the
+        /// lines under the counter: a removed first line would let the retry skip the action that
+        /// had failed and report success. <c>null</c> for a job queued before the column existed.
+        /// </remarks>
+        public string Actions { get; set; }
 
         /// <summary>
         /// Gets or sets the earliest time the job is run (again).
