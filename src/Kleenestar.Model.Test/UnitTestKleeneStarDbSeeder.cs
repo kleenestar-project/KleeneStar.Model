@@ -230,8 +230,10 @@ namespace KleeneStar.Model.Test
             Assert.True(db.Calendars.Any(), "expected at least one calendar");
             Assert.True(db.BusinessHourSlots.Any(), "expected at least one business-hour slot");
 
-            // every class should have at least one calendar
-            var classes = db.Classes.ToList();
+            // every class should have at least one calendar, except the Page classes of the
+            // home pages
+            var pageClassIds = HomePageClassIds(db);
+            var classes = db.Classes.ToList().Where(c => !pageClassIds.Contains(c.Id)).ToList();
             foreach (var cls in classes)
             {
                 Assert.True
@@ -277,8 +279,10 @@ namespace KleeneStar.Model.Test
             Assert.True(db.SlaPolicies.Any(), "expected at least one SLA policy");
             Assert.True(db.SlaTargets.Any(),  "expected at least one SLA target");
 
-            // each seeded class should have at least one policy
-            var classes = db.Classes.ToList();
+            // each seeded class should have at least one policy, except the Page classes of the
+            // home pages
+            var pageClassIds = HomePageClassIds(db);
+            var classes = db.Classes.ToList().Where(c => !pageClassIds.Contains(c.Id)).ToList();
             foreach (var cls in classes)
             {
                 Assert.True
@@ -325,8 +329,10 @@ namespace KleeneStar.Model.Test
             // validation
             Assert.True(db.Comments.Any(), "expected at least one seeded comment");
 
-            // every seeded object should have at least one top-level comment
-            var objects = db.Objects.ToList();
+            // every seeded object should have at least one top-level comment, except the home
+            // pages, which take none
+            var homeIds = HomePageIds(db);
+            var objects = db.Objects.ToList().Where(o => !homeIds.Contains(o.Id)).ToList();
             foreach (var obj in objects)
             {
                 Assert.True
@@ -605,7 +611,9 @@ namespace KleeneStar.Model.Test
                 Assert.All(sprints, s => Assert.True(s.Start.HasValue && s.End.HasValue && s.Start < s.End));
 
                 var active = sprints.Single(s => s.State == Entities.SprintState.Active);
-                var objects = db.Objects.Where(o => o.WorkspaceId == workspace.Id).ToList();
+
+                // the home page is the workspace's front page, not planned work
+                var objects = db.Objects.Where(o => o.WorkspaceId == workspace.Id && o.Id != workspace.HomeId).ToList();
 
                 if (objects.Count == 0)
                 {
@@ -649,7 +657,7 @@ namespace KleeneStar.Model.Test
             // classes are document classes, the release class is a blog class, and
             // every other class keeps the default issue kind
             var documentClassIds = db.Classes
-                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge" || c.Name == "Specification" || c.Name == "Calculation")
+                .Where(c => c.Name == "Documentation" || c.Name == "Knowledge" || c.Name == "Specification" || c.Name == "Calculation" || c.Name == "Page")
                 .Select(c => c.Id)
                 .ToHashSet();
 
@@ -660,7 +668,9 @@ namespace KleeneStar.Model.Test
                 c => Assert.Equal(Entities.ObjectKind.Blog, c.Kind));
             Assert.All(db.Classes.Where(c => c.Name == "Asset").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Asset, c.Kind));
-            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Specification" && c.Name != "Calculation" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset").ToList(),
+            Assert.All(db.Classes.Where(c => c.Name == "Page").ToList(),
+                c => Assert.Equal(Entities.ObjectKind.Document, c.Kind));
+            Assert.All(db.Classes.Where(c => c.Name != "Documentation" && c.Name != "Knowledge" && c.Name != "Specification" && c.Name != "Calculation" && c.Name != "Release" && c.Name != "Announcement" && c.Name != "Asset" && c.Name != "Page").ToList(),
                 c => Assert.Equal(Entities.ObjectKind.Issue, c.Kind));
 
             // the renderer is the other half of the presentation: the seed carries one
@@ -1074,6 +1084,123 @@ namespace KleeneStar.Model.Test
                 Assert.Contains(db.Groups, x => x.Id == Entities.Group.AnonymousId);
                 Assert.Empty(db.PermissionAssignments);
             }
+        }
+    
+
+        /// <summary>
+        /// Verifies that every seeded workspace gets its home page: a document of its own, named
+        /// by the workspace, outside the page tree, without comments, in a class rendered as
+        /// prose, and that seeding again creates no second one.
+        /// </summary>
+        [Fact]
+        public async Task SeedWorkspaceHomes()
+        {
+            // arrange
+            var connectionString = $"SeedWorkspaceHomes_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var workspaces = db.Workspaces.ToList();
+
+            Assert.NotEmpty(workspaces);
+
+            foreach (var workspace in workspaces)
+            {
+                Assert.True(workspace.HomeId.HasValue, $"expected a home page for workspace {workspace.Key}");
+
+                var home = db.Objects.Single(o => o.Id == workspace.HomeId);
+                var host = db.Classes.Single(c => c.Id == home.ClassId);
+
+                Assert.Equal(workspace.Id, home.WorkspaceId);
+                Assert.Equal(Entities.ObjectKind.Document, home.Kind);
+                Assert.Null(home.ParentId);
+                Assert.False(db.Objects.Any(o => o.ParentId == home.Id));
+                Assert.False(db.Comments.Any(c => c.ObjectId == home.Id));
+                Assert.StartsWith(workspace.Key + "-", home.Key);
+                Assert.Contains("<h2>", home.Description);
+                Assert.Equal(Entities.ObjectKind.Document, host.Kind);
+                Assert.True(host.Renderer is null || host.Renderer == Entities.ObjectRenderer.Prose);
+            }
+
+            // the service desk home page is in the Knowledge class; the finance workspace has
+            // only a spreadsheet document class, so its home page is in a Page class
+            string HostOf(string key)
+            {
+                var homeId = workspaces.Single(w => w.Key == key).HomeId;
+                var classId = db.Objects.Single(o => o.Id == homeId).ClassId;
+
+                return db.Classes.Single(c => c.Id == classId).Name;
+            }
+
+            Assert.Equal("Knowledge", HostOf("SD"));
+            Assert.Equal("Page", HostOf("FIN"));
+
+            var objects = db.Objects.Count();
+            var classes = db.Classes.Count();
+
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            Assert.Equal(objects, db.Objects.Count());
+            Assert.Equal(classes, db.Classes.Count());
+        }
+
+        /// <summary>
+        /// Verifies that a referenced document without parent and children but with comments is
+        /// not adopted as the home page: the next seed creates a new home page.
+        /// </summary>
+        [Fact]
+        public async Task SeedWorkspaceHomesLeavesACommentedPageAPage()
+        {
+            // arrange
+            var connectionString = $"SeedWorkspaceHomesCommented_{Guid.NewGuid()}";
+
+            await using var db = InMemoryDbContextFactory.Create(connectionString);
+
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            var page = db.Objects.Single(o => o.Key == "SD-9000");
+            var workspace = db.Workspaces.Single(w => w.Key == "SD");
+
+            Assert.Null(page.ParentId);
+            Assert.True(db.Comments.Any(c => c.ObjectId == page.Id), "expected the seeded help page to carry comments");
+
+            workspace.HomeId = page.Id;
+            await db.SaveChangesAsync();
+
+            // act
+            await KleeneStarDbSeeder.SeedAsync(db);
+
+            // validation
+            var homeId = db.Workspaces.AsNoTracking().Single(w => w.Key == "SD").HomeId;
+
+            Assert.NotEqual(page.Id, homeId);
+            Assert.True(db.Objects.Any(o => o.Id == page.Id));
+            Assert.Equal("Knowledge", db.Classes.Single(c => c.Id == db.Objects.Single(o => o.Id == homeId).ClassId).Name);
+        }
+
+        /// <summary>
+        /// Returns the ids of the workspaces' home pages.
+        /// </summary>
+        /// <param name="db">The seeded context.</param>
+        /// <returns>The ids.</returns>
+        private static HashSet<Guid> HomePageIds(KleeneStarDbContext db)
+        {
+            return [.. db.Workspaces.Where(w => w.HomeId.HasValue).Select(w => w.HomeId.Value)];
+        }
+
+        /// <summary>
+        /// Returns the ids of the Page classes the seeder wrote for the home pages of workspaces
+        /// without a prose document class.
+        /// </summary>
+        /// <param name="db">The seeded context.</param>
+        /// <returns>The ids.</returns>
+        private static HashSet<Guid> HomePageClassIds(KleeneStarDbContext db)
+        {
+            return [.. db.Classes.Where(c => c.Name == "Page" && c.Kind == Entities.ObjectKind.Document).Select(c => c.Id)];
         }
     }
 }

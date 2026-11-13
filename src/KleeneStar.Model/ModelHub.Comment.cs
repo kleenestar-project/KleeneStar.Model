@@ -13,6 +13,20 @@ namespace KleeneStar.Model
     internal static partial class ModelHub
     {
         /// <summary>
+        /// Returns whether any comment row references the supplied object, including deleted
+        /// comments and comments without a resolvable author. The query uses no join; the reads
+        /// below include the author and therefore skip such comments.
+        /// </summary>
+        /// <param name="objectId">The object.</param>
+        /// <returns><see langword="true"/> when the object carries a comment.</returns>
+        public static bool HasComments(Guid objectId)
+        {
+            using var db = CreateDbContext();
+
+            return db.Comments.AsNoTracking().Any(x => x.ObjectId == objectId);
+        }
+
+        /// <summary>
         /// Returns a materialized collection of comments from the database.
         /// </summary>
         /// <param name="query">The query criteria.</param>

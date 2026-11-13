@@ -479,6 +479,19 @@ namespace KleeneStar.Model
                     throw;
                 }
             }
+
+            // the home pages run on every start and last, so no comment, label or share of the
+            // earlier steps lands on a home page
+            try
+            {
+                SeedWorkspaceHomes(db);
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error seeding workspace home pages: {ex.InnerException?.Message ?? ex.Message}");
+                throw;
+            }
         }
     }
 }
