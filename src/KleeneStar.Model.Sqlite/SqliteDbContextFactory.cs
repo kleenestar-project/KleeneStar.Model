@@ -1,5 +1,6 @@
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace KleeneStar.Model.Sqlite
@@ -27,9 +28,27 @@ namespace KleeneStar.Model.Sqlite
         /// <returns>A configured KleeneStarDbContext instance.</returns>
         public static KleeneStarDbContext Create(string connectionString)
         {
-            var effective = BuildConnectionString(connectionString);
+            var options = _options.GetOrAdd(connectionString ?? string.Empty, BuildOptions);
 
-            EnsureWriteAheadLog(effective);
+            EnsureWriteAheadLog(options.Effective);
+
+            return new KleeneStarDbContext(options.Options);
+        }
+
+        /// <summary>
+        /// The options per configured connection string. They are immutable, so one instance
+        /// serves every context, and the connection string is parsed once instead of per access.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, (string Effective, DbContextOptions<KleeneStarDbContext> Options)> _options = new();
+
+        /// <summary>
+        /// Builds the options of a configured connection string.
+        /// </summary>
+        /// <param name="connectionString">The configured connection string.</param>
+        /// <returns>The effective connection string and the options built on it.</returns>
+        private static (string Effective, DbContextOptions<KleeneStarDbContext> Options) BuildOptions(string connectionString)
+        {
+            var effective = BuildConnectionString(connectionString);
 
             var options = new DbContextOptionsBuilder<KleeneStarDbContext>()
                 .UseSqlite
@@ -39,7 +58,7 @@ namespace KleeneStar.Model.Sqlite
                 )
                 .Options;
 
-            return new KleeneStarDbContext(options);
+            return (effective, options);
         }
 
         /// <summary>

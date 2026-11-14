@@ -215,6 +215,46 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
+        /// A workspace is read without its classes and objects, and updating such a workspace
+        /// leaves the classes and objects of the store in place.
+        /// </summary>
+        [Fact]
+        public void UpdateWorkspaceReadWithoutObjectsKeepsClassesAndObjects()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "UpdateWorkspaceReadWithoutObjectsKeepsClassesAndObjects",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var workspaceId = Guid.NewGuid();
+            var classId = Guid.NewGuid();
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workspaces.Add(new Workspace { Id = workspaceId, Name = "Original", Key = "K" });
+                db.Classes.Add(new Class { Id = classId, Name = "Ticket", WorkspaceId = workspaceId });
+                db.Objects.Add(new KleeneStar.Model.Entities.Object(Guid.NewGuid()) { Key = "K-1", Summary = "First", WorkspaceId = workspaceId, ClassId = classId });
+                db.SaveChanges();
+            }
+
+            // act
+            var workspace = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Id == workspaceId)).Single();
+            workspace.Name = "Updated";
+            ModelHub.Update(workspace);
+
+            // validation
+            Assert.Empty(workspace.Classes);
+            Assert.Empty(workspace.Objects);
+
+            using var check = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", check.Workspaces.Single().Name);
+            Assert.Single(check.Classes);
+            Assert.Single(check.Objects);
+        }
+
+        /// <summary>
         /// Verifies that updating a null workspace throws an argument null exception.
         /// </summary>
         [Fact]

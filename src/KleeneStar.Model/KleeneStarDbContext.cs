@@ -457,13 +457,15 @@ namespace KleeneStar.Model
         /// <summary>
         /// Configures the context beyond the options it was created with: the string
         /// comparisons WQL produces are rewritten into a translatable shape
-        /// (<see cref="Interceptors.StringComparisonQueryInterceptor"/>), whichever provider and
-        /// factory built the options.
+        /// (<see cref="Interceptors.StringComparisonQueryInterceptor"/>), and every save advances
+        /// the versions of the entity types it writes
+        /// (<see cref="Interceptors.EntityVersionInterceptor"/>), whichever provider and factory
+        /// built the options.
         /// </summary>
         /// <param name="optionsBuilder">The builder of the context options.</param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.AddInterceptors(Interceptors.StringComparisonQueryInterceptor.Instance);
+            optionsBuilder.AddInterceptors(Interceptors.StringComparisonQueryInterceptor.Instance, Interceptors.EntityVersionInterceptor.Instance);
         }
 
         /// <summary>

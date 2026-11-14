@@ -104,6 +104,19 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the ids of the classes the objects that satisfy the supplied query belong
+        /// to, without loading the objects.
+        /// </summary>
+        /// <param name="query">The query criteria. Paging must be left off.</param>
+        /// <returns>The distinct class ids.</returns>
+        public static IReadOnlyList<System.Guid> GetObjectClassIds(IQuery<Object> query)
+        {
+            using var db = CreateDbContext();
+
+            return [.. query.Apply(db.Objects.AsNoTracking()).Select(x => x.ClassId).Distinct()];
+        }
+
+        /// <summary>
         /// Returns the parent link of every object of the installation - id, parent, workspace
         /// and last change - and nothing else.
         /// </summary>

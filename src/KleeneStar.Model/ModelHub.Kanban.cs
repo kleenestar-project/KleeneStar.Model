@@ -1,4 +1,4 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,8 @@ namespace KleeneStar.Model
                 .AsNoTracking()
                 .Include(b => b.Columns)
                 .Include(b => b.Swimlanes)
+                // columns and lanes are siblings: joined in one statement they multiply
+                .AsSplitQuery()
                 .FirstOrDefault(b => b.WorkspaceId == workspaceId && b.Kind == kind && b.ViewId == viewId);
         }
 
@@ -44,6 +46,8 @@ namespace KleeneStar.Model
                 .AsNoTracking()
                 .Include(b => b.Columns)
                 .Include(b => b.Swimlanes)
+                // columns and lanes are siblings: joined in one statement they multiply
+                .AsSplitQuery()
                 .FirstOrDefault(b => b.Id == boardId);
         }
 
@@ -171,6 +175,8 @@ namespace KleeneStar.Model
 
             var board = db.KanbanBoards
                 .Include(b => b.Swimlanes)
+                // columns and lanes are siblings: joined in one statement they multiply
+                .AsSplitQuery()
                 .FirstOrDefault(b => b.Id == boardId);
 
             if (board is null)

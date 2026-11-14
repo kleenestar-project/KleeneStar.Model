@@ -1,4 +1,4 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,64 @@ namespace KleeneStar.Model
                 .AsNoTracking();
 
             return query.Apply(data);
+        }
+
+        /// <summary>
+        /// The number of object ids sent in one statement by <see cref="GetValueData"/>. SQL Server
+        /// accepts at most 2100 parameters per statement, and a parameterized collection may be
+        /// expanded into one parameter per element.
+        /// </summary>
+        private const int ValueDataChunkSize = 500;
+
+        /// <summary>
+        /// Returns the stored payload of every value that belongs to one of the supplied objects
+        /// and one of the supplied fields, in as few statements as the chunk size allows.
+        /// </summary>
+        /// <remarks>
+        /// Only the three columns are read. The object and the field are not joined, which is
+        /// what makes this the reader for a list of records that needs a few fields of each.
+        /// </remarks>
+        /// <param name="objectIds">The ids of the objects.</param>
+        /// <param name="fieldIds">The ids of the fields.</param>
+        /// <returns>The object id, field id and payload of each matching value row.</returns>
+        public static IReadOnlyList<(Guid ObjectId, Guid FieldId, string Data)> GetValueData(IEnumerable<Guid> objectIds, IEnumerable<Guid> fieldIds)
+        {
+            using var db = CreateDbContext();
+
+            return GetValueData(objectIds, fieldIds, db);
+        }
+
+        /// <summary>
+        /// Returns the stored payload of every value that belongs to one of the supplied objects
+        /// and one of the supplied fields, read through the supplied context.
+        /// </summary>
+        /// <param name="objectIds">The ids of the objects.</param>
+        /// <param name="fieldIds">The ids of the fields.</param>
+        /// <param name="db">The context to read through.</param>
+        /// <returns>The object id, field id and payload of each matching value row.</returns>
+        public static IReadOnlyList<(Guid ObjectId, Guid FieldId, string Data)> GetValueData(IEnumerable<Guid> objectIds, IEnumerable<Guid> fieldIds, KleeneStarDbContext db)
+        {
+            var objects = objectIds?.Distinct().ToList() ?? [];
+            var fields = fieldIds?.Distinct().ToList() ?? [];
+
+            if (objects.Count == 0 || fields.Count == 0)
+            {
+                return [];
+            }
+
+            var result = new List<(Guid ObjectId, Guid FieldId, string Data)>();
+
+            foreach (var chunk in objects.Chunk(ValueDataChunkSize))
+            {
+                result.AddRange(db.Values
+                    .AsNoTracking()
+                    .Where(x => chunk.Contains(x.ObjectId) && fields.Contains(x.FieldId))
+                    .Select(x => new { x.ObjectId, x.FieldId, x.Data })
+                    .AsEnumerable()
+                    .Select(x => (x.ObjectId, x.FieldId, x.Data)));
+            }
+
+            return result;
         }
 
         /// <summary>

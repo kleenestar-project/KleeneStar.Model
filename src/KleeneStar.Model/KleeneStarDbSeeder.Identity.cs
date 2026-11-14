@@ -1,4 +1,4 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using System;
 using System.Linq;
 
@@ -51,9 +51,15 @@ namespace KleeneStar.Model
         {
             var added = false;
 
+            // both groups are looked up in one statement, since this runs on every start
+            var existing = db.Groups
+                .Where(x => x.Id == Group.AuthenticatedId || x.Id == Group.AnonymousId)
+                .Select(x => x.Id)
+                .ToHashSet();
+
             void ensure(Guid id, string name, string description)
             {
-                if (db.Groups.Any(x => x.Id == id))
+                if (existing.Contains(id))
                 {
                     return;
                 }

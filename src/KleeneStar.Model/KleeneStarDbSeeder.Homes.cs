@@ -1,6 +1,7 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -127,12 +128,19 @@ namespace KleeneStar.Model
             var creatorId = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD");
             var creator = db.Identities.AsNoTracking().Any(x => x.Id == creatorId) ? creatorId : (Guid?)null;
 
+            // this runs on every start, so the workspaces and the state of their home pages are
+            // read in a few statements rather than four per workspace
+            var workspaceIds = WorkspaceHomes.Select(x => Guid.Parse(x.WorkspaceId)).ToList();
+            var workspaces = db.Workspaces
+                .Where(x => workspaceIds.Contains(x.Id))
+                .ToDictionary(x => x.Id);
+            var kept = DedicatedHomes(db, workspaces.Values);
+
             foreach (var (workspaceText, pageClassText, body) in WorkspaceHomes)
             {
                 var workspaceId = Guid.Parse(workspaceText);
-                var workspace = db.Workspaces.FirstOrDefault(x => x.Id == workspaceId);
 
-                if (workspace is null || HasDedicatedHome(db, workspace))
+                if (!workspaces.TryGetValue(workspaceId, out var workspace) || kept.Contains(workspaceId))
                 {
                     continue;
                 }
@@ -199,27 +207,53 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Determines whether the workspace's <see cref="Workspace.HomeId"/> names a dedicated
-        /// home page: a document of the workspace without parent, children and comments.
+        /// Returns the workspaces among the supplied ones whose <see cref="Workspace.HomeId"/>
+        /// names a dedicated home page: a document of the workspace without parent, children
+        /// and comments. Three statements answer for any number of workspaces.
         /// </summary>
         /// <param name="db">The database context.</param>
-        /// <param name="workspace">The workspace.</param>
-        /// <returns><see langword="true"/> when the workspace keeps its home page.</returns>
-        private static bool HasDedicatedHome(KleeneStarDbContext db, Workspace workspace)
+        /// <param name="workspaces">The workspaces.</param>
+        /// <returns>The ids of the workspaces that keep their home page.</returns>
+        private static HashSet<Guid> DedicatedHomes(KleeneStarDbContext db, IEnumerable<Workspace> workspaces)
         {
-            if (workspace.HomeId is not { } homeId || homeId == Guid.Empty)
+            var homes = workspaces
+                .Where(x => x.HomeId is { } id && id != Guid.Empty)
+                .ToDictionary(x => x.HomeId.Value, x => x.Id);
+
+            if (homes.Count == 0)
             {
-                return false;
+                return [];
             }
 
-            var home = db.Objects
-                .AsNoTracking()
-                .FirstOrDefault(x => x.Id == homeId && x.WorkspaceId == workspace.Id && x.Kind == ObjectKind.Document);
+            var homeIds = homes.Keys.ToList();
 
-            return home is not null
-                && !home.ParentId.HasValue
-                && !db.Objects.AsNoTracking().Any(x => x.ParentId == homeId)
-                && !db.Comments.AsNoTracking().Any(x => x.ObjectId == homeId);
+            var candidates = db.Objects
+                .AsNoTracking()
+                .Where(x => homeIds.Contains(x.Id) && x.Kind == ObjectKind.Document && x.ParentId == null)
+                .Select(x => new { x.Id, x.WorkspaceId })
+                .ToList();
+
+            var withChildren = db.Objects
+                .AsNoTracking()
+                .Where(x => x.ParentId != null && homeIds.Contains(x.ParentId.Value))
+                .Select(x => x.ParentId.Value)
+                .Distinct()
+                .ToHashSet();
+
+            var withComments = db.Comments
+                .AsNoTracking()
+                .Where(x => homeIds.Contains(x.ObjectId))
+                .Select(x => x.ObjectId)
+                .Distinct()
+                .ToHashSet();
+
+            return
+            [
+                .. candidates
+                    .Where(x => homes[x.Id] == x.WorkspaceId)
+                    .Where(x => !withChildren.Contains(x.Id) && !withComments.Contains(x.Id))
+                    .Select(x => x.WorkspaceId)
+            ];
         }
 
         /// <summary>
