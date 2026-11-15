@@ -10,40 +10,51 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// The password every seeded account signs in with.
+        /// The id of the administrator account a fresh database starts with.
         /// </summary>
-        /// <remarks>
-        /// Demo data, published with the source - see <see cref="SeedIdentities"/>.
-        /// </remarks>
-        public const string DemoPassword = "kleenestar";
+        public static readonly Guid AdministratorId = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD");
 
         /// <summary>
-        /// Adds a predefined set of group entities to the specified database context.
+        /// The user name of the administrator account a fresh database starts with.
         /// </summary>
-        /// <param name="db">The database context to which the group entities will be added. Cannot be null.</param>
-        private static void SeedGroups(KleeneStarDbContext db)
-        {
-            void addGroup(string id, string name, string description) => db.Groups.Add(new Group
-            {
-                Id = Guid.Parse(id),
-                Name = name,
-                Description = description
-            });
+        public const string AdministratorUserName = "admin";
 
-            addGroup(Group.AdministratorsId.ToString(), "Admin", "Administrators with full system access.");
-            addGroup("7420A9F7-F23A-4EC2-91E4-EDDB2E3172BD", "Engineering", "Software engineering team members.");
-            addGroup("4D3739DF-EBB0-4113-A40D-EEEBF9B26182", "Marketing", "Marketing department members.");
-            addGroup("7EEB5E9D-87E6-4017-A94A-884F03DF129A", "Support", "Customer support team members.");
+        /// <summary>
+        /// The display name of the administrator account a fresh database starts with.
+        /// </summary>
+        public const string AdministratorName = "Admin User";
+
+        /// <summary>
+        /// The password the administrator account of a fresh database signs in with.
+        /// </summary>
+        /// <remarks>
+        /// Published with the source. An installation changes it on the first sign in
+        /// (<c>Profile/Security</c>).
+        /// </remarks>
+        public const string InitialPassword = "kleenestar";
+
+        /// <summary>
+        /// Adds the administrators group (<see cref="Group.AdministratorsId"/>). Account
+        /// administration and the administration of unadministered resources are granted to its
+        /// members only.
+        /// </summary>
+        /// <param name="db">The database context to which the group will be added. Cannot be null.</param>
+        private static void SeedAdministratorsGroup(KleeneStarDbContext db)
+        {
+            db.Groups.Add(new Group(Group.AdministratorsId)
+            {
+                Name = "Admin",
+                Description = "Administrators with full system access."
+            });
         }
 
         /// <summary>
-        /// Adds the built-in groups whose membership is implicit - every signed-in account, every
-        /// caller - where the store does not carry them yet.
+        /// Adds the built-in groups with implicit membership (<see cref="Group.AuthenticatedId"/>,
+        /// <see cref="Group.AnonymousId"/>) where the store does not carry them.
         /// </summary>
         /// <remarks>
-        /// Runs on every start, not only on a fresh store: a grant has to name a stored group, and
-        /// a workspace created from a template on a database seeded before these groups existed
-        /// would otherwise have nobody to grant its everyday access to.
+        /// Runs on every start. A permission grant references a stored group, so both groups have
+        /// to exist in every store a workspace template grants to.
         /// </remarks>
         /// <param name="db">The database context. Cannot be null.</param>
         /// <returns><see langword="true"/> when a group was added and the context needs saving.</returns>
@@ -75,49 +86,21 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Adds a predefined set of identity entities and group memberships to the specified database context.
+        /// Adds the administrator account (<see cref="AdministratorId"/>): internal, without a
+        /// tenant, member of the administrators group, signing in as
+        /// <see cref="AdministratorUserName"/> with <see cref="InitialPassword"/>.
         /// </summary>
         /// <remarks>
-        /// Every identity is seeded with a filled-in profile — display name, bio, contact
-        /// channels, regional formats and the business data of its tenant — so the profile
-        /// settings pages show a realistic account from the first run rather than a set of
-        /// empty inputs.
-        /// <para>
-        /// Every seeded account is internal and signs in with <see cref="DemoPassword"/>. The
-        /// seeded identities are demo data, like the workspaces beside them; an installation
-        /// that keeps them past a demonstration has to give them passwords of their own (or
-        /// retire them), because the demo password is published with the source.
-        /// </para>
+        /// Account administration is restricted to the members of the administrators group, so a
+        /// database without this account has nobody who can create a second one.
         /// </remarks>
-        /// <param name="db">The database context to which the identity entities will be added. Cannot be null.</param>
-        private static void SeedIdentities(KleeneStarDbContext db)
+        /// <param name="db">The database context to which the account will be added. Cannot be null.</param>
+        private static void SeedAdministrator(KleeneStarDbContext db)
         {
-            void addIdentity(Identity identity, string tenantName, params string[] groups)
+            var administrator = new Identity(AdministratorId)
             {
-                identity.PasswordHash = IdentityPassword.Hash(identity, DemoPassword);
-                identity.PasswordChanged = DateTime.UtcNow;
-
-                identity.Tenant = tenantName is null
-                    ? null
-                    : db.Tenants.FirstOrDefault(x => x.Name == tenantName);
-
-                identity.GroupMemberships =
-                [
-                    .. db.Groups
-                        .Where(x => groups.Contains(x.Name))
-                        .Select(x => new IdentityGroupMembership { Group = x })
-                ];
-
-                db.Identities.Add(identity);
-            }
-
-            // operator-side admin has no tenant (the portal excludes it from
-            // IssueScope.Organization entirely).
-            addIdentity(new Identity
-            {
-                Id = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD"),
-                Name = "Admin User",
-                UserName = "admin",
+                Name = AdministratorName,
+                UserName = AdministratorUserName,
                 Email = "admin@kleenestar.org",
                 EmailVerified = true,
                 Bio = "Senior Product Designerin · arbeitet an Workflow-Tools im Bereich SaaS. Berlin → Lissabon → Wien.",
@@ -134,94 +117,29 @@ namespace KleeneStar.Model
                 RoleSince = new DateTime(2024, 3, 1, 0, 0, 0, DateTimeKind.Utc),
                 Department = "Engineering · QA",
                 CostCenter = "CC-4711",
-                PersonnelNumber = "A-00482"
-            }, null, "Admin");
+                PersonnelNumber = "A-00482",
+                PasswordChanged = DateTime.UtcNow
+            };
 
-            // Alice is an Acme tenant member (typical end-user identity).
-            addIdentity(new Identity
-            {
-                Id = Guid.Parse("BBF45E5D-AA35-4382-9B84-6055193CE544"),
-                Name = "Alice Engineer",
-                UserName = "alice.engineer",
-                Email = "alice.engineer@kleenestar.org",
-                EmailVerified = true,
-                Bio = "Backend-Entwicklerin · Plattform und Integrationen.",
-                PhoneCountry = "+49",
-                Phone = "170 9876543",
-                Location = "Hamburg, Deutschland",
-                Position = "Software Engineer",
-                Language = "de",
-                DateFormat = "dd.MM.yyyy",
-                WeekStart = WeekStart.Monday,
-                Role = "Mitglied · Engineering",
-                RoleSince = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                Department = "Engineering · Platform",
-                CostCenter = "CC-2200",
-                PersonnelNumber = "A-01137"
-            }, "Acme Corp", "Engineering");
+            administrator.PasswordHash = IdentityPassword.Hash(administrator, InitialPassword);
 
-            // Marketer stays tenant-less — operator-side account.
-            addIdentity(new Identity
-            {
-                Id = Guid.Parse("1AA3B0E0-5C40-46D8-8ACF-ED12740FD239"),
-                Name = "Marketing User",
-                UserName = "marketing.user",
-                Email = "marketer@kleenestar.org",
-                Location = "München, Deutschland",
-                Position = "Marketing Manager",
-                Language = "de",
-                DateFormat = "dd.MM.yyyy",
-                WeekStart = WeekStart.Monday,
-                Role = "Mitglied · Marketing",
-                Department = "Marketing"
-            }, null, "Marketing");
+            administrator.GroupMemberships =
+            [
+                .. db.Groups
+                    .Where(x => x.Id == Group.AdministratorsId)
+                    .Select(x => new IdentityGroupMembership { Group = x })
+            ];
 
-            // Support stays tenant-less — operator-side account.
-            addIdentity(new Identity
-            {
-                Id = Guid.Parse("D1C5AED2-78D3-45F7-BB19-E87B8F134301"),
-                Name = "Support User",
-                UserName = "support.user",
-                Email = "support@kleenestar.org",
-                Location = "Wien, Österreich",
-                Position = "Service Desk Agent",
-                Language = "de",
-                DateFormat = "dd.MM.yyyy",
-                WeekStart = WeekStart.Monday,
-                Role = "Mitglied · Support",
-                Department = "Customer Support"
-            }, null, "Support");
+            db.Identities.Add(administrator);
         }
 
         /// <summary>
-        /// Names the deputy of the seeded profile identity. Runs after
-        /// <see cref="SeedIdentities"/> has been committed, because the deputy is another row
-        /// of the very table being written and can only be referenced once it exists.
-        /// </summary>
-        /// <param name="db">The database context holding the seeded identities. Cannot be null.</param>
-        private static void SeedIdentityDeputies(KleeneStarDbContext db)
-        {
-            var profile = db.Identities.FirstOrDefault(x => x.Id == Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD"));
-            var deputy = db.Identities.FirstOrDefault(x => x.Id == Guid.Parse("BBF45E5D-AA35-4382-9B84-6055193CE544"));
-
-            if (profile is null || deputy is null || profile.DeputyId.HasValue)
-            {
-                return;
-            }
-
-            profile.DeputyId = deputy.Id;
-        }
-
-        /// <summary>
-        /// Gives the demo password to every account an earlier seeder left with a
-        /// <c>$seed$</c> placeholder.
+        /// Gives <see cref="InitialPassword"/> to every account whose password hash is a
+        /// <c>$seed$</c> placeholder (<see cref="IdentityPassword.SeedPlaceholderPrefix"/>).
         /// </summary>
         /// <remarks>
-        /// Before passwords were checked, the seeder wrote placeholders that no password
-        /// produces; with the check in place those accounts could never sign in again, and
-        /// nothing in the application could let them. Only the placeholders are touched - an
-        /// account whose password somebody set keeps it - so the step is safe to run on every
-        /// start, and does nothing once the placeholders are gone.
+        /// No password verifies against a placeholder, so such an account cannot sign in. An
+        /// account with any other hash is left unchanged; the step runs on every start.
         /// </remarks>
         /// <param name="db">The database context holding the identities. Cannot be null.</param>
         /// <returns><see langword="true"/> when an account was changed.</returns>
@@ -233,7 +151,7 @@ namespace KleeneStar.Model
 
             foreach (var identity in placeholders)
             {
-                identity.PasswordHash = IdentityPassword.Hash(identity, DemoPassword);
+                identity.PasswordHash = IdentityPassword.Hash(identity, InitialPassword);
                 identity.PasswordChanged = DateTime.UtcNow;
             }
 

@@ -24,7 +24,7 @@ namespace KleeneStar.Model
         /// rolled back and retried by the caller - for an audit write, that means an event that
         /// might not get recorded at all.
         /// </remarks>
-        private static readonly object _auditGate = new();
+        internal static readonly object _auditGate = new();
 
         /// <summary>
         /// Appends an event to the audit log, assigning its position in the sequence and sealing

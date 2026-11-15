@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 
 namespace KleeneStar.Model
@@ -7,17 +6,19 @@ namespace KleeneStar.Model
     /// <summary>
     /// Provides methods for seeding the database with initial data required for application operation.
     /// </summary>
+    /// <remarks>
+    /// The base seed writes what every installation needs: the maintenance and branding records,
+    /// the administrators group and the built-in groups, the administrator account, the status
+    /// categories, the relation catalog and the genesis event of the audit log. Demonstration and
+    /// test data (workspaces, classes, objects, further accounts) is the plugin
+    /// <c>KleeneStar.Seeder</c>, which runs after this seed as an <c>IDatabaseSeed</c> of the core.
+    /// </remarks>
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Ensures that the database is populated with required initial data if it is not 
-        /// already present.
+        /// Adds every part of the base data the store does not carry yet. Each part is guarded by
+        /// a check on its table, so the call is idempotent and runs on every start.
         /// </summary>
-        /// <remarks>
-        /// This method should be invoked during application startup to guarantee that the database
-        /// contains the minimum necessary data for the application to operate. If the required data
-        /// already exists, no changes are made.
-        /// </remarks>
         /// <param name="db">
         /// The database context used for performing the seeding operation. Cannot be null.
         /// </param>
@@ -26,18 +27,6 @@ namespace KleeneStar.Model
         /// </returns>
         public static async Task SeedAsync(KleeneStarDbContext db)
         {
-            if (!db.Categories.Any())
-            {
-                SeedCategories(db);
-                await db.SaveChangesAsync();
-            }
-
-            if (!db.Tenants.Any())
-            {
-                SeedTenants(db);
-                await db.SaveChangesAsync();
-            }
-
             if (!db.Maintenances.Any())
             {
                 SeedMaintenance(db);
@@ -52,7 +41,7 @@ namespace KleeneStar.Model
 
             if (!db.Groups.Any())
             {
-                SeedGroups(db);
+                SeedAdministratorsGroup(db);
                 await db.SaveChangesAsync();
             }
 
@@ -63,85 +52,18 @@ namespace KleeneStar.Model
 
             if (!db.Identities.Any())
             {
-                SeedIdentities(db);
-                await db.SaveChangesAsync();
-
-                // the deputy points at another identity, so it can only be named once the
-                // rows written above have been committed.
-                SeedIdentityDeputies(db);
+                SeedAdministrator(db);
                 await db.SaveChangesAsync();
             }
 
-            // a database seeded before passwords were checked carries placeholders no password
-            // matches; without this its accounts could never sign in again
             if (UpgradeSeedPasswords(db))
             {
                 await db.SaveChangesAsync();
             }
 
-            // no sessions and no access tokens are seeded: both are credentials the WebExpress
-            // token store knows about - a session is a sign-in grant, a token a personal access
-            // token - and a seeded row would describe a credential that does not exist
-
-            if (!db.Workspaces.Any())
-            {
-                SeedWorkspaces(db);
-                await db.SaveChangesAsync();
-
-                // the demo workspaces start administered, the way a workspace created from a
-                // template does - only in the run that seeds them: a store seeded earlier keeps
-                // the grants (or the lack of them) its administrators left it with
-                SeedWorkspacePermissions(db);
-                await db.SaveChangesAsync();
-            }
-
-            if (!db.Classes.Any())
-            {
-                SeedClasses(db);
-                await db.SaveChangesAsync();
-            }
-
-            if (!db.Fields.Any())
-            {
-                SeedFields(db);
-                await db.SaveChangesAsync();
-            }
-
-            if (!db.Forms.Any())
-            {
-                SeedForms(db);
-                await db.SaveChangesAsync();
-            }
-
-            // SecurityLevels must be seeded AFTER Classes and Groups — a level belongs to a
-            // class and names the groups cleared for it.
-            if (!db.SecurityLevels.Any())
-            {
-                SeedSecurityLevels(db);
-                await db.SaveChangesAsync();
-            }
-
-            // Templates must be seeded AFTER Classes — each template is bound to the class
-            // its objects are created from (Template.ClassId references Class.Id).
-            if (!db.Templates.Any())
-            {
-                try
-                {
-                    SeedTemplates(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding templates: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            if (!db.Priorities.Any())
-            {
-                SeedPriorities(db);
-                await db.SaveChangesAsync();
-            }
+            // no sessions and no access tokens are seeded: both are credentials of the WebExpress
+            // token store (a sign-in grant, a personal access token), and a row without its
+            // credential describes nothing that can be used
 
             if (!db.StatusCategories.Any())
             {
@@ -149,348 +71,17 @@ namespace KleeneStar.Model
                 await db.SaveChangesAsync();
             }
 
-            if (!db.Statuses.Any())
-            {
-                try
-                {
-                    SeedStatuses(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    // log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            if (!db.Workflows.Any())
-            {
-                try
-                {
-                    SeedWorkflows(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    // log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            if (!db.Objects.Any())
-            {
-                try
-                {
-                    SeedObjects(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    // log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding objects: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Classifying the seeded objects needs both the objects and the levels, so it runs
-            // after both. It is guarded the way every other seed is: once a single object
-            // carries a classification, the installation has been administered and the seeder
-            // must not put one back on the records somebody deliberately declassified.
-            if (!db.Objects.Any(x => x.SecurityLevelId != null))
-            {
-                try
-                {
-                    SeedObjectSecurityLevels(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding object security levels: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            if (!db.Values.Any())
-            {
-                try
-                {
-                    SeedValues(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    // log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding values: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Commits must be seeded AFTER Values — a seeded chain is constructed backwards from
-            // the state the objects were left in, so it needs the value rows to exist.
-            if (!db.Commits.Any())
-            {
-                try
-                {
-                    SeedCommits(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding commits: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Tags must be seeded AFTER Objects — SeedTags attaches labels to existing objects.
-            if (!db.ObjectTags.Any())
-            {
-                try
-                {
-                    SeedTags(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding tags: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Shares and watchers must be seeded AFTER Objects and Identities — both name an
-            // object and an identity by id.
-            if (!db.ObjectShares.Any() && !db.ObjectWatchers.Any())
-            {
-                try
-                {
-                    SeedSharesAndWatchers(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding shares and watchers: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // The landing page reads objects by label, so the pages it offers have to exist
-            // before the labels naming them can be attached — hence two passes rather than
-            // one. Both passes skip what is already there, so this runs on every start and
-            // fills in pages added to the set since the installation was first seeded.
-            try
-            {
-                SeedLandingPages(db);
-                await db.SaveChangesAsync();
-
-                SeedLandingLabels(db);
-                await db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error seeding landing content: {ex.InnerException?.Message ?? ex.Message}");
-                throw;
-            }
-
-            if (!db.Insights.Any())
-            {
-                try
-                {
-                    SeedInsights(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    // log the exception or handle it as needed
-                    Console.WriteLine($"Error seeding insights: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            if (!db.ObjectViews.Any())
-            {
-                try
-                {
-                    SeedObjectViews(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding object views: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Sprints must be seeded AFTER Objects — SeedSprints commits a share of each
-            // workspace's existing objects to the seeded iterations.
-            if (!db.Sprints.Any())
-            {
-                try
-                {
-                    SeedSprints(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding sprints: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // SavedSearches must be seeded AFTER Identities — each saved search is owned
-            // by the seeded admin identity (SavedSearch.OwnerId references Identity.Id).
-            if (!db.SavedSearches.Any())
-            {
-                try
-                {
-                    SeedSavedSearches(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding saved searches: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // WorkspaceBookmarks must be seeded AFTER Identities + Workspaces — each bookmark
-            // references both the seeded admin identity and an existing workspace.
-            if (!db.WorkspaceBookmarks.Any())
-            {
-                try
-                {
-                    SeedWorkspaceBookmarks(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding workspace bookmarks: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Calendars must be seeded BEFORE SLA policies — SeedSlas resolves the
-            // per-class calendar by name to populate SlaPolicy.CalendarId.
-            if (!db.Calendars.Any())
-            {
-                try
-                {
-                    SeedCalendars(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding calendars: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            if (!db.SlaPolicies.Any())
-            {
-                try
-                {
-                    SeedSlas(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding SLA policies: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Comments must be seeded AFTER Objects + Identities — SeedComments
-            // resolves authors by e-mail and attaches each thread to an existing object.
-            if (!db.Comments.Any())
-            {
-                try
-                {
-                    SeedComments(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding comments: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Attachments must be seeded AFTER Objects + Identities — SeedAttachments
-            // resolves uploaders by e-mail and attaches each file to an existing object.
-            if (!db.Attachments.Any())
-            {
-                try
-                {
-                    SeedAttachments(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding attachments: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // The relation catalog carries no dependency of its own — a relation is defined
-            // before anything uses it, and the classes it may name are matched by name rather
-            // than by a foreign key.
             if (!db.ObjectRelationTypes.Any())
             {
-                try
-                {
-                    SeedObjectRelationTypes(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding object link types: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // Links must be seeded AFTER Objects + Identities and AFTER the relation catalog —
-            // SeedObjectRelations pairs existing objects and references a relation by its key.
-            if (!db.ObjectRelations.Any())
-            {
-                try
-                {
-                    SeedObjectRelations(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding object links: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // The audit log is seeded LAST and deliberately so: its single genesis event counts
-            // what the seed produced, so everything it counts has to already be in the store.
-            if (!db.AuditEvents.Any())
-            {
-                try
-                {
-                    SeedAudit(db);
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error seeding audit log: {ex.InnerException?.Message ?? ex.Message}");
-                    throw;
-                }
-            }
-
-            // the home pages run on every start and last, so no comment, label or share of the
-            // earlier steps lands on a home page
-            try
-            {
-                SeedWorkspaceHomes(db);
+                SeedObjectRelationTypes(db);
                 await db.SaveChangesAsync();
             }
-            catch (Exception ex)
+
+            // last: the genesis event counts the rows written above
+            if (!db.AuditEvents.Any())
             {
-                Console.WriteLine($"Error seeding workspace home pages: {ex.InnerException?.Message ?? ex.Message}");
-                throw;
+                SeedAudit(db);
+                await db.SaveChangesAsync();
             }
         }
     }
