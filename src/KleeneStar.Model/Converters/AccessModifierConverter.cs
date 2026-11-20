@@ -6,82 +6,78 @@ using WebExpress.WebApp.WebRestApi;
 namespace KleeneStar.Model.Converters
 {
     /// <summary>
-    /// Provides methods to convert access modifier values between their raw representations and strongly typed forms
-    /// for use in RESTful APIs.
+    /// Converts between the id a workspace access modifier selection submits and a
+    /// <see cref="WorkspaceAccessModifier"/>.
     /// </summary>
+    /// <remarks>
+    /// The selection (<c>/api/1/workspaces/accessmodifier</c>) offers the ids of
+    /// <see cref="WorkspaceAccessModifierExtensions.Id"/>. A submission that names none of them,
+    /// an empty selection included, is read as <see cref="WorkspaceAccessModifier.Public"/>.
+    /// </remarks>
     public class AccessModifierConverter : IRestValueConverter
     {
         /// <summary>
-        /// Converts a raw value to the specified target type.
+        /// The access modifiers a selection can name.
         /// </summary>
-        /// <param name="rawValue">
-        /// The value to convert. Can be any object representing the raw data to be transformed.
-        /// </param>
-        /// <param name="targetType">
-        /// The type to which the raw value should be converted. Cannot be null.
-        /// </param>
+        private static readonly WorkspaceAccessModifier[] _modifiers =
+        [
+            WorkspaceAccessModifier.Public,
+            WorkspaceAccessModifier.Protected,
+            WorkspaceAccessModifier.Private,
+            WorkspaceAccessModifier.Internal
+        ];
+
+        /// <summary>
+        /// Converts a raw value to an access modifier.
+        /// </summary>
+        /// <param name="rawValue">The submitted value: the id of a modifier, or a modifier.</param>
+        /// <param name="targetType">The type of the target property.</param>
         /// <returns>
-        /// An object of the specified target type representing the converted value.
+        /// The modifier the value names, <see cref="WorkspaceAccessModifier.Public"/> when it
+        /// names none.
         /// </returns>
         public object FromRaw(object rawValue, Type targetType)
         {
-            if (rawValue is null)
+            if (rawValue is WorkspaceAccessModifier modifier)
             {
-                return null;
+                return modifier;
             }
 
-            if (rawValue is string s)
-            {
-                var id = s.Split(";", StringSplitOptions.RemoveEmptyEntries)
-                           .Select(x => x.Trim())
-                           .Where(x => x.Length > 0)
-                           .Select(x => Guid.TryParse(x, out var g) ? (Guid?)g : null)
-                           .Where(g => g.HasValue)
-                           .Select(g => g.Value)
-                           .FirstOrDefault();
+            var entry = rawValue?.ToString()?
+                .Split(";", StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .FirstOrDefault(x => x.Length > 0);
 
-                if (id == AccessModifier.Public.Id())
+            if (Guid.TryParse(entry, out var id))
+            {
+                foreach (var candidate in _modifiers)
                 {
-                    return AccessModifier.Public;
-                }
-                else if (id == AccessModifier.Protected.Id())
-                {
-                    return AccessModifier.Protected;
-                }
-                else if (id == AccessModifier.Internal.Id())
-                {
-                    return AccessModifier.Internal;
-                }
-                else if (id == AccessModifier.Private.Id())
-                {
-                    return AccessModifier.Private;
+                    if (candidate.Id() == id)
+                    {
+                        return candidate;
+                    }
                 }
             }
+            else if (Enum.TryParse<WorkspaceAccessModifier>(entry, true, out var named)
+                && Enum.IsDefined(named))
+            {
+                return named;
+            }
 
-            return rawValue;
+            return WorkspaceAccessModifier.Public;
         }
 
         /// <summary>
-        /// Converts the specified value to its raw representation based on the provided source type.
+        /// Converts an access modifier to the id the selection reads back.
         /// </summary>
-        /// <param name="value">
-        /// The value to convert to a raw representation. Can be null if the conversion supports
-        /// null values.</param>
-        /// <param name="sourceType">
-        /// The type that describes how the value should be interpreted and converted. Cannot be null.
-        /// </param>
-        /// <returns>
-        /// An object representing the raw form of the input value, as determined by the source type.
-        /// </returns>
+        /// <param name="value">The access modifier.</param>
+        /// <param name="sourceType">The type of the source property.</param>
+        /// <returns>The id of the modifier, the id of public for an unknown value.</returns>
         public object ToRaw(object value, Type sourceType)
         {
-            return value switch
-            {
-                AccessModifier.Protected => AccessModifier.Protected.Id(),
-                AccessModifier.Private => AccessModifier.Private.Id(),
-                AccessModifier.Internal => AccessModifier.Internal.Id(),
-                _ => AccessModifier.Public.Id()
-            };
+            return value is WorkspaceAccessModifier modifier && modifier.Id() != Guid.Empty
+                ? modifier.Id().ToString()
+                : WorkspaceAccessModifier.Public.Id().ToString();
         }
     }
 }

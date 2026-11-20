@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
@@ -73,6 +75,10 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the unique identifier of the workspace this workspace inherits from.
         /// </summary>
+        /// <remarks>
+        /// The selection submits the empty guid for <i>None</i>; the converter stores null for it.
+        /// </remarks>
+        [RestConverter<OptionalReferenceConverter>]
         public Guid? InheritedId { get; set; }
 
         /// <summary>
@@ -112,6 +118,19 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [JsonIgnore]
         public List<Tenant> Tenants { get; set; } = [];
+
+        /// <summary>
+        /// Gets the identifiers of the tenants associated with this workspace.
+        /// </summary>
+        /// <remarks>
+        /// The value the tenant selection of the workspace dialogs reads. It is a projection of
+        /// <see cref="Tenants"/> and has no column; the workspace endpoint maps a submitted list
+        /// onto <see cref="Tenants"/>.
+        /// </remarks>
+        [NotMapped]
+        [IndexIgnore]
+        [RestConverter<GuidListConverter>]
+        public List<Guid> TenantIds => Tenants?.Select(x => x.Id).ToList() ?? [];
 
         /// <summary>
         /// Gets or sets the collection of classes associated with this workspace.
