@@ -1963,6 +1963,33 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TemplateClass",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Template = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TemplateClass", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TemplateClass_Class_Class",
+                        column: x => x.Class,
+                        principalTable: "Class",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TemplateClass_Template_Template",
+                        column: x => x.Template,
+                        principalTable: "Template",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transition",
                 columns: table => new
                 {
@@ -3404,6 +3431,17 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 column: "Predecessor");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TemplateClass_Class",
+                table: "TemplateClass",
+                column: "Class");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemplateClass_Template_Class",
+                table: "TemplateClass",
+                columns: new[] { "Template", "Class" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tenant_Name",
                 table: "Tenant",
                 column: "Name",
@@ -3710,7 +3748,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "SlaTarget");
 
             migrationBuilder.DropTable(
-                name: "Template");
+                name: "TemplateClass");
 
             migrationBuilder.DropTable(
                 name: "Transition");
@@ -3786,6 +3824,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "SlaPolicy");
+
+            migrationBuilder.DropTable(
+                name: "Template");
 
             migrationBuilder.DropTable(
                 name: "Field");

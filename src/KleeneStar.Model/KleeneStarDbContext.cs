@@ -42,6 +42,11 @@ namespace KleeneStar.Model
         public DbSet<Template> Templates { get; set; }
 
         /// <summary>
+        /// Gets or sets the further classes the templates serve beside the class they are bound to.
+        /// </summary>
+        public DbSet<TemplateClass> TemplateClasses { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of forms.
         /// </summary>
         public DbSet<Form> Forms { get; set; }

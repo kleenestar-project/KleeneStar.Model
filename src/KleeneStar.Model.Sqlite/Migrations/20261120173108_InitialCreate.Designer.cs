@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20261111213223_InitialCreate")]
+    [Migration("20261120173108_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -4205,6 +4205,36 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.ToTable("Template", (string)null);
                 });
 
+            modelBuilder.Entity("KleeneStar.Model.Entities.TemplateClass", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Template");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("TemplateId", "ClassId")
+                        .IsUnique();
+
+                    b.ToTable("TemplateClass", (string)null);
+                });
+
             modelBuilder.Entity("KleeneStar.Model.Entities.Tenant", b =>
                 {
                     b.Property<int>("RawId")
@@ -6098,6 +6128,27 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     b.Navigation("Parent");
 
                     b.Navigation("Predecessor");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.TemplateClass", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Template");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Transition", b =>
