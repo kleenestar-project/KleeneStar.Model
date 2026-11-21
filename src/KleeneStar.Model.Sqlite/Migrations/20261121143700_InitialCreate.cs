@@ -1645,10 +1645,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                     Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     State = table.Column<int>(type: "INTEGER", nullable: false),
                     Presets = table.Column<string>(type: "TEXT", nullable: true),
-                    Parent = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Order = table.Column<int>(type: "INTEGER", nullable: false),
-                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Predecessor = table.Column<Guid>(type: "TEXT", nullable: true),
                     Class = table.Column<Guid>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
@@ -1663,24 +1659,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Class",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Template_Identity_Assignee",
-                        column: x => x.Assignee,
-                        principalTable: "Identity",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Template_Template_Parent",
-                        column: x => x.Parent,
-                        principalTable: "Template",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Template_Template_Predecessor",
-                        column: x => x.Predecessor,
-                        principalTable: "Template",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -1985,6 +1963,42 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         name: "FK_TemplateClass_Template_Template",
                         column: x => x.Template,
                         principalTable: "Template",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TemplateHierarchy",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    State = table.Column<int>(type: "INTEGER", nullable: false),
+                    Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                    RootTemplate = table.Column<Guid>(type: "TEXT", nullable: false),
+                    RootClass = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TemplateHierarchy", x => x.Id);
+                    table.UniqueConstraint("AK_TemplateHierarchy_Guid", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_TemplateHierarchy_Template_RootTemplate",
+                        column: x => x.RootTemplate,
+                        principalTable: "Template",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TemplateHierarchy_Workspace_Workspace",
+                        column: x => x.Workspace,
+                        principalTable: "Workspace",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -2609,6 +2623,47 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         principalTable: "Object",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TemplateHierarchyNode",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                    Hierarchy = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ParentNode = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Template = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Class = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false),
+                    AsChild = table.Column<bool>(type: "INTEGER", nullable: false),
+                    RelationType = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                    RelationInverse = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Predecessor = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TemplateHierarchyNode", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TemplateHierarchyNode_Identity_Assignee",
+                        column: x => x.Assignee,
+                        principalTable: "Identity",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_TemplateHierarchyNode_TemplateHierarchy_Hierarchy",
+                        column: x => x.Hierarchy,
+                        principalTable: "TemplateHierarchy",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TemplateHierarchyNode_Template_Template",
+                        column: x => x.Template,
+                        principalTable: "Template",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -3410,25 +3465,10 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Template_Assignee",
-                table: "Template",
-                column: "Assignee");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Template_Class_Name",
                 table: "Template",
                 columns: new[] { "Class", "Name" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Template_Parent",
-                table: "Template",
-                column: "Parent");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Template_Predecessor",
-                table: "Template",
-                column: "Predecessor");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TemplateClass_Class",
@@ -3440,6 +3480,32 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 table: "TemplateClass",
                 columns: new[] { "Template", "Class" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemplateHierarchy_RootTemplate",
+                table: "TemplateHierarchy",
+                column: "RootTemplate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemplateHierarchy_Workspace_Name",
+                table: "TemplateHierarchy",
+                columns: new[] { "Workspace", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemplateHierarchyNode_Assignee",
+                table: "TemplateHierarchyNode",
+                column: "Assignee");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemplateHierarchyNode_Hierarchy",
+                table: "TemplateHierarchyNode",
+                column: "Hierarchy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TemplateHierarchyNode_Template",
+                table: "TemplateHierarchyNode",
+                column: "Template");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenant_Name",
@@ -3751,6 +3817,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "TemplateClass");
 
             migrationBuilder.DropTable(
+                name: "TemplateHierarchyNode");
+
+            migrationBuilder.DropTable(
                 name: "Transition");
 
             migrationBuilder.DropTable(
@@ -3826,7 +3895,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                 name: "SlaPolicy");
 
             migrationBuilder.DropTable(
-                name: "Template");
+                name: "TemplateHierarchy");
 
             migrationBuilder.DropTable(
                 name: "Field");
@@ -3857,6 +3926,9 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Calendar");
+
+            migrationBuilder.DropTable(
+                name: "Template");
 
             migrationBuilder.DropTable(
                 name: "Insight");

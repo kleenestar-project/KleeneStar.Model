@@ -64,38 +64,6 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(36);
 
-            builder.Property(x => x.Order)
-                .HasColumnName("Order");
-
-            builder.Property(x => x.ParentId)
-                .HasColumnName("Parent");
-
-            builder.HasOne(x => x.Parent)
-                .WithMany()
-                .HasForeignKey(x => x.ParentId)
-                .HasPrincipalKey(t => t.Id)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Property(x => x.AssigneeId)
-                .HasColumnName("Assignee");
-
-            // removing an account leaves the template without an assignee rather than taking the
-            // template with it
-            builder.HasOne(x => x.Assignee)
-                .WithMany()
-                .HasForeignKey(x => x.AssigneeId)
-                .HasPrincipalKey(i => i.Id)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder.Property(x => x.PredecessorId)
-                .HasColumnName("Predecessor");
-
-            builder.HasOne(x => x.Predecessor)
-                .WithMany()
-                .HasForeignKey(x => x.PredecessorId)
-                .HasPrincipalKey(t => t.Id)
-                .OnDelete(DeleteBehavior.SetNull);
-
             builder.Property(x => x.ClassId)
                 .HasColumnName("Class")
                 .IsRequired();

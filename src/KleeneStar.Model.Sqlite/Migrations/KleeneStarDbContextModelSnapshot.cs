@@ -4127,10 +4127,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("Id");
 
-                    b.Property<Guid?>("AssigneeId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Assignee");
-
                     b.Property<string>("Category")
                         .HasMaxLength(128)
                         .HasColumnType("TEXT")
@@ -4164,18 +4160,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("Name");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER")
-                        .HasColumnName("Order");
-
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Parent");
-
-                    b.Property<Guid?>("PredecessorId")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("Predecessor");
-
                     b.Property<string>("Presets")
                         .HasColumnType("TEXT")
                         .HasColumnName("Presets");
@@ -4189,12 +4173,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .HasColumnName("Updated");
 
                     b.HasKey("RawId");
-
-                    b.HasIndex("AssigneeId");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("PredecessorId");
 
                     b.HasIndex("ClassId", "Name")
                         .IsUnique();
@@ -4230,6 +4208,136 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("TemplateClass", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.TemplateHierarchy", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Category");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Created");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Icon");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Name");
+
+                    b.Property<Guid?>("RootClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RootClass");
+
+                    b.Property<Guid>("RootTemplateId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RootTemplate");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("State");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Updated");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Workspace");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("RootTemplateId");
+
+                    b.HasIndex("WorkspaceId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("TemplateHierarchy", (string)null);
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.TemplateHierarchyNode", b =>
+                {
+                    b.Property<int>("RawId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("AsChild")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("AsChild");
+
+                    b.Property<Guid?>("AssigneeId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Assignee");
+
+                    b.Property<Guid?>("ClassId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Class");
+
+                    b.Property<Guid>("HierarchyId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Hierarchy");
+
+                    b.Property<Guid>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Guid");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("Order");
+
+                    b.Property<Guid?>("ParentNodeId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ParentNode");
+
+                    b.Property<Guid?>("PredecessorId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Predecessor");
+
+                    b.Property<bool>("RelationInverse")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("RelationInverse");
+
+                    b.Property<string>("RelationTypeKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("RelationType");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Template");
+
+                    b.HasKey("RawId");
+
+                    b.HasIndex("AssigneeId");
+
+                    b.HasIndex("HierarchyId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("TemplateHierarchyNode", (string)null);
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Tenant", b =>
@@ -6093,12 +6201,6 @@ namespace KleeneStar.Model.Sqlite.Migrations
 
             modelBuilder.Entity("KleeneStar.Model.Entities.Template", b =>
                 {
-                    b.HasOne("KleeneStar.Model.Entities.Identity", "Assignee")
-                        .WithMany()
-                        .HasForeignKey("AssigneeId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("KleeneStar.Model.Entities.Class", "Class")
                         .WithMany()
                         .HasForeignKey("ClassId")
@@ -6106,25 +6208,7 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KleeneStar.Model.Entities.Template", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("KleeneStar.Model.Entities.Template", "Predecessor")
-                        .WithMany()
-                        .HasForeignKey("PredecessorId")
-                        .HasPrincipalKey("Id")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Assignee");
-
                     b.Navigation("Class");
-
-                    b.Navigation("Parent");
-
-                    b.Navigation("Predecessor");
                 });
 
             modelBuilder.Entity("KleeneStar.Model.Entities.TemplateClass", b =>
@@ -6144,6 +6228,56 @@ namespace KleeneStar.Model.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.TemplateHierarchy", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Template", "RootTemplate")
+                        .WithMany()
+                        .HasForeignKey("RootTemplateId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Workspace", "Workspace")
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RootTemplate");
+
+                    b.Navigation("Workspace");
+                });
+
+            modelBuilder.Entity("KleeneStar.Model.Entities.TemplateHierarchyNode", b =>
+                {
+                    b.HasOne("KleeneStar.Model.Entities.Identity", "Assignee")
+                        .WithMany()
+                        .HasForeignKey("AssigneeId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("KleeneStar.Model.Entities.TemplateHierarchy", "Hierarchy")
+                        .WithMany()
+                        .HasForeignKey("HierarchyId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KleeneStar.Model.Entities.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .HasPrincipalKey("Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assignee");
+
+                    b.Navigation("Hierarchy");
 
                     b.Navigation("Template");
                 });

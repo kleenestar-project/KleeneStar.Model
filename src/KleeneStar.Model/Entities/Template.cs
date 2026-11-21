@@ -1,7 +1,6 @@
 using KleeneStar.Model.Converters;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
 using WebExpress.WebIndex.WebAttribute;
@@ -13,6 +12,10 @@ namespace KleeneStar.Model.Entities
     /// Represents a template entity.
     /// A template provides predefined field values and metadata to accelerate object creation.
     /// </summary>
+    /// <remarks>
+    /// A template describes one object. Work structures of several objects are template
+    /// hierarchies (<see cref="TemplateHierarchy"/>), which reference templates.
+    /// </remarks>
     public class Template : IEntity
     {
         /// <summary>
@@ -58,62 +61,6 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the JSON serialized collection of predefined field value presets.
         /// </summary>
         public string Presets { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the parent template.
-        /// </summary>
-        /// <remarks>
-        /// The parent reference composes templates: creating an object from a template also
-        /// creates one object per child template, linked below the created object.
-        /// </remarks>
-        public Guid? ParentId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent template.
-        /// </summary>
-        [JsonIgnore]
-        public Template Parent { get; set; }
-
-        /// <summary>
-        /// Gets or sets the position of the template among its siblings, so the objects a
-        /// composite template creates appear in a defined order.
-        /// </summary>
-        public int Order { get; set; }
-
-        /// <summary>
-        /// Gets or sets the identity the objects created from this template are assigned to,
-        /// or <c>null</c> to leave them unassigned.
-        /// </summary>
-        /// <remarks>
-        /// A work structure names who does each part - the onboarding's account request goes to
-        /// the IT desk, the access card to facility management - so a child of a composite
-        /// arrives in the right hands rather than in a pool somebody has to sort.
-        /// </remarks>
-        public Guid? AssigneeId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the identity the objects created from this template are assigned to.
-        /// </summary>
-        [JsonIgnore]
-        public Identity Assignee { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sibling template whose object has to be finished before the object of
-        /// this one can be, or <c>null</c> when it depends on nothing.
-        /// </summary>
-        /// <remarks>
-        /// The dependency is created as a blocking relation between the two objects, so the
-        /// workflow refuses to close the dependent one early - the account cannot be handed
-        /// over before it exists. Only a sibling counts: the two objects are created by the same
-        /// instantiation, and a reference outside it would point at nothing.
-        /// </remarks>
-        public Guid? PredecessorId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sibling template this one depends on.
-        /// </summary>
-        [JsonIgnore]
-        public Template Predecessor { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the class this template is bound to.

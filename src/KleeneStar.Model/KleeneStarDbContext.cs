@@ -47,6 +47,16 @@ namespace KleeneStar.Model
         public DbSet<TemplateClass> TemplateClasses { get; set; }
 
         /// <summary>
+        /// Gets or sets the template hierarchies: work structures offered beside the templates.
+        /// </summary>
+        public DbSet<TemplateHierarchy> TemplateHierarchies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the nodes of the template hierarchies.
+        /// </summary>
+        public DbSet<TemplateHierarchyNode> TemplateHierarchyNodes { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of forms.
         /// </summary>
         public DbSet<Form> Forms { get; set; }

@@ -48,7 +48,6 @@ namespace KleeneStar.Model
             var data = context.Templates
                 .Include(x => x.Class)
                 .ThenInclude(c => c.Workspace)
-                .Include(x => x.Parent)
                 .AsNoTracking();
 
             return query.Apply(data); // none materialize query
@@ -109,13 +108,6 @@ namespace KleeneStar.Model
             dbEntry.Icon = templateEntry.Icon;
             dbEntry.State = templateEntry.State;
             dbEntry.Presets = templateEntry.Presets;
-            dbEntry.Order = templateEntry.Order;
-
-            // the empty guid names nobody and nothing (the "none" entry of a selection); written
-            // into a reference it would violate the foreign key
-            dbEntry.ParentId = templateEntry.ParentId == Guid.Empty ? null : templateEntry.ParentId;
-            dbEntry.AssigneeId = templateEntry.AssigneeId == Guid.Empty ? null : templateEntry.AssigneeId;
-            dbEntry.PredecessorId = templateEntry.PredecessorId == Guid.Empty ? null : templateEntry.PredecessorId;
 
             if (templateEntry.ClassId != Guid.Empty)
             {
