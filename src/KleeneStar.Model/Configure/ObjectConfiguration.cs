@@ -49,6 +49,12 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.State)
                 .HasColumnName("State");
 
+            builder.Property(x => x.Kind)
+                .HasColumnName("Kind")
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue(ObjectKind.Default);
+
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
                 .IsRequired();
@@ -80,6 +86,23 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.ClassId)
                 .HasPrincipalKey(w => w.Id);
 
+            builder.Property(x => x.SecurityLevelId)
+                .HasColumnName("SecurityLevel");
+
+            // an object keeps its classification when the level is archived; deleting the level
+            // is what declassifies the objects that carried it, and that is a decision an
+            // administrator makes deliberately rather than one a cascade makes for them
+            builder.HasOne(x => x.SecurityLevel)
+                .WithMany()
+                .HasForeignKey(x => x.SecurityLevelId)
+                .HasPrincipalKey(s => s.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Property(x => x.PortalRestricted)
+                .HasColumnName("PortalRestricted")
+                .HasDefaultValue(false)
+                .IsRequired();
+
             builder.Property(x => x.ParentId)
                 .HasColumnName("Parent");
 
@@ -107,6 +130,21 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(i => i.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(x => x.SprintId)
+                .HasColumnName("Sprint");
+
+            builder.HasOne(x => x.Sprint)
+                .WithMany()
+                .HasForeignKey(x => x.SprintId)
+                .HasPrincipalKey(s => s.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Property(x => x.SprintRank)
+                .HasColumnName("SprintRank");
+
+            builder.Property(x => x.StoryPoints)
+                .HasColumnName("StoryPoints");
+
             builder.Property(x => x.UpdaterId)
                 .HasColumnName("Updater");
 
@@ -118,6 +156,8 @@ namespace KleeneStar.Model.Configure
 
             builder.HasIndex(x => x.Key)
                 .IsUnique();
+
+            builder.HasIndex(x => new { x.WorkspaceId, x.Kind });
         }
     }
 }

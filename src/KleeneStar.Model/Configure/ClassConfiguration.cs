@@ -70,6 +70,21 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(c => c.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(x => x.IsBlueprint)
+                .HasColumnName("IsBlueprint")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            builder.Property(x => x.BlueprintId)
+                .HasColumnName("Blueprint");
+
+            // a follower whose blueprint is deleted keeps its copies and becomes a class of its own
+            builder.HasOne(x => x.Blueprint)
+                .WithMany()
+                .HasForeignKey(x => x.BlueprintId)
+                .HasPrincipalKey(c => c.Id)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Property(x => x.Sealed)
                 .HasColumnName("Sealed");
 
@@ -84,6 +99,18 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.AccessModifier)
                 .HasColumnName("AccessModifier");
+
+            builder.Property(x => x.Kind)
+                .HasColumnName("Kind")
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue(ObjectKind.Default);
+
+            // no default value and nullable on purpose: an unset renderer is the state
+            // "follow the kind", which is not the same as any one renderer key
+            builder.Property(x => x.Renderer)
+                .HasColumnName("Renderer")
+                .HasMaxLength(64);
 
             builder.Property(x => x.PortalVisible)
                 .HasColumnName("PortalVisible")

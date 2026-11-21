@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using WebExpress.WebIndex.Queries;
 
 namespace KleeneStar.Model
@@ -55,24 +56,33 @@ namespace KleeneStar.Model
             return db.Attachments
                 .Where(a => a.ObjectId == objectId)
                 .OrderBy(a => a.Created)
-                .Select(a => new Attachment
-                {
-                    RawId = a.RawId,
-                    Id = a.Id,
-                    FileName = a.FileName,
-                    ContentType = a.ContentType,
-                    Size = a.Size,
-                    StoragePath = a.StoragePath,
-                    Description = a.Description,
-                    State = a.State,
-                    Created = a.Created,
-                    Updated = a.Updated,
-                    ObjectId = a.ObjectId,
-                    UploaderId = a.UploaderId
-                })
+                .Select(AttachmentMetadata)
                 .AsNoTracking()
                 .ToList();
         }
+
+        /// <summary>
+        /// The projection that reads an attachment without its binary
+        /// <see cref="Attachment.Content"/>. It is shared by every metadata read so a column
+        /// added to the entity is carried by all of them or by none, rather than by whichever
+        /// one was remembered.
+        /// </summary>
+        private static readonly Expression<Func<Attachment, Attachment>> AttachmentMetadata = a => new Attachment
+        {
+            RawId = a.RawId,
+            Id = a.Id,
+            FileName = a.FileName,
+            ContentType = a.ContentType,
+            Version = a.Version,
+            Size = a.Size,
+            StoragePath = a.StoragePath,
+            Description = a.Description,
+            State = a.State,
+            Created = a.Created,
+            Updated = a.Updated,
+            ObjectId = a.ObjectId,
+            UploaderId = a.UploaderId
+        };
 
         /// <summary>
         /// Returns the single attachment with the supplied id including its binary
@@ -92,8 +102,14 @@ namespace KleeneStar.Model
         /// <summary>
         /// Adds the supplied attachment to the database when no attachment with the same id
         /// exists. Stamps <see cref="Attachment.Created"/> / <see cref="Attachment.Updated"/>
-        /// when they are not set by the caller.
+        /// when they are not set by the caller, and assigns the next
+        /// <see cref="Attachment.Version"/> of its file name when the caller left it unset.
         /// </summary>
+        /// <remarks>
+        /// The version is assigned here rather than by the caller so the number is read and
+        /// written against the same context: a caller that queried the chain first and inserted
+        /// afterwards would hand two simultaneous uploads of one name the same number.
+        /// </remarks>
         /// <param name="attachment">The attachment to add.</param>
         public static void Add(Attachment attachment)
         {
@@ -113,8 +129,28 @@ namespace KleeneStar.Model
 
             attachment.Updated = DateTime.UtcNow;
 
+            if (attachment.Version <= 0)
+            {
+                attachment.Version = GetAttachmentVersionCeiling(db, attachment.ObjectId, attachment.FileName) + 1;
+            }
+
             db.Attachments.Add(attachment);
             db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Returns the highest version currently attached to the object under the supplied file
+        /// name, or zero when the name is new to the object.
+        /// </summary>
+        /// <param name="db">The context the lookup runs in.</param>
+        /// <param name="objectId">The id of the owning object.</param>
+        /// <param name="fileName">The file name whose chain is measured.</param>
+        /// <returns>The highest version of the name, or zero.</returns>
+        private static int GetAttachmentVersionCeiling(KleeneStarDbContext db, Guid objectId, string fileName)
+        {
+            return db.Attachments
+                .Where(x => x.ObjectId == objectId && x.FileName == fileName)
+                .Max(x => (int?)x.Version) ?? 0;
         }
 
         /// <summary>
@@ -142,6 +178,46 @@ namespace KleeneStar.Model
             existing.Updated = DateTime.UtcNow;
 
             db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Writes the description of a single attachment and returns the changed row.
+        /// </summary>
+        /// <remarks>
+        /// The row is read through the metadata projection and attached with only the two changed
+        /// properties marked, so the file's binary <see cref="Attachment.Content"/> is neither
+        /// read nor written to change a caption beside it. <c>ExecuteUpdate</c> would say the same
+        /// thing in one statement, but it is relational-only and the provider here is loaded by
+        /// reflection - this way stays true for whatever provider the installation configures.
+        /// </remarks>
+        /// <param name="id">The attachment id.</param>
+        /// <param name="description">The new description, or <c>null</c> to clear it.</param>
+        /// <returns>The changed attachment, or <c>null</c> when no row matches.</returns>
+        public static Attachment SetAttachmentDescription(Guid id, string description)
+        {
+            using var db = CreateDbContext();
+
+            var existing = db.Attachments
+                .Where(x => x.Id == id)
+                .Select(AttachmentMetadata)
+                .AsNoTracking()
+                .FirstOrDefault();
+
+            if (existing is null)
+            {
+                return null;
+            }
+
+            existing.Description = description;
+            existing.Updated = DateTime.UtcNow;
+
+            var entry = db.Attach(existing);
+            entry.Property(x => x.Description).IsModified = true;
+            entry.Property(x => x.Updated).IsModified = true;
+
+            db.SaveChanges();
+
+            return existing;
         }
 
         /// <summary>

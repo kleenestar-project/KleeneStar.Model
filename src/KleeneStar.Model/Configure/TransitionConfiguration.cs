@@ -1,6 +1,8 @@
 ﻿using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace KleeneStar.Model.Configure
 {
@@ -19,6 +21,9 @@ namespace KleeneStar.Model.Configure
 
             builder.HasKey(x => x.RawId);
 
+            builder.Property(x => x.BlueprintSourceId)
+                .HasColumnName("BlueprintSource");
+
             builder.Property(x => x.RawId)
                 .HasColumnName("Id")
                 .ValueGeneratedOnAdd();
@@ -33,6 +38,26 @@ namespace KleeneStar.Model.Configure
 
             builder.Property(x => x.State)
                 .HasColumnName("State");
+
+            builder.Property(x => x.Color)
+                .HasColumnName("Color")
+                .HasMaxLength(32);
+
+            builder.Property(x => x.DashArray)
+                .HasColumnName("DashArray")
+                .HasMaxLength(64);
+
+            // the waypoints are only ever read as a whole sequence, so they travel as a
+            // serialized list rather than as rows of their own, matching Field.ValidationRules
+            builder.Property(x => x.Waypoints)
+                .HasColumnName("Waypoints")
+                .HasConversion
+                (
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => string.IsNullOrEmpty(v)
+                        ? new List<TransitionWaypoint>()
+                        : JsonSerializer.Deserialize<List<TransitionWaypoint>>(v, (JsonSerializerOptions)null)
+                );
 
             builder.Property(x => x.Created)
                 .HasColumnName("Created")
@@ -71,6 +96,37 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.TargetId)
                 .HasPrincipalKey(s => s.Id)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.GuardExpression)
+                .HasColumnName("GuardExpression");
+
+            builder.Property(x => x.ValidatorExpression)
+                .HasColumnName("ValidatorExpression");
+
+            // the post functions are only ever read as a whole sequence and their order is part
+            // of what was administered, so they travel as a serialized list rather than as rows
+            // of their own - the same reading the waypoints above get
+            builder.Property(x => x.PostFunctionKeys)
+                .HasColumnName("PostFunctions")
+                .HasConversion
+                (
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => string.IsNullOrEmpty(v)
+                        ? new List<string>()
+                        : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null)
+                );
+
+            builder.Property(x => x.ScreenFormId)
+                .HasColumnName("ScreenForm");
+
+            // the screen (many transitions → one form). Deleting the form does not delete the
+            // transitions that showed it: a workflow keeps working without its screen, which is
+            // the same reading an unconfigured transition gets
+            builder.HasOne(x => x.ScreenForm)
+                .WithMany()
+                .HasForeignKey(x => x.ScreenFormId)
+                .HasPrincipalKey(f => f.Id)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasIndex(x => new { x.WorkflowId, x.Name })
                 .IsUnique();

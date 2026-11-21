@@ -12,6 +12,10 @@ namespace KleeneStar.Model.Entities
     /// Represents a template entity.
     /// A template provides predefined field values and metadata to accelerate object creation.
     /// </summary>
+    /// <remarks>
+    /// A template describes one object. Work structures of several objects are template
+    /// hierarchies (<see cref="TemplateHierarchy"/>), which reference templates.
+    /// </remarks>
     public class Template : IEntity
     {
         /// <summary>

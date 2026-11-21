@@ -35,9 +35,24 @@ namespace KleeneStar.Model
             var data = context.Identities
                 .AsNoTracking()
                 .Include(x => x.GroupMemberships)
-                    .ThenInclude(x => x.Group);
+                    .ThenInclude(x => x.Group)
+                        .ThenInclude(x => x.GroupPolicies);
 
             return query.Apply(data);
+        }
+
+        /// <summary>
+        /// Returns the number of identities that satisfy the supplied query without
+        /// materializing a single row. Counts against the bare identity set, so the group
+        /// memberships are not dragged along. Callers must leave paging off the query.
+        /// </summary>
+        /// <param name="query">The query criteria used to filter the counted identities.</param>
+        /// <returns>The number of matching identities.</returns>
+        public static int CountIdentities(IQuery<Identity> query)
+        {
+            using var db = CreateDbContext();
+
+            return query.Apply(db.Identities.AsNoTracking()).Count();
         }
 
         /// <summary>
@@ -63,8 +78,26 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Updates the specified identity in the database.
+        /// The columns an ordinary update never writes: the credentials and the link to an
+        /// external account. They are written by <see cref="SetPasswordHash"/>,
+        /// <see cref="CompletePasswordReset"/> and <see cref="SetExternalSubject"/> alone.
         /// </summary>
+        private static readonly string[] _credentialColumns =
+        [
+            nameof(Identity.PasswordHash),
+            nameof(Identity.PasswordChanged),
+            nameof(Identity.ExternalSubject)
+        ];
+
+        /// <summary>
+        /// Updates the specified identity in the database, leaving its credentials alone.
+        /// </summary>
+        /// <remarks>
+        /// Every identity that has been out to a client comes back with its password hash
+        /// blanked - the REST serializer ships every public property, so the endpoints strip
+        /// it - and the whole-row update would write that blank back. So the credential columns
+        /// keep their stored values whatever the incoming copy says.
+        /// </remarks>
         /// <param name="identity">The identity to update.</param>
         public static void Update(Identity identity)
         {
@@ -73,6 +106,21 @@ namespace KleeneStar.Model
             using var db = CreateDbContext();
 
             db.UpdateEntity(identity);
+
+            var tracked = db.ChangeTracker.Entries<Identity>()
+                .FirstOrDefault(x => x.Entity.RawId == identity.RawId);
+
+            if (tracked is not null)
+            {
+                foreach (var column in _credentialColumns)
+                {
+                    var property = tracked.Property(column);
+
+                    property.CurrentValue = property.OriginalValue;
+                    property.IsModified = false;
+                }
+            }
+
             db.SaveChanges();
         }
 

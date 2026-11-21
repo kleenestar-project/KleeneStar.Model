@@ -1,4 +1,4 @@
-﻿using KleeneStar.Model.Config;
+﻿using KleeneStar.Model.Settings;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Concurrent;
@@ -24,19 +24,19 @@ namespace KleeneStar.Model
 
         /// <summary>
         /// Creates a new instance of the KleeneStarDbContext using the specified 
-        /// database configuration.
+        /// database settings.
         /// </summary>
-        /// <param name="config">
-        /// The database configuration containing the provider and connection 
+        /// <param name="settings">
+        /// The database settings naming the provider, the assembly and the connection 
         /// string to use for the context. Cannot be null.
         /// </param>
         /// <returns>
         /// A new KleeneStarDbContext instance configured with the specified database 
         /// provider and connection string.
         /// </returns>
-        public static KleeneStarDbContext Create(DbConfig config)
+        public static KleeneStarDbContext Create(DatabaseSettings settings)
         {
-            return Create(config.Provider, config.ConnectionString, config.Assembly);
+            return Create(settings.Provider, settings.ConnectionString, settings.Assembly);
         }
 
         /// <summary>

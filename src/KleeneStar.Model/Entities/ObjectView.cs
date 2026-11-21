@@ -34,6 +34,14 @@ namespace KleeneStar.Model.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the object kind whose overview tab control this view belongs to
+        /// (e.g. <see cref="ObjectKind.Issue"/> or <see cref="ObjectKind.Asset"/>). A
+        /// workspace keeps a separate tab set per kind, so the same layout (Table, List,
+        /// …) can exist once for issues and once for assets without colliding.
+        /// </summary>
+        public string Kind { get; set; } = ObjectKind.Default;
+
+        /// <summary>
         /// Gets or sets the kind of view that should be rendered for this tab.
         /// </summary>
         public ObjectViewType ViewType { get; set; }
@@ -42,6 +50,12 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the optional configuration payload for the view, serialized as JSON.
         /// </summary>
         public string Configuration { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional color of the tab as a <c>#rrggbb</c> value, chosen from
+        /// the tab menu and shown as an underline of the tab header; <c>null</c> for none.
+        /// </summary>
+        public string Color { get; set; }
 
         /// <summary>
         /// Gets or sets the display order of the view within the tab control.

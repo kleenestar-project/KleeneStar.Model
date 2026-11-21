@@ -76,6 +76,37 @@ namespace KleeneStar.Model.Entities
         public Class Inherited { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the class is a blueprint: a structure other
+        /// workspaces follow.
+        /// </summary>
+        /// <remarks>
+        /// Data structures that several departments share - the incident of every service desk,
+        /// the application every workspace references - are defined once in a blueprint class
+        /// and provided to the workspaces that follow it, so they stay alike without anybody
+        /// copying a field by hand. The flag offers the class as a blueprint; it changes nothing
+        /// about the class itself.
+        /// </remarks>
+        public bool IsBlueprint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blueprint class this class follows, or <c>null</c> for a class that
+        /// defines its structure alone.
+        /// </summary>
+        /// <remarks>
+        /// A follower receives the blueprint's fields, statuses, priorities and workflows as
+        /// managed copies (<see cref="IBlueprintManaged"/>), kept in step whenever the blueprint
+        /// changes. What it shows and how it works stays its own: views, boards, forms, filters,
+        /// templates and additional local fields.
+        /// </remarks>
+        public Guid? BlueprintId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blueprint class this class follows.
+        /// </summary>
+        [JsonIgnore]
+        public Class Blueprint { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the class is sealed.
         /// </summary>
         public bool Sealed { get; set; }
@@ -103,6 +134,36 @@ namespace KleeneStar.Model.Entities
         /// request-type catalog; their objects surface as portal issues.
         /// </summary>
         public bool PortalVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object-kind key of the class, e.g.
+        /// <see cref="ObjectKind.Document"/>, <see cref="ObjectKind.Blog"/>, or
+        /// <see cref="ObjectKind.Issue"/>. The class is the single source of the kind:
+        /// every object of the class carries this kind (stamped onto
+        /// <see cref="Object.Kind"/> on create and update), which decides in which kind
+        /// overview the objects appear. The set of kinds is open — add-ons may
+        /// introduce further keys. Defaults to <see cref="ObjectKind.Default"/>.
+        /// </summary>
+        public string Kind { get; set; } = ObjectKind.Default;
+
+        /// <summary>
+        /// Gets or sets the renderer key of the class, e.g.
+        /// <see cref="ObjectRenderer.Prose"/> or <see cref="ObjectRenderer.Form"/>. Where
+        /// <see cref="Kind"/> decides in which overview the objects of the class appear,
+        /// the renderer decides how a single one of them is read and written: as prose in
+        /// the WYSIWYG editor, or through the structured input mask the class's forms
+        /// describe. The set of renderers is open per kind — plugins may contribute
+        /// further ones.
+        /// </summary>
+        /// <remarks>
+        /// <see langword="null"/> means "follow the kind": the renderer the kind
+        /// descriptor names as its default is used, so a class that was never configured
+        /// keeps behaving the way its kind always has, and follows along when the kind is
+        /// changed. Unlike <see cref="Kind"/>, the renderer is <em>not</em> stamped onto
+        /// the objects of the class — it is presentation, not data, and is read live from
+        /// the class on every request.
+        /// </remarks>
+        public string Renderer { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of classes allowed as children of this class.

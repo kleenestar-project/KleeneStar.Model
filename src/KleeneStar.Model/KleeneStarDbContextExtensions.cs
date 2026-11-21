@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -116,8 +117,7 @@ namespace KleeneStar.Model
             foreach (var relationName in includeRelations)
             {
                 // find navigation and property
-                var navigation = entityType.FindNavigation(relationName);
-                if (navigation is null || !navigation.IsCollection)
+                if (FindCollectionNavigation(entityType, relationName) is null)
                 {
                     continue;
                 }
@@ -338,8 +338,7 @@ namespace KleeneStar.Model
             // update relationships with diff-logic (add/remove instead of clear/add)
             foreach (var relationName in includeRelations)
             {
-                var navigation = entityType.FindNavigation(relationName);
-                if (navigation is null || !navigation.IsCollection)
+                if (FindCollectionNavigation(entityType, relationName) is null)
                 {
                     continue;
                 }
@@ -442,8 +441,7 @@ namespace KleeneStar.Model
             // load collection navigations so EF tracks the join-table entries
             foreach (var relation in includeRelations)
             {
-                var navigation = entityType.FindNavigation(relation);
-                if (navigation != null)
+                if (FindCollectionNavigation(entityType, relation) is not null)
                 {
                     context.Entry(existingEntity).Collection(relation).Load();
                 }
@@ -451,6 +449,26 @@ namespace KleeneStar.Model
 
             // remove the entity (join table entries will be removed on SaveChanges)
             context.Remove(existingEntity);
+        }
+
+        /// <summary>
+        /// Returns the collection navigation of the given name, a one-to-many navigation or the
+        /// skip navigation of a many-to-many relation alike.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="IEntityType.FindNavigation(string)"/> answers one-to-many navigations only;
+        /// a many-to-many collection (for example <c>Workspace.Tenants</c> or
+        /// <c>Workspace.Categories</c>) is a skip navigation and would be passed over.
+        /// </remarks>
+        /// <param name="entityType">The entity type.</param>
+        /// <param name="name">The name of the navigation.</param>
+        /// <returns>The navigation, or null when the type has no collection navigation of that name.</returns>
+        private static INavigationBase FindCollectionNavigation(IEntityType entityType, string name)
+        {
+            var navigation = (INavigationBase)entityType.FindNavigation(name)
+                ?? entityType.FindSkipNavigation(name);
+
+            return navigation is { IsCollection: true } ? navigation : null;
         }
     }
 }

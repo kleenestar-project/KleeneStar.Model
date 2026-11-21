@@ -32,9 +32,29 @@ namespace KleeneStar.Model
         public DbSet<Field> Fields { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of security levels.
+        /// </summary>
+        public DbSet<SecurityLevel> SecurityLevels { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of templates.
         /// </summary>
         public DbSet<Template> Templates { get; set; }
+
+        /// <summary>
+        /// Gets or sets the further classes the templates serve beside the class they are bound to.
+        /// </summary>
+        public DbSet<TemplateClass> TemplateClasses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the template hierarchies: work structures offered beside the templates.
+        /// </summary>
+        public DbSet<TemplateHierarchy> TemplateHierarchies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the nodes of the template hierarchies.
+        /// </summary>
+        public DbSet<TemplateHierarchyNode> TemplateHierarchyNodes { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of forms.
@@ -87,14 +107,46 @@ namespace KleeneStar.Model
         public DbSet<ObjectView> ObjectViews { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of Scrum sprints.
+        /// </summary>
+        public DbSet<Sprint> Sprints { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of field values associated with objects.
         /// </summary>
         public DbSet<Value> Values { get; set; }
 
         /// <summary>
+        /// Gets or sets the append-only commit chains that record every change made to an
+        /// object. The head of an object's chain always matches its <see cref="Values"/>.
+        /// </summary>
+        public DbSet<Commit> Commits { get; set; }
+
+        /// <summary>
+        /// Gets or sets the individual field modifications recorded inside the commits.
+        /// </summary>
+        public DbSet<Change> Changes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the append-only, hash-chained audit log: one installation-wide sequence
+        /// of every event worth reconstructing later, whoever or whatever caused it.
+        /// </summary>
+        public DbSet<AuditEvent> AuditEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attribute-level state changes recorded inside the audit events.
+        /// </summary>
+        public DbSet<AuditDelta> AuditDeltas { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of typed directional links between objects.
         /// </summary>
-        public DbSet<ObjectLink> ObjectLinks { get; set; }
+        public DbSet<ObjectRelation> ObjectRelations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of relation definitions the links are classified by.
+        /// </summary>
+        public DbSet<ObjectRelationType> ObjectRelationTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of per-identity watch relationships on objects.
@@ -112,9 +164,20 @@ namespace KleeneStar.Model
         public DbSet<ObjectTag> ObjectTags { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of dashboards.
+        /// Gets or sets the unpublished working copies of the prose attributes of objects.
+        /// At most one row per object.
         /// </summary>
-        public DbSet<Dashboard> Dashboards { get; set; }
+        public DbSet<ObjectDraft> ObjectDrafts { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of insights.
+        /// </summary>
+        public DbSet<Insight> Insights { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of insight tabs.
+        /// </summary>
+        public DbSet<InsightView> InsightViews { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of dashboard columns.
@@ -127,9 +190,65 @@ namespace KleeneStar.Model
         public DbSet<Widget> Widgets { get; set; }
 
         /// <summary>
+        /// Gets or sets the collection of Kanban board layout configurations.
+        /// </summary>
+        public DbSet<KanbanBoard> KanbanBoards { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of Kanban board columns.
+        /// </summary>
+        public DbSet<KanbanBoardColumn> KanbanBoardColumns { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of Kanban board swimlanes.
+        /// </summary>
+        public DbSet<KanbanBoardSwimlane> KanbanBoardSwimlanes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of object-kind dashboard layout configurations.
+        /// </summary>
+        public DbSet<KindDashboard> KindDashboards { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of object-kind dashboard columns.
+        /// </summary>
+        public DbSet<KindDashboardColumn> KindDashboardColumns { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of object-kind dashboard widgets.
+        /// </summary>
+        public DbSet<KindDashboardWidget> KindDashboardWidgets { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of tenants.
         /// </summary>
         public DbSet<Tenant> Tenants { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of additional links shown in the app navigator.
+        /// </summary>
+        public DbSet<NavigatorLink> NavigatorLinks { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maintenance notice of the installation. Holds a single record.
+        /// </summary>
+        public DbSet<Maintenance> Maintenances { get; set; }
+
+        /// <summary>
+        /// Gets or sets the branding of the installation: the title and the icon the application
+        /// is presented under. A singleton, like the maintenance notice.
+        /// </summary>
+        public DbSet<Branding> Brandings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quickfilters the users defined themselves.
+        /// </summary>
+        public DbSet<CustomQuickfilter> CustomQuickfilters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group-to-policy grants the permission dialogs administer.
+        /// </summary>
+        public DbSet<PermissionAssignment> PermissionAssignments { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of identities.
@@ -202,6 +321,32 @@ namespace KleeneStar.Model
         public DbSet<UserSession> UserSessions { get; set; }
 
         /// <summary>
+        /// Gets or sets the WQL queries each identity has run, which the query prompts
+        /// offer back as their history.
+        /// </summary>
+        public DbSet<WqlHistory> WqlHistories { get; set; }
+
+        /// <summary>
+        /// Gets or sets the devices and browsers currently signed in with an identity.
+        /// </summary>
+        public DbSet<IdentitySession> IdentitySessions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the in-app notifications listed in the notification center.
+        /// </summary>
+        public DbSet<UserNotification> UserNotifications { get; set; }
+
+        /// <summary>
+        /// Gets or sets the personal access tokens the identities created for API access.
+        /// </summary>
+        public DbSet<AccessToken> AccessTokens { get; set; }
+
+        /// <summary>
+        /// Gets or sets the one-time links that set the password of an internal account.
+        /// </summary>
+        public DbSet<PasswordReset> PasswordResets { get; set; }
+
+        /// <summary>
         /// Gets or sets the per-identity saved searches over the object model.
         /// </summary>
         public DbSet<SavedSearch> SavedSearches { get; set; }
@@ -217,6 +362,103 @@ namespace KleeneStar.Model
         public DbSet<ObjectVisit> ObjectVisits { get; set; }
 
         /// <summary>
+        /// Gets or sets the records of object creations, which make them idempotent and atomic.
+        /// </summary>
+        public DbSet<ObjectCreation> ObjectCreations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the materialized paths of the objects (derived from the parent relation).
+        /// </summary>
+        public DbSet<ObjectPath> ObjectPaths { get; set; }
+
+        /// <summary>
+        /// Gets or sets the recursive operation runs.
+        /// </summary>
+        public DbSet<ObjectOperation> ObjectOperations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the objects of the recursive operation runs.
+        /// </summary>
+        public DbSet<ObjectOperationItem> ObjectOperationItems { get; set; }
+
+
+
+        /// <summary>
+        /// Gets or sets the former keys of objects moved into another workspace.
+        /// </summary>
+        public DbSet<ObjectKeyAlias> ObjectKeyAliases { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rules of the automation platform.
+        /// </summary>
+        public DbSet<AutomationRule> AutomationRules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the persistent queue of automation jobs.
+        /// </summary>
+        public DbSet<AutomationJob> AutomationJobs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the connections of the workspaces to other systems.
+        /// </summary>
+        public DbSet<Webhook> Webhooks { get; set; }
+
+        /// <summary>
+        /// Gets or sets the approval policies.
+        /// </summary>
+        public DbSet<ApprovalPolicy> ApprovalPolicies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the approvals.
+        /// </summary>
+        public DbSet<Approval> Approvals { get; set; }
+
+        /// <summary>
+        /// Gets or sets the decisions taken on approvals.
+        /// </summary>
+        public DbSet<ApprovalDecision> ApprovalDecisions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time logged on objects.
+        /// </summary>
+        public DbSet<Worklog> Worklogs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the planning figures of objects.
+        /// </summary>
+        public DbSet<ObjectPlanning> ObjectPlannings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the milestones.
+        /// </summary>
+        public DbSet<Milestone> Milestones { get; set; }
+
+        /// <summary>
+        /// Gets or sets the planning settings of the workspaces.
+        /// </summary>
+        public DbSet<WorkspacePlanning> WorkspacePlannings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the weekly capacities of people.
+        /// </summary>
+        public DbSet<IdentityCapacity> IdentityCapacities { get; set; }
+
+        /// <summary>
+        /// Gets or sets the central value catalogs.
+        /// </summary>
+        public DbSet<ValueCatalog> ValueCatalogs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the versions of the value catalogs.
+        /// </summary>
+        public DbSet<ValueCatalogVersion> ValueCatalogVersions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fields that draw their options from a catalog.
+        /// </summary>
+        public DbSet<FieldCatalogBinding> FieldCatalogBindings { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">
@@ -225,6 +467,20 @@ namespace KleeneStar.Model
         public KleeneStarDbContext(DbContextOptions<KleeneStarDbContext> options)
             : base(options)
         {
+        }
+
+        /// <summary>
+        /// Configures the context beyond the options it was created with: the string
+        /// comparisons WQL produces are rewritten into a translatable shape
+        /// (<see cref="Interceptors.StringComparisonQueryInterceptor"/>), and every save advances
+        /// the versions of the entity types it writes
+        /// (<see cref="Interceptors.EntityVersionInterceptor"/>), whichever provider and factory
+        /// built the options.
+        /// </summary>
+        /// <param name="optionsBuilder">The builder of the context options.</param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.AddInterceptors(Interceptors.StringComparisonQueryInterceptor.Instance, Interceptors.EntityVersionInterceptor.Instance);
         }
 
         /// <summary>

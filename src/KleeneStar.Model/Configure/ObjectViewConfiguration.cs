@@ -36,12 +36,22 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.Description)
                 .HasColumnName("Description");
 
+            builder.Property(x => x.Kind)
+                .HasColumnName("Kind")
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue(ObjectKind.Default);
+
             builder.Property(x => x.ViewType)
                 .HasColumnName("ViewType")
                 .IsRequired();
 
             builder.Property(x => x.Configuration)
                 .HasColumnName("Configuration");
+
+            builder.Property(x => x.Color)
+                .HasColumnName("Color")
+                .HasMaxLength(7);
 
             builder.Property(x => x.Order)
                 .HasColumnName("Order")
@@ -69,7 +79,7 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("Updated")
                 .IsRequired();
 
-            builder.HasIndex(x => new { x.WorkspaceId, x.Name })
+            builder.HasIndex(x => new { x.WorkspaceId, x.Kind, x.Name })
                 .IsUnique();
         }
     }

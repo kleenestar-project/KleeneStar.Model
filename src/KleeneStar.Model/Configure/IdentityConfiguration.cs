@@ -3,19 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebExpress.WebCore.WebIdentity;
 using WebExpress.WebUI.WebIcon;
+// the framework's own identity lives in the namespace this file imports for IIdentity, so the
+// stored one is named explicitly rather than by the name both of them carry
+using IdentityEntity = KleeneStar.Model.Entities.Identity;
 
 namespace KleeneStar.Model.Configure
 {
     /// <summary>
     /// Provides the Entity Framework Core configuration for the Identity entity type.
     /// </summary>
-    internal class IdentityConfiguration : IEntityTypeConfiguration<Identity>
+    internal class IdentityConfiguration : IEntityTypeConfiguration<IdentityEntity>
     {
         /// <summary>
         /// Configuration of the field entity.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Configure(EntityTypeBuilder<Identity> builder)
+        public void Configure(EntityTypeBuilder<IdentityEntity> builder)
         {
             builder.ToTable("Identity");
 
@@ -55,10 +58,112 @@ namespace KleeneStar.Model.Configure
                 .HasColumnName("State")
                 .IsRequired();
 
+            // optional: an external account keeps no password here, and an internal one has
+            // none until its first reset link is used
             builder.Property(x => x.PasswordHash)
                 .HasColumnName("PasswordHash")
-                .IsRequired()
                 .HasMaxLength(512);
+
+            builder.Property(x => x.PasswordChanged)
+                .HasColumnName("PasswordChanged");
+
+            // null is the internal source, see IdentitySource
+            builder.Property(x => x.AuthenticationSource)
+                .HasColumnName("AuthenticationSource")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.ExternalSubject)
+                .HasColumnName("ExternalSubject")
+                .HasMaxLength(256);
+
+            // one stored account per external subject; the internal accounts carry no subject
+            // and a null never collides
+            builder.HasIndex(x => new { x.AuthenticationSource, x.ExternalSubject })
+                .IsUnique();
+
+            // profile page — publicly visible inside the tenant
+            builder.Property(x => x.UserName)
+                .HasColumnName("UserName")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.EmailVerified)
+                .HasColumnName("EmailVerified")
+                .IsRequired();
+
+            builder.Property(x => x.Bio)
+                .HasColumnName("Bio")
+                .HasMaxLength(1024);
+
+            builder.Property(x => x.PhoneCountry)
+                .HasColumnName("PhoneCountry")
+                .HasMaxLength(8);
+
+            builder.Property(x => x.Phone)
+                .HasColumnName("Phone")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.Website)
+                .HasColumnName("Website")
+                .HasMaxLength(256);
+
+            builder.Property(x => x.Location)
+                .HasColumnName("Location")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.Position)
+                .HasColumnName("Position")
+                .HasMaxLength(128);
+
+            // account page — login, language, time zone and regional formats
+            builder.Property(x => x.Language)
+                .HasColumnName("Language")
+                .HasMaxLength(16);
+
+            builder.Property(x => x.TimeZone)
+                .HasColumnName("TimeZone")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.DateFormat)
+                .HasColumnName("DateFormat")
+                .HasMaxLength(32);
+
+            builder.Property(x => x.WeekStart)
+                .HasColumnName("WeekStart")
+                .IsRequired();
+
+            // tenant & role page — business data of the identity's active tenant
+            builder.Property(x => x.Role)
+                .HasColumnName("Role")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.RoleSince)
+                .HasColumnName("RoleSince");
+
+            builder.Property(x => x.Department)
+                .HasColumnName("Department")
+                .HasMaxLength(128);
+
+            builder.Property(x => x.CostCenter)
+                .HasColumnName("CostCenter")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.PersonnelNumber)
+                .HasColumnName("PersonnelNumber")
+                .HasMaxLength(64);
+
+            // self-referencing, nullable FK: the deputy is another identity, and removing it
+            // must not cascade into the identities it stands in for.
+            builder.Property(x => x.DeputyId)
+                .HasColumnName("Deputy")
+                .HasMaxLength(36);
+
+            builder.HasOne(x => x.Deputy)
+                .WithMany()
+                .HasForeignKey(x => x.DeputyId)
+                .HasPrincipalKey(x => x.Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.UserName);
 
             // nullable FK: portal-side accounts carry the tenant they belong to;
             // operator-side accounts (the seeded admin, integration users) stay

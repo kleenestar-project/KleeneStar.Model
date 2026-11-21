@@ -1,4 +1,5 @@
 ﻿using KleeneStar.Model.Converters;
+using KleeneStar.Model.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -52,6 +53,118 @@ namespace KleeneStar.Model.Entities
         public IdentityState State { get; set; }
 
         /// <summary>
+        /// Gets or sets the login name of the identity. Unique across the installation and
+        /// used in profile URLs and @-mentions, whereas <see cref="Name"/> is the free-form
+        /// display name shown in comments.
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the address in <see cref="Email"/> has been confirmed by the
+        /// user. Drives the verified badge on the account page.
+        /// </summary>
+        [RestConverter<RestValueConverterBool>]
+        public bool EmailVerified { get; set; }
+
+        /// <summary>
+        /// Gets or sets the short self-description shown on the profile page. Markdown is
+        /// supported by the renderer.
+        /// </summary>
+        public string Bio { get; set; }
+
+        /// <summary>
+        /// Gets or sets the international dialling prefix of <see cref="Phone"/> (e.g. "+49").
+        /// Held separately so the profile form can offer it as a selection next to the number.
+        /// </summary>
+        public string PhoneCountry { get; set; }
+
+        /// <summary>
+        /// Gets or sets the phone number without the dialling prefix. Only visible to members
+        /// of the identity's own tenant.
+        /// </summary>
+        public string Phone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the personal web site of the identity (portfolio, blog, ...), stored
+        /// without the scheme — the form prepends "https://".
+        /// </summary>
+        public string Website { get; set; }
+
+        /// <summary>
+        /// Gets or sets the free-form location of the identity ("Berlin, Deutschland").
+        /// </summary>
+        public string Location { get; set; }
+
+        /// <summary>
+        /// Gets or sets the job title of the identity inside the tenant.
+        /// </summary>
+        public string Position { get; set; }
+
+        /// <summary>
+        /// Gets or sets the culture of the user interface as an ISO code ("de", "en", ...).
+        /// <see langword="null"/> falls back to the culture configured for the application.
+        /// </summary>
+        [RestConverter<LanguageConverter>]
+        public string Language { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IANA time zone id used to render dates and times for this identity.
+        /// <see langword="null"/> means the time zone is detected automatically.
+        /// </summary>
+        public string TimeZone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the .NET date pattern the identity prefers ("dd.MM.yyyy", "yyyy-MM-dd", ...).
+        /// <see langword="null"/> falls back to the pattern of <see cref="Language"/>.
+        /// </summary>
+        public string DateFormat { get; set; }
+
+        /// <summary>
+        /// Gets or sets the first day of the week in calendars and schedules.
+        /// </summary>
+        [RestConverter<WeekStartConverter>]
+        public WeekStart WeekStart { get; set; }
+
+        /// <summary>
+        /// Gets or sets the role the identity holds inside its tenant, as set by the workspace
+        /// admins ("Workspace-Admin · Klasse Bug"). Free text — the effective permissions come
+        /// from the group memberships, not from this label.
+        /// </summary>
+        public string Role { get; set; }
+
+        /// <summary>
+        /// Gets or sets the point in time from which <see cref="Role"/> has been held.
+        /// </summary>
+        public DateTime? RoleSince { get; set; }
+
+        /// <summary>
+        /// Gets or sets the department of the identity inside its tenant ("Engineering · QA").
+        /// </summary>
+        public string Department { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cost center used for internal billing ("CC-4711"). Optional.
+        /// </summary>
+        public string CostCenter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the personnel number of the identity. Only shown to tenant admins.
+        /// </summary>
+        public string PersonnelNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identity that takes over this identity's tickets while it is
+        /// absent, or <see langword="null"/> when no deputy has been named.
+        /// </summary>
+        public Guid? DeputyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the navigation property for the deputy named by <see cref="DeputyId"/>.
+        /// </summary>
+        [JsonIgnore]
+        public Identity Deputy { get; set; }
+
+        /// <summary>
         /// Gets or sets the unique identifier of the tenant the identity belongs to.
         /// <see langword="null"/> for operator-side accounts that are not members of
         /// any tenant (the fallback admin identity, integration users). Portal-side
@@ -80,10 +193,54 @@ namespace KleeneStar.Model.Entities
         IEnumerable<IIdentityGroup> IIdentity.Groups => GroupMemberships.Select(x => x.Group);
 
         /// <summary>
-        /// Gets or sets the hashed representation of the user's password.
+        /// Gets or sets the hashed representation of the user's password, or
+        /// <see langword="null"/> when the account has none.
         /// </summary>
+        /// <remarks>
+        /// Only an internal account (<see cref="AuthenticationSource"/> unset) ever carries one:
+        /// the password of an external account lives with the source that authenticates it.
+        /// An internal account without a hash cannot sign in with a password until one is set
+        /// through a reset link. The format is that of ASP.NET's <c>PasswordHasher</c>, the one
+        /// WebExpress's own <c>LocalIdentityProvider</c> verifies, so both read the same column.
+        /// </remarks>
         [JsonIgnore]
+        [AuditRedacted]
         public string PasswordHash { get; set; }
+
+        /// <summary>
+        /// Gets or sets the point in time the password was last set, or <see langword="null"/>
+        /// when it never was (or the account is external).
+        /// </summary>
+        public DateTime? PasswordChanged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the key of the authentication source that owns the account's
+        /// credentials, or <see langword="null"/> for an internal account whose password this
+        /// installation keeps.
+        /// </summary>
+        /// <remarks>
+        /// There is no enum of sources: the key names an entry of the core's
+        /// <c>AuthenticationSourceManager</c>, which a plugin extends (OpenID Connect, LDAP, ...).
+        /// A key that names no registered source - its plugin was uninstalled - signs nobody in:
+        /// unlike a renderer, an authentication source does not fall back to a default, because
+        /// the fallback would be the local password check of an account that never had one
+        /// here. See <see cref="IdentitySource"/>.
+        /// </remarks>
+        [RestConverter<AuthenticationSourceConverter>]
+        public string AuthenticationSource { get; set; }
+
+        /// <summary>
+        /// Gets or sets the identifier the external source knows the account by (the OpenID
+        /// Connect subject, an LDAP distinguished name, ...), or <see langword="null"/> for an
+        /// internal account - and for an external one that has not signed in yet.
+        /// </summary>
+        /// <remarks>
+        /// Together with <see cref="AuthenticationSource"/> this is the one link between a
+        /// stored account and an external sign-in. It is deliberately not the user name or the
+        /// e-mail address: those are claims the external directory may hand to anybody, and
+        /// matching on them would let an external account take over an internal one.
+        /// </remarks>
+        public string ExternalSubject { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the Identity class.

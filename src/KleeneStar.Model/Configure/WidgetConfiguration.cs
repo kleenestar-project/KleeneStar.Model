@@ -28,6 +28,21 @@ namespace KleeneStar.Model.Configure
                 .IsRequired()
                 .HasMaxLength(64);
 
+            builder.Property(x => x.Type)
+                .HasColumnName("Type")
+                .HasMaxLength(64);
+
+            builder.Property(x => x.Color)
+                .HasColumnName("Color")
+                .HasMaxLength(32);
+
+            builder.Property(x => x.Params)
+                .HasColumnName("Params");
+
+            builder.Property(x => x.Position)
+                .HasColumnName("Position")
+                .IsRequired();
+
             builder.Property(x => x.Wql)
                 .HasColumnName("Wql");
 
@@ -45,8 +60,9 @@ namespace KleeneStar.Model.Configure
                 .HasForeignKey(x => x.ColumnId)
                 .HasPrincipalKey(c => c.Id);
 
-            builder.HasIndex(x => new { x.ColumnId, x.Name })
-                .IsUnique();
+            // Widget names are not unique: rebuilding a board from the "…" menu can produce
+            // several widgets that share a title, so only a non-unique lookup index is kept.
+            builder.HasIndex(x => x.ColumnId);
         }
     }
 }

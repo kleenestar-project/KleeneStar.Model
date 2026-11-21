@@ -38,7 +38,37 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Scrum product backlog view.
         /// </summary>
-        ScrumBacklog
+        ScrumBacklog,
+
+        /// <summary>
+        /// Curated issue list: the most recently updated issues of the workspace with
+        /// search, personal quickfilters (starred, assigned to me, created by me,
+        /// archived), and pagination. Appended after <see cref="ScrumBacklog"/> because
+        /// the enum is persisted by ordinal and therefore append-only.
+        /// </summary>
+        Issues,
+
+        /// <summary>
+        /// Curated asset list: the most recently updated assets of the workspace with
+        /// search, personal quickfilters (starred, assigned to me, created by me,
+        /// archived), and pagination. Appended after <see cref="Issues"/> because the
+        /// enum is persisted by ordinal and therefore append-only.
+        /// </summary>
+        Assets,
+
+        /// <summary>
+        /// Gantt chart view that lays the objects out on a timeline, with the bars taken
+        /// from the date fields of their class. Appended after <see cref="Assets"/>
+        /// because the enum is persisted by ordinal and therefore append-only.
+        /// </summary>
+        Gantt,
+
+        /// <summary>
+        /// Calendar view that places the objects on a month, week or agenda grid by the
+        /// date fields of their class. Appended after <see cref="Gantt"/> because the enum
+        /// is persisted by ordinal and therefore append-only.
+        /// </summary>
+        Scheduler
     }
 
     /// <summary>
@@ -46,25 +76,12 @@ namespace KleeneStar.Model.Entities
     /// </summary>
     public static class ObjectViewTypeExtensions
     {
-        /// <summary>
-        /// Returns the stable string identifier of the view type. The identifier matches
-        /// the <c>TemplateId</c> of the corresponding tab template fragment.
-        /// </summary>
-        /// <param name="type">The view type.</param>
-        /// <returns>The string identifier.</returns>
-        public static string TemplateId(this ObjectViewType type)
-        {
-            return type switch
-            {
-                ObjectViewType.Table => "tab-objects-table",
-                ObjectViewType.List => "tab-objects-list",
-                ObjectViewType.Dashboard => "tab-objects-dashboard",
-                ObjectViewType.Kanban => "tab-objects-kanban",
-                ObjectViewType.ScrumSprint => "tab-objects-scrum-sprint",
-                ObjectViewType.ScrumBacklog => "tab-objects-scrum-backlog",
-                _ => null
-            };
-        }
+        // The mapping from a view type to the tab template that renders it used to live here, as a
+        // table of hard-written fragment ids. It named fragments that no longer existed, so no id
+        // matched and every tab a user added came out as a table. Naming types of KleeneStar.Core
+        // from the model could only ever be checked by eye, and the templates differ per object
+        // kind anyway, so the mapping now lives next to those fragments in
+        // KleeneStar.Core.WebFragment.Object.ObjectViewTemplate and is derived from the types.
 
         /// <summary>
         /// Returns the well-known identifier of the view type as a <see cref="Guid"/>
@@ -80,6 +97,10 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.Kanban => Guid.Parse("4A6F90BD-3E8C-46B5-9F2A-19D6E0AC8E04"),
                 ObjectViewType.ScrumSprint => Guid.Parse("5B5C18D3-7AAB-481C-A8E6-A95F4D2B7E05"),
                 ObjectViewType.ScrumBacklog => Guid.Parse("6E7D9342-5CBE-409B-9A1F-0C5BAD3E2F06"),
+                ObjectViewType.Issues => Guid.Parse("7A2C41F8-90DE-4B6B-8D3A-1E5F72C4AE07"),
+                ObjectViewType.Assets => Guid.Parse("8B3D52A9-A1EF-4C7C-9E4B-2F6A83D5BF08"),
+                ObjectViewType.Gantt => Guid.Parse("9C4E63BA-B2FA-4D8D-AF5C-306B94E6C019"),
+                ObjectViewType.Scheduler => Guid.Parse("AD5F74CB-C30B-4E9E-B06D-417CA5F7D12A"),
                 _ => Guid.Empty
             };
         }
@@ -97,6 +118,34 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.Kanban => "kleenestar.core:object.view.kanban.label",
                 ObjectViewType.ScrumSprint => "kleenestar.core:object.view.scrum.sprint.label",
                 ObjectViewType.ScrumBacklog => "kleenestar.core:object.view.scrum.backlog.label",
+                ObjectViewType.Issues => "kleenestar.core:object.view.issues.label",
+                ObjectViewType.Assets => "kleenestar.core:object.view.assets.label",
+                ObjectViewType.Gantt => "kleenestar.core:object.view.gantt.label",
+                ObjectViewType.Scheduler => "kleenestar.core:object.view.scheduler.label",
+                _ => null
+            };
+        }
+
+        /// <summary>
+        /// Returns the resource key of the short description shown for the view type in the
+        /// "add view" template picker of the objects tab control.
+        /// </summary>
+        /// <param name="type">The view type.</param>
+        /// <returns>The description resource key.</returns>
+        public static string Description(this ObjectViewType type)
+        {
+            return type switch
+            {
+                ObjectViewType.Table => "kleenestar.core:object.view.table.description",
+                ObjectViewType.List => "kleenestar.core:object.view.list.description",
+                ObjectViewType.Dashboard => "kleenestar.core:object.view.dashboard.description",
+                ObjectViewType.Kanban => "kleenestar.core:object.view.kanban.description",
+                ObjectViewType.ScrumSprint => "kleenestar.core:object.view.scrum.sprint.description",
+                ObjectViewType.ScrumBacklog => "kleenestar.core:object.view.scrum.backlog.description",
+                ObjectViewType.Issues => "kleenestar.core:object.view.issues.description",
+                ObjectViewType.Assets => "kleenestar.core:object.view.assets.description",
+                ObjectViewType.Gantt => "kleenestar.core:object.view.gantt.description",
+                ObjectViewType.Scheduler => "kleenestar.core:object.view.scheduler.description",
                 _ => null
             };
         }
@@ -114,6 +163,10 @@ namespace KleeneStar.Model.Entities
                 ObjectViewType.Kanban => new IconColumns(),
                 ObjectViewType.ScrumSprint => new IconBolt(),
                 ObjectViewType.ScrumBacklog => new IconListCheck(),
+                ObjectViewType.Issues => new IconClipboardList(),
+                ObjectViewType.Assets => new IconCubes(),
+                ObjectViewType.Gantt => new IconChartGantt(),
+                ObjectViewType.Scheduler => new IconCalendarDays(),
                 _ => null
             };
         }

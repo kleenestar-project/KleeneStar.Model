@@ -47,15 +47,20 @@ namespace KleeneStar.Model
         /// </param>
         /// <returns>
         /// An enumeration representing the filtered collection of workspaces. The query
-        /// includes related categories and is not tracked by the context.
+        /// includes categories, tenants and the inherited workspace and is not tracked by the
+        /// context.
         /// </returns>
+        /// <remarks>
+        /// <see cref="Workspace.Classes"/> and <see cref="Workspace.Objects"/> are not loaded.
+        /// Every object and every class of a workspace joined into the same query multiplies the
+        /// rows by the product of all collections, and nothing reads them from a workspace: the
+        /// class and object managers answer those questions.
+        /// </remarks>
         public static IEnumerable<Workspace> GetWorkspaces(IQuery<Workspace> query, KleeneStarDbContext context)
         {
             var data = context?.Workspaces
                 .AsNoTracking()
                 .Include(w => w.Categories)
-                .Include(w => w.Classes)
-                .Include(w => w.Objects)
                 .Include(w => w.Inherited)
                 .Include(w => w.Tenants);
 
@@ -87,7 +92,7 @@ namespace KleeneStar.Model
                 return;
             }
 
-            db.AddEntity(workspace, ["Categories", "Classes", "Objects", "Tenants", "PermissionProfiles"]);
+            db.AddEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
 
             // persist changes
             db.SaveChanges();
@@ -105,7 +110,9 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
-            db.UpdateEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
+            // classes and objects are not synchronized from the workspace: they are written by
+            // their own managers, and a workspace read without them would orphan every row
+            db.UpdateEntity(workspace, ["Categories", "Tenants"]);
 
             // persist changes
             db.SaveChanges();
@@ -125,6 +132,7 @@ namespace KleeneStar.Model
 
             using var db = CreateDbContext();
 
+            RemoveBoardViews(db, workspace.Id);
             db.RemoveEntity(workspace, ["Categories", "Classes", "Objects", "Tenants"]);
 
             // persist changes

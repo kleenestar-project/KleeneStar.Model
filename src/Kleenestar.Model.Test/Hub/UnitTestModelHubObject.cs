@@ -19,7 +19,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllObjects()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllObjects",
                 Assembly = "KleeneStar.Model.Test"
@@ -50,7 +50,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredObjects()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredObjects",
                 Assembly = "KleeneStar.Model.Test"
@@ -82,7 +82,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddObjectWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddObjectWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -106,7 +106,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddObjectWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddObjectWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -132,7 +132,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingObject()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingObject",
                 Assembly = "KleeneStar.Model.Test"
@@ -161,7 +161,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenObjectNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenObjectNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -184,7 +184,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingObject()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingObject",
                 Assembly = "KleeneStar.Model.Test"

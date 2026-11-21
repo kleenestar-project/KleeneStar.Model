@@ -17,7 +17,7 @@ namespace Kleenestar.Model.Test.Hub
 
         private static void SeedFixtures(string connectionString)
         {
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings
             {
                 ConnectionString = connectionString,
                 Assembly = "KleeneStar.Model.Test"

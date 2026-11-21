@@ -18,7 +18,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllPriorities()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllPriorities",
                 Assembly = "KleeneStar.Model.Test"
@@ -46,7 +46,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredPriorities()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredPriorities",
                 Assembly = "KleeneStar.Model.Test"
@@ -75,7 +75,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddPriorityWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddPriorityWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -99,7 +99,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddPriorityWhenIdExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddPriorityWhenIdExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -125,7 +125,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingPriority()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingPriority",
                 Assembly = "KleeneStar.Model.Test"
@@ -154,7 +154,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenPriorityNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenPriorityNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -177,7 +177,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingPriority()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingPriority",
                 Assembly = "KleeneStar.Model.Test"

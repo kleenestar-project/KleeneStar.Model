@@ -58,6 +58,79 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the workflow together with the structure its state machine is made of: the
+        /// participating states (with their category and the canvas/entry/end payload carried by
+        /// the pairing) and the transitions with both endpoints resolved.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="GetWorkflows(IQuery{Workflow})"/> deliberately stays shallow — the list and
+        /// detail views only need the header — so every caller that has to reason about the state
+        /// machine itself (which states exist, which transition leads where) has to come through
+        /// here. <see cref="Workflow.Statuses"/> is a skip navigation over
+        /// <see cref="Workflow.WorkflowStatuses"/> and is not populated by including the pairing,
+        /// so it is projected from the participations afterwards.
+        /// </remarks>
+        /// <param name="workflowId">The id of the workflow to load.</param>
+        /// <param name="context">
+        /// The database context to read through. When omitted a context is created and disposed
+        /// for the duration of the call.
+        /// </param>
+        /// <returns>
+        /// The workflow including states and transitions, or <c>null</c> when no workflow with the
+        /// supplied id exists.
+        /// </returns>
+        public static Workflow GetWorkflowWithStructure(Guid workflowId, KleeneStarDbContext context = null)
+        {
+            var ownsContext = context is null;
+            var db = context ?? CreateDbContext();
+
+            try
+            {
+                var workflow = db.Workflows
+                    .AsNoTracking()
+                    .Include(x => x.Class)
+                    .Include(x => x.WorkflowStatuses)
+                        .ThenInclude(x => x.Status)
+                            .ThenInclude(x => x.Category)
+                    .FirstOrDefault(x => x.Id == workflowId);
+
+                if (workflow is null)
+                {
+                    return null;
+                }
+
+                workflow.WorkflowStatuses ??= [];
+                workflow.Statuses =
+                [
+                    .. workflow.WorkflowStatuses
+                        .Where(x => x.Status is not null)
+                        .Select(x => x.Status)
+                ];
+
+                workflow.Transitions =
+                [
+                    .. db.Transitions
+                        .AsNoTracking()
+                        .Include(x => x.Source)
+                            .ThenInclude(x => x.Category)
+                        .Include(x => x.Target)
+                            .ThenInclude(x => x.Category)
+                        .Where(x => x.WorkflowId == workflowId)
+                        .OrderBy(x => x.Name)
+                ];
+
+                return workflow;
+            }
+            finally
+            {
+                if (ownsContext)
+                {
+                    db.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds the specified workflow to the database if it does not already exist.
         /// </summary>
         /// <remarks>

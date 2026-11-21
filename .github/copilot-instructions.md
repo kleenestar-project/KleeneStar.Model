@@ -25,7 +25,7 @@ It is consumed by `KleeneStar.Core` via `InternalsVisibleTo`.
 KleeneStar.Model/
 └── src/
     └── KleeneStar.Model/
-        ├── Config/               ← Application configuration (e.g. DbConfig)
+        ├── Settings/             ← Options objects bound from the settings directory (e.g. DatabaseSettings)
         ├── Configure/            ← EF Core IEntityTypeConfiguration<T> classes
         ├── Converters/           ← IRestValueConverter implementations
         ├── Entities/             ← Entity classes and associated enums
@@ -248,7 +248,7 @@ internal static partial class ModelHub
     public static IComponentHub ComponentHub { get; set; }
     public static IApplicationContext ApplicationContext { get; set; }
     public static IHttpServerContext HttpServerContext { get; set; }
-    public static DbConfig DatabaseConfig { get; set; }
+    public static DatabaseSettings DatabaseSettings { get; set; }
 
     public static KleeneStarDbContext CreateDbContext() { ... }
 }

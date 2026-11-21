@@ -11,8 +11,15 @@ namespace KleeneStar.Model.Entities
     /// <summary>
     /// Represents a workflow entity.
     /// </summary>
-    public class Workflow : IEntity
+    public class Workflow : IEntity, IBlueprintManaged
     {
+        /// <summary>
+        /// Gets or sets the blueprint element this one is a copy of, or <c>null</c> for one
+        /// defined locally. A copy is kept in step by the blueprint synchronization and is not
+        /// changed locally.
+        /// </summary>
+        public Guid? BlueprintSourceId { get; set; }
+
         /// <summary>
         /// Gets or sets the database id.
         /// </summary>
@@ -69,7 +76,18 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the list of states defined in the workflow.
         /// </summary>
+        /// <remarks>
+        /// This is a skip navigation over <see cref="WorkflowStatuses"/>. Use it to read the
+        /// states themselves; the per-workflow canvas position and the entry/end marks live on
+        /// the pairing and are reached through <see cref="WorkflowStatuses"/>.
+        /// </remarks>
         public List<Status> Statuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the participations of the states in this workflow, carrying the canvas
+        /// position and the entry/end mark of each.
+        /// </summary>
+        public List<WorkflowStatus> WorkflowStatuses { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of workflow transitions associated with this instance.

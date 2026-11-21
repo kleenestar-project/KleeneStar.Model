@@ -33,6 +33,33 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Stamps the supplied kind onto every object of the supplied class whose kind
+        /// differs. Called when a class changes its object kind, so the class stays the
+        /// single source of the kind and the kind overviews immediately reflect the
+        /// change.
+        /// </summary>
+        /// <param name="classId">The id of the class whose objects are aligned.</param>
+        /// <param name="kind">The normalized kind key to stamp. Must not be null or empty.</param>
+        /// <returns>The number of objects whose kind was changed.</returns>
+        public static int AlignObjectKinds(System.Guid classId, string kind)
+        {
+            using var db = CreateDbContext();
+
+            var stale = db.Objects
+                .Where(x => x.ClassId == classId && x.Kind != kind)
+                .ToList();
+
+            foreach (var objectEntity in stale)
+            {
+                objectEntity.Kind = kind;
+            }
+
+            db.SaveChanges();
+
+            return stale.Count;
+        }
+
+        /// <summary>
         /// Returns a queryable collection of objects from the database, optionally filtered 
         /// by one or more predicate expressions.
         /// </summary>
@@ -54,6 +81,61 @@ namespace KleeneStar.Model
                 .Include(x => x.Parent);
 
             return query.Apply(data); // none materialize query
+        }
+
+        /// <summary>
+        /// Returns the number of objects that satisfy the supplied query without
+        /// materializing a single row.
+        /// </summary>
+        /// <remarks>
+        /// The count runs against the bare object set - none of the includes
+        /// <see cref="GetObjects(IQuery{Object}, KleeneStarDbContext)"/> adds are needed for
+        /// a count, and asking for them would drag the workspace and parent rows across for
+        /// nothing. Callers must leave paging off the query; a query carrying
+        /// <c>WithPaging</c> counts the page rather than the whole result.
+        /// </remarks>
+        /// <param name="query">The query criteria used to filter the counted objects.</param>
+        /// <returns>The number of matching objects.</returns>
+        public static int CountObjects(IQuery<Object> query)
+        {
+            using var db = CreateDbContext();
+
+            return query.Apply(db.Objects.AsNoTracking()).Count();
+        }
+
+        /// <summary>
+        /// Returns the ids of the classes the objects that satisfy the supplied query belong
+        /// to, without loading the objects.
+        /// </summary>
+        /// <param name="query">The query criteria. Paging must be left off.</param>
+        /// <returns>The distinct class ids.</returns>
+        public static IReadOnlyList<System.Guid> GetObjectClassIds(IQuery<Object> query)
+        {
+            using var db = CreateDbContext();
+
+            return [.. query.Apply(db.Objects.AsNoTracking()).Select(x => x.ClassId).Distinct()];
+        }
+
+        /// <summary>
+        /// Returns the parent link of every object of the installation - id, parent, workspace
+        /// and last change - and nothing else.
+        /// </summary>
+        /// <remarks>
+        /// The hierarchy verifier walks the whole parent relation once per start. Reading it
+        /// through <see cref="GetObjects(IQuery{Object})"/> would load every object with its
+        /// workspace and parent rows; the projection reads four columns. Unnarrowed by design:
+        /// the tree is the installation's, not a caller's.
+        /// </remarks>
+        /// <returns>The links, in no particular order.</returns>
+        public static IReadOnlyList<(System.Guid Id, System.Guid? ParentId, System.Guid WorkspaceId, System.DateTime Updated)> GetObjectHierarchy()
+        {
+            using var db = CreateDbContext();
+
+            return [.. db.Objects
+                .AsNoTracking()
+                .Select(x => new { x.Id, x.ParentId, x.WorkspaceId, x.Updated })
+                .AsEnumerable()
+                .Select(x => (x.Id, x.ParentId, x.WorkspaceId, x.Updated))];
         }
 
         /// <summary>

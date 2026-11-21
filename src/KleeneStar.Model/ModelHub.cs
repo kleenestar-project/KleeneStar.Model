@@ -1,4 +1,4 @@
-﻿using KleeneStar.Model.Config;
+﻿using KleeneStar.Model.Settings;
 using System;
 using WebExpress.WebCore;
 using WebExpress.WebCore.WebApplication;
@@ -27,9 +27,9 @@ namespace KleeneStar.Model
         public static IHttpServerContext HttpServerContext { get; set; }
 
         /// <summary>
-        /// Gets or sets the configuration settings for the database connection.
+        /// Gets or sets the settings of the database connection, bound at start-up from the plugin's settings.
         /// </summary>
-        public static DbConfig DatabaseConfig { get; set; }
+        public static DatabaseSettings DatabaseSettings { get; set; }
 
         /// <summary>
         /// Returns a new instance of the application's database context configured with 
@@ -42,12 +42,12 @@ namespace KleeneStar.Model
         /// <returns>A new instance of db context.</returns>
         public static KleeneStarDbContext CreateDbContext()
         {
-            if (DatabaseConfig == null)
+            if (DatabaseSettings == null)
             {
-                throw new InvalidOperationException("DatabaseConfig has not been initialized.");
+                throw new InvalidOperationException("DatabaseSettings has not been initialized.");
             }
 
-            return KleeneStarDbContextFactory.Create(DatabaseConfig);
+            return KleeneStarDbContextFactory.Create(DatabaseSettings);
         }
     }
 }

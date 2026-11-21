@@ -43,16 +43,46 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
-        /// Inserts or updates the visit of the supplied identity for the supplied object, advancing
-        /// its last-visited timestamp to now. The unique composite index on (Owner, Object)
-        /// guarantees a single row per pair; an existing row is mutated in place. Returns
-        /// <see langword="null"/> when either the owner or the object does not exist (the foreign
-        /// keys would otherwise reject the write).
+        /// Returns the single visit row of the supplied identity for the supplied object, or
+        /// <see langword="null"/> when the identity has neither visited nor starred it.
         /// </summary>
         /// <param name="ownerId">The id of the owning identity.</param>
         /// <param name="objectId">The id of the object.</param>
+        /// <returns>The visit, or <see langword="null"/>.</returns>
+        public static ObjectVisit GetObjectVisit(Guid ownerId, Guid objectId)
+        {
+            using var db = CreateDbContext();
+
+            return db.ObjectVisits
+                .Include(x => x.Object)
+                .AsNoTracking()
+                .FirstOrDefault(x => x.OwnerId == ownerId && x.ObjectId == objectId);
+        }
+
+        /// <summary>
+        /// Inserts or updates the visit row of the supplied identity for the supplied object.
+        /// The unique composite index on (Owner, Object) guarantees a single row per pair; an
+        /// existing row is mutated in place. Returns <see langword="null"/> when either the
+        /// owner or the object does not exist (the foreign keys would otherwise reject the
+        /// write).
+        /// </summary>
+        /// <param name="ownerId">The id of the owning identity.</param>
+        /// <param name="objectId">The id of the object.</param>
+        /// <param name="favorite">
+        /// When set, the new starred state; when <see langword="null"/>, the starred state is
+        /// left untouched (used by "record visit").
+        /// </param>
+        /// <param name="recordVisit">
+        /// When <see langword="true"/>, the last-visited timestamp is advanced to now (used by
+        /// "record visit"); when <see langword="false"/>, it is left untouched.
+        /// </param>
+        /// <param name="liked">
+        /// When set, the new liked state; when <see langword="null"/>, the liked state is left
+        /// untouched. Every caller that is not the like itself passes null, which is why it is
+        /// optional: recording a visit must not silently take somebody's like away.
+        /// </param>
         /// <returns>The persisted visit, or <see langword="null"/>.</returns>
-        public static ObjectVisit UpsertObjectVisit(Guid ownerId, Guid objectId)
+        public static ObjectVisit UpsertObjectVisit(Guid ownerId, Guid objectId, bool? favorite, bool recordVisit, bool? liked = null)
         {
             using var db = CreateDbContext();
 
@@ -73,7 +103,9 @@ namespace KleeneStar.Model
                 {
                     OwnerId = ownerId,
                     ObjectId = objectId,
-                    LastVisited = now,
+                    Favorite = favorite ?? false,
+                    Liked = liked ?? false,
+                    LastVisited = recordVisit ? now : default,
                     Created = now,
                     Updated = now
                 };
@@ -82,7 +114,21 @@ namespace KleeneStar.Model
             }
             else
             {
-                visit.LastVisited = now;
+                if (favorite.HasValue)
+                {
+                    visit.Favorite = favorite.Value;
+                }
+
+                if (liked.HasValue)
+                {
+                    visit.Liked = liked.Value;
+                }
+
+                if (recordVisit)
+                {
+                    visit.LastVisited = now;
+                }
+
                 visit.Updated = now;
             }
 

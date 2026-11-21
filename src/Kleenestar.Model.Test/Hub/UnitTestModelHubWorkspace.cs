@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model;
 using KleeneStar.Model.Entities;
+using Microsoft.EntityFrameworkCore;
 using WebExpress.WebIndex.Queries;
 using WebExpress.WebUI.WebIcon;
 
@@ -19,7 +20,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AllWorkspaces()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AllWorkspaces",
                 Assembly = "KleeneStar.Model.Test"
@@ -47,7 +48,7 @@ namespace Kleenestar.Model.Test.Hub
         public void FilteredWorkspaces()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "FilteredWorkspaces",
                 Assembly = "KleeneStar.Model.Test"
@@ -83,7 +84,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddWorkspaceWhenNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddWorkspaceWhenNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -117,7 +118,7 @@ namespace Kleenestar.Model.Test.Hub
         public void AddWorkspaceWhenKeyExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "AddWorkspaceWhenKeyExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -142,7 +143,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveExistingWorkspace()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveExistingWorkspace",
                 Assembly = "KleeneStar.Model.Test"
@@ -171,7 +172,7 @@ namespace Kleenestar.Model.Test.Hub
         public void RemoveWhenWorkspaceNotExists()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "RemoveWhenWorkspaceNotExists",
                 Assembly = "KleeneStar.Model.Test"
@@ -194,7 +195,7 @@ namespace Kleenestar.Model.Test.Hub
         public void UpdateExistingWorkspace()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "UpdateExistingWorkspace",
                 Assembly = "KleeneStar.Model.Test"
@@ -215,6 +216,46 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
+        /// A workspace is read without its classes and objects, and updating such a workspace
+        /// leaves the classes and objects of the store in place.
+        /// </summary>
+        [Fact]
+        public void UpdateWorkspaceReadWithoutObjectsKeepsClassesAndObjects()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "UpdateWorkspaceReadWithoutObjectsKeepsClassesAndObjects",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var workspaceId = Guid.NewGuid();
+            var classId = Guid.NewGuid();
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Workspaces.Add(new Workspace { Id = workspaceId, Name = "Original", Key = "K" });
+                db.Classes.Add(new Class { Id = classId, Name = "Ticket", WorkspaceId = workspaceId });
+                db.Objects.Add(new KleeneStar.Model.Entities.Object(Guid.NewGuid()) { Key = "K-1", Summary = "First", WorkspaceId = workspaceId, ClassId = classId });
+                db.SaveChanges();
+            }
+
+            // act
+            var workspace = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Id == workspaceId)).Single();
+            workspace.Name = "Updated";
+            ModelHub.Update(workspace);
+
+            // validation
+            Assert.Empty(workspace.Classes);
+            Assert.Empty(workspace.Objects);
+
+            using var check = ModelHub.CreateDbContext();
+            Assert.Equal("Updated", check.Workspaces.Single().Name);
+            Assert.Single(check.Classes);
+            Assert.Single(check.Objects);
+        }
+
+        /// <summary>
         /// Verifies that updating a null workspace throws an argument null exception.
         /// </summary>
         [Fact]
@@ -231,7 +272,7 @@ namespace Kleenestar.Model.Test.Hub
         public void PersistSealedProperty()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "PersistSealedProperty",
                 Assembly = "KleeneStar.Model.Test"
@@ -269,7 +310,7 @@ namespace Kleenestar.Model.Test.Hub
         {
             // arrange
             var dbName = $"PersistAccessModifier_{accessModifier}";
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = dbName,
                 Assembly = "KleeneStar.Model.Test"
@@ -302,7 +343,7 @@ namespace Kleenestar.Model.Test.Hub
         public void PersistInheritedWorkspace()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "PersistInheritedWorkspace",
                 Assembly = "KleeneStar.Model.Test"
@@ -346,7 +387,7 @@ namespace Kleenestar.Model.Test.Hub
         public void PersistWorkspaceWithTenants()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
             {
                 ConnectionString = "PersistWorkspaceWithTenants",
                 Assembly = "KleeneStar.Model.Test"
@@ -378,6 +419,91 @@ namespace Kleenestar.Model.Test.Hub
         }
 
         /// <summary>
+        /// Verifies that a workspace added with stored tenants read elsewhere binds them, rather
+        /// than inserting the tenants a second time.
+        /// </summary>
+        [Fact]
+        public void AddWorkspaceWithStoredTenants()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "AddWorkspaceWithStoredTenants",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var tenantId = Guid.NewGuid();
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Tenants.Add(new Tenant { Id = tenantId, Name = "Tenant A" });
+                db.SaveChanges();
+            }
+
+            Tenant stored;
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                stored = db.Tenants.AsNoTracking().Single();
+            }
+
+            // act
+            ModelHub.Add(new Workspace { Id = Guid.NewGuid(), Name = "WS", Key = "WS", Tenants = [stored] });
+
+            // validation
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).Single();
+            Assert.Equal([tenantId], result.Tenants.Select(x => x.Id));
+
+            using var check = ModelHub.CreateDbContext();
+            Assert.Single(check.Tenants);
+        }
+
+        /// <summary>
+        /// Verifies that updating a workspace replaces its tenant assignments with the ones it
+        /// carries.
+        /// </summary>
+        [Fact]
+        public void UpdateWorkspaceReplacesTenants()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "UpdateWorkspaceReplacesTenants",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var workspaceId = Guid.NewGuid();
+            var first = new Tenant { Id = Guid.NewGuid(), Name = "Tenant A" };
+            var second = new Tenant { Id = Guid.NewGuid(), Name = "Tenant B" };
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Tenants.AddRange(first, second);
+                db.Workspaces.Add(new Workspace { Id = workspaceId, Name = "WS", Key = "WS", Tenants = [first] });
+                db.SaveChanges();
+            }
+
+            Tenant stored;
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                stored = db.Tenants.AsNoTracking().Single(x => x.Id == second.Id);
+            }
+
+            // act
+            var workspace = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Id == workspaceId)).Single();
+            workspace.Tenants = [stored];
+            ModelHub.Update(workspace);
+
+            // validation
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Id == workspaceId)).Single();
+            Assert.Equal([second.Id], result.Tenants.Select(x => x.Id));
+
+            using var check = ModelHub.CreateDbContext();
+            Assert.Equal(2, check.Tenants.Count());
+        }
+
+        /// <summary>
         /// Verifies that removing a null workspace throws an argument null exception.
         /// </summary>
         [Fact]
@@ -394,7 +520,7 @@ namespace Kleenestar.Model.Test.Hub
         //public void PersistWorkspaceWithPermissionProfiles()
         //{
         //    // arrange
-        //    ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig()
+        //    ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
         //    {
         //        ConnectionString = "PersistWorkspaceWithPermissionProfiles",
         //        Assembly = "KleeneStar.Model.Test"

@@ -44,6 +44,20 @@ namespace KleeneStar.Model.Entities
         public CommentState State { get; set; }
 
         /// <summary>
+        /// Gets or sets the audience of the comment. Defaults to
+        /// <see cref="CommentVisibility.Public"/>, so a caller that does not decide never
+        /// narrows the audience by accident.
+        /// </summary>
+        /// <remarks>
+        /// The operator-side thread shows every comment regardless of this flag; the
+        /// customer portal filters its timeline by it (see the portal concept document,
+        /// §Comments): an <see cref="CommentVisibility.InternalTeam"/> comment reaches the
+        /// assigned service group and the requester only.
+        /// </remarks>
+        [RestConverter<CommentVisibilityConverter>]
+        public CommentVisibility Visibility { get; set; } = CommentVisibility.Public;
+
+        /// <summary>
         /// Gets or sets the date and time when the comment was created.
         /// </summary>
         public DateTime Created { get; set; }

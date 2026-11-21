@@ -46,19 +46,19 @@ namespace Kleenestar.Model.Test.Entity
         /// Sets the dashboard reference on a DashboardColumn instance and verifies that the value is assigned correctly.
         /// </summary>
         [Fact]
-        public void SetDashboard()
+        public void SetInsight()
         {
             // arrange
             var column = new DashboardColumn();
-            var dashboard = new Dashboard { Name = "My Dashboard" };
+            var insight = new Insight { Name = "My Insight" };
 
             // act
-            column.DashboardId = dashboard.Id;
-            column.Dashboard = dashboard;
+            column.InsightId = insight.Id;
+            column.Insight = insight;
 
             // validation
-            Assert.Equal(dashboard.Id, column.DashboardId);
-            Assert.Equal(dashboard, column.Dashboard);
+            Assert.Equal(insight.Id, column.InsightId);
+            Assert.Equal(insight, column.Insight);
         }
 
         /// <summary>

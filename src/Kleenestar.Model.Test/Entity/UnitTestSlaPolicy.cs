@@ -86,12 +86,15 @@ namespace Kleenestar.Model.Test.Entity
         [Fact]
         public void NotificationChannelsCombineAsFlags()
         {
-            var combined = SlaNotificationChannels.Email | SlaNotificationChannels.Slack | SlaNotificationChannels.Sms;
+            var combined = SlaNotificationChannels.Email | SlaNotificationChannels.InApp;
 
             Assert.True(combined.HasFlag(SlaNotificationChannels.Email));
-            Assert.True(combined.HasFlag(SlaNotificationChannels.Slack));
-            Assert.True(combined.HasFlag(SlaNotificationChannels.Sms));
-            Assert.False(combined.HasFlag(SlaNotificationChannels.InApp));
+            Assert.True(combined.HasFlag(SlaNotificationChannels.InApp));
+
+            // a single channel must not carry the other one, which is what tells a flags enum
+            // apart from one whose values happen to be distinct numbers
+            Assert.False(SlaNotificationChannels.Email.HasFlag(SlaNotificationChannels.InApp));
+            Assert.False(SlaNotificationChannels.InApp.HasFlag(SlaNotificationChannels.Email));
         }
 
         /// <summary>

@@ -42,6 +42,21 @@ namespace KleeneStar.Model
         }
 
         /// <summary>
+        /// Returns the number of groups that satisfy the supplied query without
+        /// materializing a single row. Counts against the bare group set, so neither the
+        /// policies nor the memberships are dragged along. Callers must leave paging off
+        /// the query.
+        /// </summary>
+        /// <param name="query">The query criteria used to filter the counted groups.</param>
+        /// <returns>The number of matching groups.</returns>
+        public static int CountGroups(IQuery<Group> query)
+        {
+            using var db = CreateDbContext();
+
+            return query.Apply(db.Groups.AsNoTracking()).Count();
+        }
+
+        /// <summary>
         /// Adds the specified group to the database if it does not already exist.
         /// </summary>
         /// <param name="group">The group to add.</param>

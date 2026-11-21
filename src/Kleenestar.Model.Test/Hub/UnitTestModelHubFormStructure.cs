@@ -17,7 +17,7 @@ namespace Kleenestar.Model.Test.Hub
 
         private static Guid Seed(string connectionString, params Field[] fields)
         {
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings
             {
                 ConnectionString = connectionString,
                 Assembly = "KleeneStar.Model.Test"
@@ -212,7 +212,7 @@ namespace Kleenestar.Model.Test.Hub
         public void GetFormWithStructure_ReturnsNullWhenMissing()
         {
             // arrange
-            ModelHub.DatabaseConfig = new KleeneStar.Model.Config.DbConfig
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings
             {
                 ConnectionString = nameof(GetFormWithStructure_ReturnsNullWhenMissing),
                 Assembly = "KleeneStar.Model.Test"

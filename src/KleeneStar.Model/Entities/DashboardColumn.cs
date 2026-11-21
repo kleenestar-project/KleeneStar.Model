@@ -7,7 +7,8 @@ using WebExpress.WebIndex.WebAttribute;
 namespace KleeneStar.Model.Entities
 {
     /// <summary>
-    /// Represents a column within a dashboard, used to arrange widgets in a structured layout.
+    /// Represents a column within a dashboard - the content of an insight of the dashboard type -
+    /// used to arrange widgets in a structured layout.
     /// </summary>
     public class DashboardColumn : IEntity
     {
@@ -24,6 +25,11 @@ namespace KleeneStar.Model.Entities
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the owning tab identifier, or an empty identifier for the legacy board.
+        /// </summary>
+        public Guid ViewId { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the dashboard column.
         /// </summary>
         public string Name { get; set; }
@@ -34,15 +40,36 @@ namespace KleeneStar.Model.Entities
         public string Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the dashboard that contains this column.
+        /// Gets or sets the optional accent color of the dashboard column (a CSS color such as
+        /// "#3273A3" or a named color). A null value leaves the column without an accent.
         /// </summary>
-        public Guid DashboardId { get; set; }
+        public string Color { get; set; }
 
         /// <summary>
-        /// Gets or sets the dashboard that contains this column.
+        /// Gets or sets the zero-based position of the column within its dashboard. The value is
+        /// authored by the client when columns are reordered and defines the render order.
+        /// </summary>
+        public int Position { get; set; }
+
+        /// <summary>
+        /// Gets or sets the transient client key of a column that was added on the board but not yet
+        /// reloaded. The client keeps identifying a freshly added column by this non-GUID key across
+        /// saves (the update response carries no ids), so it is persisted to correlate the same column
+        /// between a board update and a later column update within a session. It is null for columns
+        /// the client addresses by their business id (everything after a reload).
+        /// </summary>
+        public string Key { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the insight whose dashboard contains this column.
+        /// </summary>
+        public Guid InsightId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the insight whose dashboard contains this column.
         /// </summary>
         [JsonIgnore]
-        public Dashboard Dashboard { get; set; }
+        public Insight Insight { get; set; }
 
         /// <summary>
         /// Returns the collection of widgets arranged in this column.

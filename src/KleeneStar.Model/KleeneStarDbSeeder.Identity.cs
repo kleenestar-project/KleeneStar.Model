@@ -1,4 +1,4 @@
-using KleeneStar.Model.Entities;
+﻿using KleeneStar.Model.Entities;
 using System;
 using System.Linq;
 
@@ -10,109 +10,152 @@ namespace KleeneStar.Model
     public static partial class KleeneStarDbSeeder
     {
         /// <summary>
-        /// Adds a predefined set of group entities to the specified database context.
+        /// The id of the administrator account a fresh database starts with.
         /// </summary>
-        /// <param name="db">The database context to which the group entities will be added. Cannot be null.</param>
-        private static void SeedGroups(KleeneStarDbContext db)
-        {
-            void addGroup(string id, string name, string description) => db.Groups.Add(new Group
-            {
-                Id = Guid.Parse(id),
-                Name = name,
-                Description = description
-            });
+        public static readonly Guid AdministratorId = Guid.Parse("77087646-B13A-44B1-9BAC-6E66443CEDFD");
 
-            addGroup("7F57823B-8B94-4284-8DA1-39C49E152C8C", "Admin", "Administrators with full system access.");
-            addGroup("7420A9F7-F23A-4EC2-91E4-EDDB2E3172BD", "Engineering", "Software engineering team members.");
-            addGroup("4D3739DF-EBB0-4113-A40D-EEEBF9B26182", "Marketing", "Marketing department members.");
-            addGroup("7EEB5E9D-87E6-4017-A94A-884F03DF129A", "Support", "Customer support team members.");
+        /// <summary>
+        /// The user name of the administrator account a fresh database starts with.
+        /// </summary>
+        public const string AdministratorUserName = "admin";
+
+        /// <summary>
+        /// The display name of the administrator account a fresh database starts with.
+        /// </summary>
+        public const string AdministratorName = "Admin User";
+
+        /// <summary>
+        /// The password the administrator account of a fresh database signs in with.
+        /// </summary>
+        /// <remarks>
+        /// Published with the source. An installation changes it on the first sign in
+        /// (<c>Profile/Security</c>).
+        /// </remarks>
+        public const string InitialPassword = "kleenestar";
+
+        /// <summary>
+        /// Adds the administrators group (<see cref="Group.AdministratorsId"/>). Account
+        /// administration and the administration of unadministered resources are granted to its
+        /// members only.
+        /// </summary>
+        /// <param name="db">The database context to which the group will be added. Cannot be null.</param>
+        private static void SeedAdministratorsGroup(KleeneStarDbContext db)
+        {
+            db.Groups.Add(new Group(Group.AdministratorsId)
+            {
+                Name = "Admin",
+                Description = "Administrators with full system access."
+            });
         }
 
         /// <summary>
-        /// Adds a predefined set of identity entities and group memberships to the specified database context.
+        /// Adds the built-in groups with implicit membership (<see cref="Group.AuthenticatedId"/>,
+        /// <see cref="Group.AnonymousId"/>) where the store does not carry them.
         /// </summary>
-        /// <param name="db">The database context to which the identity entities will be added. Cannot be null.</param>
-        private static void SeedIdentities(KleeneStarDbContext db)
+        /// <remarks>
+        /// Runs on every start. A permission grant references a stored group, so both groups have
+        /// to exist in every store a workspace template grants to.
+        /// </remarks>
+        /// <param name="db">The database context. Cannot be null.</param>
+        /// <returns><see langword="true"/> when a group was added and the context needs saving.</returns>
+        private static bool EnsureBuiltInGroups(KleeneStarDbContext db)
         {
-            // WARNING: Placeholder non-production hash values for development/test seed identities only.
-            // These values must never be used as real credential hashes in production environments.
-            const string adminHash = "$seed$v1$fb4e111dbf8b4c1cb95e0f6579f7f72f";
-            const string aliceHash = "$seed$v1$7d47a268f7df4d31bc8a32f8f60f8124";
-            const string marketerHash = "$seed$v1$903d043655ff45119a3d1ec0f7bc6f16";
-            const string supportHash = "$seed$v1$9b5ddb23be9945039f8d2bf8ff5b81c5";
+            var added = false;
 
-            void addIdentity(string id, string name, string email, string passwordHash, params string[] groups)
+            // both groups are looked up in one statement, since this runs on every start
+            var existing = db.Groups
+                .Where(x => x.Id == Group.AuthenticatedId || x.Id == Group.AnonymousId)
+                .Select(x => x.Id)
+                .ToHashSet();
+
+            void ensure(Guid id, string name, string description)
             {
-                db.Identities.Add(new Identity
+                if (existing.Contains(id))
                 {
-                    Id = Guid.Parse(id),
-                    Name = name,
-                    Email = email,
-                    PasswordHash = passwordHash,
-                    GroupMemberships =
-                    [
-                        .. db.Groups
-                            .Where(x => groups.Contains(x.Name))
-                            .Select(x => new IdentityGroupMembership { Group = x })
-                    ]
-                });
+                    return;
+                }
+
+                db.Groups.Add(new Group(id) { Name = name, Description = description });
+                added = true;
             }
 
-            void addTenantedIdentity(string id, string name, string email, string passwordHash, string tenantName, params string[] groups)
+            ensure(Group.AuthenticatedId, "Signed-in users", "Every signed-in account. Membership is implicit.");
+            ensure(Group.AnonymousId, "Anonymous", "Every caller, including visitors who are not signed in. Membership is implicit.");
+
+            return added;
+        }
+
+        /// <summary>
+        /// Adds the administrator account (<see cref="AdministratorId"/>): internal, without a
+        /// tenant, member of the administrators group, signing in as
+        /// <see cref="AdministratorUserName"/> with <see cref="InitialPassword"/>.
+        /// </summary>
+        /// <remarks>
+        /// Account administration is restricted to the members of the administrators group, so a
+        /// database without this account has nobody who can create a second one.
+        /// </remarks>
+        /// <param name="db">The database context to which the account will be added. Cannot be null.</param>
+        private static void SeedAdministrator(KleeneStarDbContext db)
+        {
+            var administrator = new Identity(AdministratorId)
             {
-                db.Identities.Add(new Identity
-                {
-                    Id = Guid.Parse(id),
-                    Name = name,
-                    Email = email,
-                    PasswordHash = passwordHash,
-                    Tenant = db.Tenants.First(x => x.Name == tenantName),
-                    GroupMemberships =
-                    [
-                        .. db.Groups
-                            .Where(x => groups.Contains(x.Name))
-                            .Select(x => new IdentityGroupMembership { Group = x })
-                    ]
-                });
+                Name = AdministratorName,
+                UserName = AdministratorUserName,
+                Email = "admin@kleenestar.org",
+                EmailVerified = true,
+                Bio = "Senior Product Designerin · arbeitet an Workflow-Tools im Bereich SaaS. Berlin → Lissabon → Wien.",
+                PhoneCountry = "+49",
+                Phone = "151 23456789",
+                Website = "kleenestar.org",
+                Location = "Berlin, Deutschland",
+                Position = "Senior Product Designerin",
+                Language = "de",
+                TimeZone = null,
+                DateFormat = "dd.MM.yyyy",
+                WeekStart = WeekStart.Monday,
+                Role = "Workspace-Admin · Klasse Bug",
+                RoleSince = new DateTime(2024, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+                Department = "Engineering · QA",
+                CostCenter = "CC-4711",
+                PersonnelNumber = "A-00482",
+                PasswordChanged = DateTime.UtcNow
+            };
+
+            administrator.PasswordHash = IdentityPassword.Hash(administrator, InitialPassword);
+
+            administrator.GroupMemberships =
+            [
+                .. db.Groups
+                    .Where(x => x.Id == Group.AdministratorsId)
+                    .Select(x => new IdentityGroupMembership { Group = x })
+            ];
+
+            db.Identities.Add(administrator);
+        }
+
+        /// <summary>
+        /// Gives <see cref="InitialPassword"/> to every account whose password hash is a
+        /// <c>$seed$</c> placeholder (<see cref="IdentityPassword.SeedPlaceholderPrefix"/>).
+        /// </summary>
+        /// <remarks>
+        /// No password verifies against a placeholder, so such an account cannot sign in. An
+        /// account with any other hash is left unchanged; the step runs on every start.
+        /// </remarks>
+        /// <param name="db">The database context holding the identities. Cannot be null.</param>
+        /// <returns><see langword="true"/> when an account was changed.</returns>
+        private static bool UpgradeSeedPasswords(KleeneStarDbContext db)
+        {
+            var placeholders = db.Identities
+                .Where(x => x.PasswordHash != null && x.PasswordHash.StartsWith(IdentityPassword.SeedPlaceholderPrefix))
+                .ToList();
+
+            foreach (var identity in placeholders)
+            {
+                identity.PasswordHash = IdentityPassword.Hash(identity, InitialPassword);
+                identity.PasswordChanged = DateTime.UtcNow;
             }
 
-            // operator-side admin has no tenant (the portal excludes it from
-            // IssueScope.Organization entirely).
-            addIdentity(
-                "77087646-B13A-44B1-9BAC-6E66443CEDFD",
-                "Admin User",
-                "admin@kleenestar.org",
-                adminHash,
-                "Admin"
-            );
-
-            // Alice is an Acme tenant member (typical end-user identity).
-            addTenantedIdentity(
-                "BBF45E5D-AA35-4382-9B84-6055193CE544",
-                "Alice Engineer",
-                "alice.engineer@kleenestar.org",
-                aliceHash,
-                "Acme Corp",
-                "Engineering"
-            );
-
-            // Marketer is a Globex tenant member.
-            addIdentity(
-                "1AA3B0E0-5C40-46D8-8ACF-ED12740FD239",
-                "Marketing User",
-                "marketer@kleenestar.org",
-                marketerHash,
-                "Marketing"
-            );
-
-            // Support stays tenant-less — operator-side account.
-            addIdentity(
-                "D1C5AED2-78D3-45F7-BB19-E87B8F134301",
-                "Support User",
-                "support@kleenestar.org",
-                supportHash,
-                "Support"
-            );
+            return placeholders.Count > 0;
         }
     }
 }

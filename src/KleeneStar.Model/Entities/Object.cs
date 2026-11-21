@@ -62,6 +62,15 @@ namespace KleeneStar.Model.Entities
         public DateTime Updated { get; set; }
 
         /// <summary>
+        /// Gets or sets the kind key that assigns the object to one of the object kinds
+        /// (subtypes), e.g. <see cref="ObjectKind.Document"/>, <see cref="ObjectKind.Blog"/>,
+        /// or <see cref="ObjectKind.Issue"/>. The set of kinds is open — add-ons may
+        /// introduce further keys — and the kind decides which overview view presents the
+        /// object. Defaults to <see cref="ObjectKind.Default"/>.
+        /// </summary>
+        public string Kind { get; set; } = ObjectKind.Default;
+
+        /// <summary>
         /// Gets or sets the unique identifier of the workspace associated with this object.
         /// </summary>
         public Guid WorkspaceId { get; set; }
@@ -80,6 +89,37 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the class associated with the current context.
         /// </summary>
         public Class Class { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the security level the object is classified
+        /// with, or <c>null</c> when the object is unclassified.
+        /// </summary>
+        /// <remarks>
+        /// The level is one of the levels defined on the object's class. An unclassified object
+        /// is visible to everyone; a classified one is visible only to the identities cleared
+        /// for its level through one of the level's groups. The rule is enforced centrally by
+        /// the object manager, so every list, overview and detail view obeys it.
+        /// </remarks>
+        public Guid? SecurityLevelId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the security level the object is classified with.
+        /// </summary>
+        public SecurityLevel SecurityLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the customer portal keeps the object to its
+        /// participants: the requester and the identities it was shared with.
+        /// </summary>
+        /// <remarks>
+        /// A portal issue is otherwise visible to the whole organization of the requester - every
+        /// member of a tenant the workspace serves - which is wrong for a request about a person
+        /// (a dismissal, a salary question, a complaint about a colleague). The requester
+        /// restricts it when submitting or later, the service team on the operator side. It is a
+        /// portal flag beside <see cref="Class.PortalVisible"/> and does not narrow the operator
+        /// side, where the security level is the classification.
+        /// </remarks>
+        public bool PortalRestricted { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the parent object, if any. The parent
@@ -114,6 +154,30 @@ namespace KleeneStar.Model.Entities
         /// Gets or sets the identity the object is currently assigned to.
         /// </summary>
         public Identity Assignee { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the sprint the object is committed to,
+        /// or <c>null</c> when the object sits in the product backlog of its workspace.
+        /// </summary>
+        public Guid? SprintId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sprint the object is committed to.
+        /// </summary>
+        public Sprint Sprint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the 1-based ordering rank of the object within its sprint, or —
+        /// when <see cref="SprintId"/> is <c>null</c> — within the product backlog of its
+        /// workspace. Zero means the object has not been ranked yet.
+        /// </summary>
+        public int SprintRank { get; set; }
+
+        /// <summary>
+        /// Gets or sets the story-point estimate of the object, or <c>null</c> when the
+        /// object has not been estimated.
+        /// </summary>
+        public int? StoryPoints { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the identity that last updated the

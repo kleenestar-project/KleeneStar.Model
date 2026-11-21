@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text.Json.Serialization;
 using WebExpress.WebApp.WebAttribute;
 using WebExpress.WebApp.WebRestApi.WebExpress.WebApp.WebRestApi;
@@ -30,12 +32,21 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the key of the workspace.
         /// </summary>
+        [ValidateRequired]
         [ValidateMinLength(2)]
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the workspace.
         /// </summary>
+        /// <remarks>
+        /// The name is what every list, breadcrumb and dropdown addresses the workspace by, so
+        /// an unnamed one is not a workspace with a field left blank - it is a row nobody can
+        /// find again. The attribute is what makes the create and update endpoints refuse it:
+        /// the form marks the field required, but a marked field is only a promise until
+        /// something checks it.
+        /// </remarks>
+        [ValidateRequired]
         public string Name { get; set; }
 
         /// <summary>
@@ -64,6 +75,10 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the unique identifier of the workspace this workspace inherits from.
         /// </summary>
+        /// <remarks>
+        /// The selection submits the empty guid for <i>None</i>; the converter stores null for it.
+        /// </remarks>
+        [RestConverter<OptionalReferenceConverter>]
         public Guid? InheritedId { get; set; }
 
         /// <summary>
@@ -71,6 +86,20 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [JsonIgnore]
         public Workspace Inherited { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the document shown as the home page of the
+        /// workspace, or <c>null</c> when nobody has chosen one.
+        /// </summary>
+        /// <remarks>
+        /// It is a choice, not a rule: unset, the document overview falls back to the first root
+        /// of the page tree, which is an accident of alphabetical order and was the only
+        /// behaviour there used to be. A workspace whose chosen document has since been deleted
+        /// or moved to another workspace falls back the same way rather than showing nothing -
+        /// the id is not a foreign key with a cascade, because a home page is a piece of
+        /// presentation and deleting a document must not be blocked by it.
+        /// </remarks>
+        public Guid? HomeId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the workspace is sealed
@@ -81,7 +110,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the access modifier controlling the visibility and accessibility of this workspace.
         /// </summary>
-        [RestConverter<AccessModifierConverter>]
+        [RestConverter<WorkspaceAccessModifierConverter>]
         public WorkspaceAccessModifier AccessModifier { get; set; }
 
         /// <summary>
@@ -89,6 +118,19 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [JsonIgnore]
         public List<Tenant> Tenants { get; set; } = [];
+
+        /// <summary>
+        /// Gets the identifiers of the tenants associated with this workspace.
+        /// </summary>
+        /// <remarks>
+        /// The value the tenant selection of the workspace dialogs reads. It is a projection of
+        /// <see cref="Tenants"/> and has no column; the workspace endpoint maps a submitted list
+        /// onto <see cref="Tenants"/>.
+        /// </remarks>
+        [NotMapped]
+        [IndexIgnore]
+        [RestConverter<GuidListConverter>]
+        public List<Guid> TenantIds => Tenants?.Select(x => x.Id).ToList() ?? [];
 
         /// <summary>
         /// Gets or sets the collection of classes associated with this workspace.
@@ -101,12 +143,6 @@ namespace KleeneStar.Model.Entities
         /// </summary>
         [JsonIgnore]
         public List<Object> Objects { get; set; } = [];
-
-        /// <summary>
-        /// Gets or sets the collection of permission profiles within this workspace.
-        /// </summary>
-        [JsonIgnore]
-        public List<PermissionProfile> PermissionProfiles { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the date and time when the entity was created.
