@@ -14,7 +14,7 @@ It is consumed by `KleeneStar.Core` via `InternalsVisibleTo`.
 
 ## Target Framework
 
-- .NET 10
+- .NET 11
 - Class library — no entry point
 
 ---
