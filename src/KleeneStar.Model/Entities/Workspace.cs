@@ -110,7 +110,7 @@ namespace KleeneStar.Model.Entities
         /// <summary>
         /// Gets or sets the access modifier controlling the visibility and accessibility of this workspace.
         /// </summary>
-        [RestConverter<AccessModifierConverter>]
+        [RestConverter<WorkspaceAccessModifierConverter>]
         public WorkspaceAccessModifier AccessModifier { get; set; }
 
         /// <summary>

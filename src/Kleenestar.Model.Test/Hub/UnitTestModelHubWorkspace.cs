@@ -1,5 +1,6 @@
 ﻿using KleeneStar.Model;
 using KleeneStar.Model.Entities;
+using Microsoft.EntityFrameworkCore;
 using WebExpress.WebIndex.Queries;
 using WebExpress.WebUI.WebIcon;
 
@@ -415,6 +416,91 @@ namespace Kleenestar.Model.Test.Hub
             // validation
             Assert.Single(result);
             Assert.Equal(2, result[0].Tenants.Count);
+        }
+
+        /// <summary>
+        /// Verifies that a workspace added with stored tenants read elsewhere binds them, rather
+        /// than inserting the tenants a second time.
+        /// </summary>
+        [Fact]
+        public void AddWorkspaceWithStoredTenants()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "AddWorkspaceWithStoredTenants",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var tenantId = Guid.NewGuid();
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Tenants.Add(new Tenant { Id = tenantId, Name = "Tenant A" });
+                db.SaveChanges();
+            }
+
+            Tenant stored;
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                stored = db.Tenants.AsNoTracking().Single();
+            }
+
+            // act
+            ModelHub.Add(new Workspace { Id = Guid.NewGuid(), Name = "WS", Key = "WS", Tenants = [stored] });
+
+            // validation
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>()).Single();
+            Assert.Equal([tenantId], result.Tenants.Select(x => x.Id));
+
+            using var check = ModelHub.CreateDbContext();
+            Assert.Single(check.Tenants);
+        }
+
+        /// <summary>
+        /// Verifies that updating a workspace replaces its tenant assignments with the ones it
+        /// carries.
+        /// </summary>
+        [Fact]
+        public void UpdateWorkspaceReplacesTenants()
+        {
+            // arrange
+            ModelHub.DatabaseSettings = new KleeneStar.Model.Settings.DatabaseSettings()
+            {
+                ConnectionString = "UpdateWorkspaceReplacesTenants",
+                Assembly = "KleeneStar.Model.Test"
+            };
+
+            var workspaceId = Guid.NewGuid();
+            var first = new Tenant { Id = Guid.NewGuid(), Name = "Tenant A" };
+            var second = new Tenant { Id = Guid.NewGuid(), Name = "Tenant B" };
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                db.Tenants.AddRange(first, second);
+                db.Workspaces.Add(new Workspace { Id = workspaceId, Name = "WS", Key = "WS", Tenants = [first] });
+                db.SaveChanges();
+            }
+
+            Tenant stored;
+
+            using (var db = ModelHub.CreateDbContext())
+            {
+                stored = db.Tenants.AsNoTracking().Single(x => x.Id == second.Id);
+            }
+
+            // act
+            var workspace = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Id == workspaceId)).Single();
+            workspace.Tenants = [stored];
+            ModelHub.Update(workspace);
+
+            // validation
+            var result = ModelHub.GetWorkspaces(new Query<Workspace>().Where(x => x.Id == workspaceId)).Single();
+            Assert.Equal([second.Id], result.Tenants.Select(x => x.Id));
+
+            using var check = ModelHub.CreateDbContext();
+            Assert.Equal(2, check.Tenants.Count());
         }
 
         /// <summary>

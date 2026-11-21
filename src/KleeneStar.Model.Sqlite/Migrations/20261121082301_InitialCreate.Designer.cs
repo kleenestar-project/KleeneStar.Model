@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations
 {
     [DbContext(typeof(KleeneStarDbContext))]
-    [Migration("20261120173108_InitialCreate")]
+    [Migration("20261121082301_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -20,7 +20,7 @@ namespace Kleenestar.Model.Test.Converters
         [InlineData(WorkspaceAccessModifier.Internal)]
         public void AccessModifier_RoundTripsTheSelectionId(WorkspaceAccessModifier modifier)
         {
-            var converter = new AccessModifierConverter();
+            var converter = new WorkspaceAccessModifierConverter();
 
             var bound = converter.FromRaw(modifier.Id().ToString(), typeof(WorkspaceAccessModifier));
 
@@ -38,7 +38,7 @@ namespace Kleenestar.Model.Test.Converters
         [InlineData("00000000-0000-0000-0000-000000000000")]
         public void AccessModifier_EmptySelectionIsPublic(string raw)
         {
-            var bound = new AccessModifierConverter().FromRaw(raw, typeof(WorkspaceAccessModifier));
+            var bound = new WorkspaceAccessModifierConverter().FromRaw(raw, typeof(WorkspaceAccessModifier));
 
             Assert.Equal(WorkspaceAccessModifier.Public, bound);
         }
@@ -53,7 +53,7 @@ namespace Kleenestar.Model.Test.Converters
             var workspace = new Workspace();
             var property = typeof(Workspace).GetProperty(nameof(Workspace.AccessModifier));
 
-            property.SetValue(workspace, new AccessModifierConverter().FromRaw(WorkspaceAccessModifier.Internal.Id().ToString(), property.PropertyType));
+            property.SetValue(workspace, new WorkspaceAccessModifierConverter().FromRaw(WorkspaceAccessModifier.Internal.Id().ToString(), property.PropertyType));
 
             Assert.Equal(WorkspaceAccessModifier.Internal, workspace.AccessModifier);
         }
