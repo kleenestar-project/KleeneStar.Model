@@ -1,0 +1,3955 @@
+using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace KleeneStar.Model.Sqlite.Migrations;
+
+/// <inheritdoc />
+public partial class _20261121193944_InitialCreate : Migration
+{
+    /// <inheritdoc />
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.CreateTable(
+            name: "AuditEvent",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Sequence = table.Column<long>(type: "INTEGER", nullable: false),
+                Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Origin = table.Column<int>(type: "INTEGER", nullable: false),
+                Category = table.Column<int>(type: "INTEGER", nullable: false),
+                Action = table.Column<int>(type: "INTEGER", nullable: false),
+                Outcome = table.Column<int>(type: "INTEGER", nullable: false),
+                Severity = table.Column<int>(type: "INTEGER", nullable: false),
+                Actor = table.Column<Guid>(type: "TEXT", nullable: true),
+                ActorName = table.Column<string>(type: "TEXT", nullable: true),
+                Agent = table.Column<string>(type: "TEXT", nullable: true),
+                ClientAddress = table.Column<string>(type: "TEXT", nullable: true),
+                TargetType = table.Column<int>(type: "INTEGER", nullable: false),
+                Target = table.Column<Guid>(type: "TEXT", nullable: true),
+                TargetKey = table.Column<string>(type: "TEXT", nullable: true),
+                TargetRevision = table.Column<int>(type: "INTEGER", nullable: true),
+                Correlation = table.Column<Guid>(type: "TEXT", nullable: false),
+                Causation = table.Column<Guid>(type: "TEXT", nullable: true),
+                PreviousHash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Hash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AuditEvent", x => x.Id);
+                table.UniqueConstraint("AK_AuditEvent_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AutomationJob",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Rule = table.Column<Guid>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Trigger = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Deduplication = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                Depth = table.Column<int>(type: "INTEGER", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Attempts = table.Column<int>(type: "INTEGER", nullable: false),
+                CompletedActions = table.Column<int>(type: "INTEGER", nullable: false),
+                Actions = table.Column<string>(type: "TEXT", nullable: true),
+                NextAttempt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                LockedBy = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                LockedUntil = table.Column<DateTime>(type: "TEXT", nullable: true),
+                LastError = table.Column<string>(type: "TEXT", nullable: true),
+                Version = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AutomationJob", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Branding",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Title = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                WelcomeText = table.Column<string>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Branding", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Category",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Category", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Commit",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                ObjectKey = table.Column<string>(type: "TEXT", nullable: true),
+                Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                Number = table.Column<int>(type: "INTEGER", nullable: false),
+                Type = table.Column<int>(type: "INTEGER", nullable: false),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                CreatedByName = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Message = table.Column<string>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Commit", x => x.Id);
+                table.UniqueConstraint("AK_Commit_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Group",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Group", x => x.Id);
+                table.UniqueConstraint("AK_Group_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "IdentityCapacity",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false),
+                WeeklyMinutes = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_IdentityCapacity", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Insight",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dashboard"),
+                Query = table.Column<string>(type: "TEXT", nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Insight", x => x.Id);
+                table.UniqueConstraint("AK_Insight_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "KanbanBoard",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                View = table.Column<Guid>(type: "TEXT", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Filter = table.Column<string>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_KanbanBoard", x => x.Id);
+                table.UniqueConstraint("AK_KanbanBoard_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "KindDashboard",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                View = table.Column<Guid>(type: "TEXT", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_KindDashboard", x => x.Id);
+                table.UniqueConstraint("AK_KindDashboard_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Maintenance",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                Message = table.Column<string>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Maintenance", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "NavigatorLink",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Uri = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
+                Ordinal = table.Column<int>(type: "INTEGER", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_NavigatorLink", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectCreation",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Template = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                RootObject = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Objects = table.Column<string>(type: "TEXT", nullable: true),
+                Relations = table.Column<string>(type: "TEXT", nullable: true),
+                Error = table.Column<string>(type: "TEXT", nullable: true),
+                Identity = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Finished = table.Column<DateTime>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectCreation", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectOperation",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 16, nullable: false),
+                Mode = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                Root = table.Column<Guid>(type: "TEXT", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Reference = table.Column<Guid>(type: "TEXT", nullable: true),
+                TargetWorkspace = table.Column<Guid>(type: "TEXT", nullable: true),
+                Options = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Total = table.Column<int>(type: "INTEGER", nullable: false),
+                Done = table.Column<int>(type: "INTEGER", nullable: false),
+                Error = table.Column<string>(type: "TEXT", nullable: true),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Finished = table.Column<DateTime>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectOperation", x => x.Id);
+                table.UniqueConstraint("AK_ObjectOperation_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectRelationType",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Label = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                InverseLabel = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Symmetric = table.Column<bool>(type: "INTEGER", nullable: false),
+                System = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                TargetClasses = table.Column<string>(type: "TEXT", nullable: true),
+                Cardinality = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                Effect = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                Active = table.Column<bool>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectRelationType", x => x.Id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "StatusCategory",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 9, nullable: true),
+                IsDefault = table.Column<bool>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_StatusCategory", x => x.Id);
+                table.UniqueConstraint("AK_StatusCategory_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Tenant",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Tenant", x => x.Id);
+                table.UniqueConstraint("AK_Tenant_Guid", x => x.Guid);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Workspace",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Inherited = table.Column<Guid>(type: "TEXT", nullable: true),
+                HomeId = table.Column<Guid>(type: "TEXT", nullable: true),
+                Sealed = table.Column<bool>(type: "INTEGER", nullable: false),
+                AccessModifier = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Workspace", x => x.Id);
+                table.UniqueConstraint("AK_Workspace_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Workspace_Workspace_Inherited",
+                    column: x => x.Inherited,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AuditDelta",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Event = table.Column<Guid>(type: "TEXT", nullable: false),
+                Kind = table.Column<int>(type: "INTEGER", nullable: false),
+                Attribute = table.Column<string>(type: "TEXT", nullable: false),
+                AttributeRef = table.Column<Guid>(type: "TEXT", nullable: true),
+                ValueKind = table.Column<int>(type: "INTEGER", nullable: false),
+                OldValue = table.Column<string>(type: "TEXT", nullable: true),
+                NewValue = table.Column<string>(type: "TEXT", nullable: true),
+                Ordinal = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AuditDelta", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_AuditDelta_AuditEvent_Event",
+                    column: x => x.Event,
+                    principalTable: "AuditEvent",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Change",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Commit = table.Column<Guid>(type: "TEXT", nullable: false),
+                Field = table.Column<Guid>(type: "TEXT", nullable: true),
+                Name = table.Column<string>(type: "TEXT", nullable: false),
+                OldValue = table.Column<string>(type: "TEXT", nullable: true),
+                NewValue = table.Column<string>(type: "TEXT", nullable: true),
+                Ordinal = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Change", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Change_Commit_Commit",
+                    column: x => x.Commit,
+                    principalTable: "Commit",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "GroupPolicy",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                GroupId = table.Column<int>(type: "INTEGER", nullable: false),
+                Policy = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_GroupPolicy", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_GroupPolicy_Group_GroupId",
+                    column: x => x.GroupId,
+                    principalTable: "Group",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "PermissionAssignment",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Group = table.Column<Guid>(type: "TEXT", nullable: false),
+                Policy = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Scope = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                ScopeId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_PermissionAssignment", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_PermissionAssignment_Group_Group",
+                    column: x => x.Group,
+                    principalTable: "Group",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "DashboardColumn",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                View = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Insight = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_DashboardColumn", x => x.Id);
+                table.UniqueConstraint("AK_DashboardColumn_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_DashboardColumn_Insight_Insight",
+                    column: x => x.Insight,
+                    principalTable: "Insight",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "InsightCategory",
+            columns: table => new
+            {
+                CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                InsightId = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_InsightCategory", x => new { x.CategoryId, x.InsightId });
+                table.ForeignKey(
+                    name: "FK_InsightCategory_Category_CategoryId",
+                    column: x => x.CategoryId,
+                    principalTable: "Category",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_InsightCategory_Insight_InsightId",
+                    column: x => x.InsightId,
+                    principalTable: "Insight",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "InsightView",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                ViewType = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Configuration = table.Column<string>(type: "TEXT", nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 7, nullable: true),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Insight = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_InsightView", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_InsightView_Insight_Insight",
+                    column: x => x.Insight,
+                    principalTable: "Insight",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "KanbanBoardColumn",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Category = table.Column<Guid>(type: "TEXT", nullable: true),
+                Statuses = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Board = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_KanbanBoardColumn", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_KanbanBoardColumn_KanbanBoard_Board",
+                    column: x => x.Board,
+                    principalTable: "KanbanBoard",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "KanbanBoardSwimlane",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Filter = table.Column<string>(type: "TEXT", nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: true),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Board = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_KanbanBoardSwimlane", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_KanbanBoardSwimlane_KanbanBoard_Board",
+                    column: x => x.Board,
+                    principalTable: "KanbanBoard",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "KindDashboardColumn",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Size = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Board = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_KindDashboardColumn", x => x.Id);
+                table.UniqueConstraint("AK_KindDashboardColumn_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_KindDashboardColumn_KindDashboard_Board",
+                    column: x => x.Board,
+                    principalTable: "KindDashboard",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectOperationItem",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Operation = table.Column<Guid>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Done = table.Column<bool>(type: "INTEGER", nullable: false),
+                Result = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectOperationItem", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectOperationItem_ObjectOperation_Operation",
+                    column: x => x.Operation,
+                    principalTable: "ObjectOperation",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Identity",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                UserName = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                EmailVerified = table.Column<bool>(type: "INTEGER", nullable: false),
+                Bio = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                PhoneCountry = table.Column<string>(type: "TEXT", maxLength: 8, nullable: true),
+                Phone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Website = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Location = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                Position = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                Language = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                TimeZone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                DateFormat = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                WeekStart = table.Column<int>(type: "INTEGER", nullable: false),
+                Role = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                RoleSince = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Department = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                CostCenter = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                PersonnelNumber = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Deputy = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                Tenant = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                PasswordHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                PasswordChanged = table.Column<DateTime>(type: "TEXT", nullable: true),
+                AuthenticationSource = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                ExternalSubject = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Identity", x => x.Id);
+                table.UniqueConstraint("AK_Identity_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Identity_Identity_Deputy",
+                    column: x => x.Deputy,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Identity_Tenant_Tenant",
+                    column: x => x.Tenant,
+                    principalTable: "Tenant",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AutomationRule",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: true),
+                Trigger = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                TriggerParameter = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Condition = table.Column<string>(type: "TEXT", nullable: true),
+                Actions = table.Column<string>(type: "TEXT", nullable: true),
+                RunAs = table.Column<Guid>(type: "TEXT", nullable: true),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                NextRun = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AutomationRule", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_AutomationRule_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Class",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                IsAbstract = table.Column<bool>(type: "INTEGER", nullable: false),
+                Inherited = table.Column<Guid>(type: "TEXT", nullable: true),
+                IsBlueprint = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                Blueprint = table.Column<Guid>(type: "TEXT", nullable: true),
+                Sealed = table.Column<bool>(type: "INTEGER", nullable: false),
+                Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                AccessModifier = table.Column<int>(type: "INTEGER", nullable: false),
+                PortalVisible = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
+                Renderer = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Class", x => x.Id);
+                table.UniqueConstraint("AK_Class_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Class_Class_Blueprint",
+                    column: x => x.Blueprint,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_Class_Class_Inherited",
+                    column: x => x.Inherited,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Class_Class_Parent",
+                    column: x => x.Parent,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Class_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Milestone",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Description = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                Due = table.Column<DateTime>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Milestone", x => x.Id);
+                table.UniqueConstraint("AK_Milestone_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Milestone_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectView",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
+                ViewType = table.Column<int>(type: "INTEGER", nullable: false),
+                Configuration = table.Column<string>(type: "TEXT", nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 7, nullable: true),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectView", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectView_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Sprint",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Goal = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Start = table.Column<DateTime>(type: "TEXT", nullable: true),
+                End = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Capacity = table.Column<int>(type: "INTEGER", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Sprint", x => x.Id);
+                table.UniqueConstraint("AK_Sprint_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Sprint_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ValueCatalog",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: true),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Description = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                Source = table.Column<int>(type: "INTEGER", nullable: false),
+                Query = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                ValueAttribute = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Url = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                RefreshMinutes = table.Column<int>(type: "INTEGER", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                CurrentVersion = table.Column<int>(type: "INTEGER", nullable: false),
+                LastRefresh = table.Column<DateTime>(type: "TEXT", nullable: true),
+                LastError = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ValueCatalog", x => x.Id);
+                table.UniqueConstraint("AK_ValueCatalog_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_ValueCatalog_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Webhook",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Direction = table.Column<int>(type: "INTEGER", nullable: false),
+                Url = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                Integration = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Secret = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                LastDelivery = table.Column<DateTime>(type: "TEXT", nullable: true),
+                LastResult = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Webhook", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Webhook_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "WorkspaceCategory",
+            columns: table => new
+            {
+                CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                WorkspaceId = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_WorkspaceCategory", x => new { x.CategoryId, x.WorkspaceId });
+                table.ForeignKey(
+                    name: "FK_WorkspaceCategory_Category_CategoryId",
+                    column: x => x.CategoryId,
+                    principalTable: "Category",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_WorkspaceCategory_Workspace_WorkspaceId",
+                    column: x => x.WorkspaceId,
+                    principalTable: "Workspace",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "WorkspacePlanning",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                TimeTracking = table.Column<bool>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_WorkspacePlanning", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_WorkspacePlanning_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "WorkspaceTenant",
+            columns: table => new
+            {
+                TenantId = table.Column<int>(type: "INTEGER", nullable: false),
+                WorkspaceId = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_WorkspaceTenant", x => new { x.TenantId, x.WorkspaceId });
+                table.ForeignKey(
+                    name: "FK_WorkspaceTenant_Tenant_TenantId",
+                    column: x => x.TenantId,
+                    principalTable: "Tenant",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_WorkspaceTenant_Workspace_WorkspaceId",
+                    column: x => x.WorkspaceId,
+                    principalTable: "Workspace",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Widget",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Params = table.Column<string>(type: "TEXT", nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Wql = table.Column<string>(type: "TEXT", nullable: true),
+                Column = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Widget", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Widget_DashboardColumn_Column",
+                    column: x => x.Column,
+                    principalTable: "DashboardColumn",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "KindDashboardWidget",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Params = table.Column<string>(type: "TEXT", nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Column = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_KindDashboardWidget", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_KindDashboardWidget_KindDashboardColumn_Column",
+                    column: x => x.Column,
+                    principalTable: "KindDashboardColumn",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AccessToken",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Prefix = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                TokenId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                TokenHash = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Scopes = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                LastUsed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Expires = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Revoked = table.Column<bool>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AccessToken", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_AccessToken_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "CustomQuickfilter",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                ViewKey = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                ContextKey = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Query = table.Column<string>(type: "TEXT", nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Shared = table.Column<bool>(type: "INTEGER", nullable: false),
+                Ordinal = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_CustomQuickfilter", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_CustomQuickfilter_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "IdentityGroupMembership",
+            columns: table => new
+            {
+                IdentityId = table.Column<int>(type: "INTEGER", nullable: false),
+                GroupId = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_IdentityGroupMembership", x => new { x.IdentityId, x.GroupId });
+                table.ForeignKey(
+                    name: "FK_IdentityGroupMembership_Group_GroupId",
+                    column: x => x.GroupId,
+                    principalTable: "Group",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_IdentityGroupMembership_Identity_IdentityId",
+                    column: x => x.IdentityId,
+                    principalTable: "Identity",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "IdentitySession",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Device = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Client = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                Mobile = table.Column<bool>(type: "INTEGER", nullable: false),
+                Location = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                IpAddress = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                LastActive = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Grant = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Expires = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_IdentitySession", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_IdentitySession_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "PasswordReset",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false),
+                IssuedBy = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                TokenHash = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Expires = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Used = table.Column<DateTime>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_PasswordReset", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_PasswordReset_Identity_Identity",
+                    column: x => x.Identity,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "SavedSearch",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Query = table.Column<string>(type: "TEXT", nullable: true),
+                Columns = table.Column<string>(type: "TEXT", nullable: true),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Starred = table.Column<bool>(type: "INTEGER", nullable: false),
+                LastUsed = table.Column<DateTime>(type: "TEXT", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_SavedSearch", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_SavedSearch_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "UserNotification",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Actor = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: true),
+                TitleKey = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                MessageKey = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
+                Subject = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                TargetUri = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                SubjectIcon = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Read = table.Column<bool>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_UserNotification", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_UserNotification_Identity_Actor",
+                    column: x => x.Actor,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_UserNotification_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "UserSession",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Scope = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                Value = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_UserSession", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_UserSession_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "WorkspaceBookmark",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Favorite = table.Column<bool>(type: "INTEGER", nullable: false),
+                LastVisited = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_WorkspaceBookmark", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_WorkspaceBookmark_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_WorkspaceBookmark_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "WqlHistory",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Subject = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                Query = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
+                UseCount = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 1),
+                LastUsed = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_WqlHistory", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_WqlHistory_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ApprovalPolicy",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Description = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                Steps = table.Column<string>(type: "TEXT", maxLength: 8192, nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                AllowSelfApproval = table.Column<bool>(type: "INTEGER", nullable: false),
+                RequestStatus = table.Column<Guid>(type: "TEXT", nullable: true),
+                ApprovedStatus = table.Column<Guid>(type: "TEXT", nullable: true),
+                RejectedStatus = table.Column<Guid>(type: "TEXT", nullable: true),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ApprovalPolicy", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ApprovalPolicy_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_ApprovalPolicy_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Calendar",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                TimeZone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Region = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                IsDefault = table.Column<bool>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Calendar", x => x.Id);
+                table.UniqueConstraint("AK_Calendar_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Calendar_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ClassAllowedChild",
+            columns: table => new
+            {
+                ChildId = table.Column<int>(type: "INTEGER", nullable: false),
+                ClassId = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ClassAllowedChild", x => new { x.ChildId, x.ClassId });
+                table.ForeignKey(
+                    name: "FK_ClassAllowedChild_Class_ChildId",
+                    column: x => x.ChildId,
+                    principalTable: "Class",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_ClassAllowedChild_Class_ClassId",
+                    column: x => x.ClassId,
+                    principalTable: "Class",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Field",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                BlueprintSource = table.Column<Guid>(type: "TEXT", nullable: true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                HelpText = table.Column<string>(type: "TEXT", nullable: true),
+                Placeholder = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                FieldType = table.Column<int>(type: "INTEGER", maxLength: 128, nullable: false),
+                Cardinality = table.Column<int>(type: "INTEGER", nullable: false),
+                CardinalityMin = table.Column<int>(type: "INTEGER", nullable: false),
+                CardinalityMax = table.Column<int>(type: "INTEGER", nullable: false),
+                CardinalityUnlimited = table.Column<bool>(type: "INTEGER", nullable: false),
+                RegexPattern = table.Column<string>(type: "TEXT", nullable: true),
+                Options = table.Column<string>(type: "TEXT", nullable: true),
+                WorkflowId = table.Column<Guid>(type: "TEXT", nullable: true),
+                DefaultPriorityId = table.Column<Guid>(type: "TEXT", nullable: true),
+                SelectedPriorityIds = table.Column<string>(type: "TEXT", nullable: true),
+                ValidationRules = table.Column<string>(type: "TEXT", nullable: true),
+                DefaultSpec = table.Column<string>(type: "TEXT", nullable: true),
+                Required = table.Column<bool>(type: "INTEGER", nullable: false),
+                Unique = table.Column<bool>(type: "INTEGER", nullable: false),
+                Deprecated = table.Column<bool>(type: "INTEGER", nullable: false),
+                AccessModifier = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Field", x => x.Id);
+                table.UniqueConstraint("AK_Field_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Field_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Form",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                FormType = table.Column<int>(type: "INTEGER", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                Version = table.Column<int>(type: "INTEGER", nullable: false),
+                PortalTemplate = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Form", x => x.Id);
+                table.UniqueConstraint("AK_Form_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Form_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Priority",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                BlueprintSource = table.Column<Guid>(type: "TEXT", nullable: true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Priority", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Priority_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "SecurityLevel",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Rank = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                PermittedGroupIds = table.Column<string>(type: "TEXT", nullable: true),
+                IsDefault = table.Column<bool>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_SecurityLevel", x => x.Id);
+                table.UniqueConstraint("AK_SecurityLevel_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_SecurityLevel_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Status",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                BlueprintSource = table.Column<Guid>(type: "TEXT", nullable: true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Category = table.Column<Guid>(type: "TEXT", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Status", x => x.Id);
+                table.UniqueConstraint("AK_Status_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Status_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_Status_StatusCategory_Category",
+                    column: x => x.Category,
+                    principalTable: "StatusCategory",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Template",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Category = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Presets = table.Column<string>(type: "TEXT", nullable: true),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Template", x => x.Id);
+                table.UniqueConstraint("AK_Template_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Template_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Workflow",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                BlueprintSource = table.Column<Guid>(type: "TEXT", nullable: true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Workflow", x => x.Id);
+                table.UniqueConstraint("AK_Workflow_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Workflow_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ValueCatalogVersion",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Catalog = table.Column<Guid>(type: "TEXT", nullable: false),
+                Number = table.Column<int>(type: "INTEGER", nullable: false),
+                Values = table.Column<string>(type: "TEXT", nullable: false),
+                Added = table.Column<int>(type: "INTEGER", nullable: false),
+                Removed = table.Column<int>(type: "INTEGER", nullable: false),
+                Comment = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ValueCatalogVersion", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ValueCatalogVersion_ValueCatalog_Catalog",
+                    column: x => x.Catalog,
+                    principalTable: "ValueCatalog",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "BusinessHourSlot",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                DayOfWeek = table.Column<int>(type: "INTEGER", nullable: false),
+                Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                StartTime = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                EndTime = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                Calendar = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_BusinessHourSlot", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_BusinessHourSlot_Calendar_Calendar",
+                    column: x => x.Calendar,
+                    principalTable: "Calendar",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Holiday",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Region = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
+                Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                Calendar = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Holiday", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Holiday_Calendar_Calendar",
+                    column: x => x.Calendar,
+                    principalTable: "Calendar",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "SlaPolicy",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Priority = table.Column<int>(type: "INTEGER", nullable: false),
+                Calendar = table.Column<Guid>(type: "TEXT", nullable: true),
+                Notifications = table.Column<int>(type: "INTEGER", nullable: false),
+                PauseOn = table.Column<string>(type: "TEXT", nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_SlaPolicy", x => x.Id);
+                table.UniqueConstraint("AK_SlaPolicy_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_SlaPolicy_Calendar_Calendar",
+                    column: x => x.Calendar,
+                    principalTable: "Calendar",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_SlaPolicy_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_SlaPolicy_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "FieldCatalogBinding",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Field = table.Column<Guid>(type: "TEXT", nullable: false),
+                Catalog = table.Column<Guid>(type: "TEXT", nullable: false),
+                PinnedVersion = table.Column<int>(type: "INTEGER", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_FieldCatalogBinding", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_FieldCatalogBinding_Field_Field",
+                    column: x => x.Field,
+                    principalTable: "Field",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_FieldCatalogBinding_ValueCatalog_Catalog",
+                    column: x => x.Catalog,
+                    principalTable: "ValueCatalog",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "FormTab",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Form = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Position = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_FormTab", x => x.Id);
+                table.UniqueConstraint("AK_FormTab_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_FormTab_Form_Form",
+                    column: x => x.Form,
+                    principalTable: "Form",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Object",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Summary = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "issue"),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false),
+                SecurityLevel = table.Column<Guid>(type: "TEXT", nullable: true),
+                PortalRestricted = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                Creator = table.Column<Guid>(type: "TEXT", nullable: true),
+                Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
+                Sprint = table.Column<Guid>(type: "TEXT", nullable: true),
+                SprintRank = table.Column<int>(type: "INTEGER", nullable: false),
+                StoryPoints = table.Column<int>(type: "INTEGER", nullable: true),
+                Updater = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Object", x => x.Id);
+                table.UniqueConstraint("AK_Object_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Object_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_Object_Identity_Assignee",
+                    column: x => x.Assignee,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Object_Identity_Creator",
+                    column: x => x.Creator,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Object_Identity_Updater",
+                    column: x => x.Updater,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Object_Object_Parent",
+                    column: x => x.Parent,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Object_SecurityLevel_SecurityLevel",
+                    column: x => x.SecurityLevel,
+                    principalTable: "SecurityLevel",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_Object_Sprint_Sprint",
+                    column: x => x.Sprint,
+                    principalTable: "Sprint",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_Object_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "TemplateClass",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Template = table.Column<Guid>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_TemplateClass", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_TemplateClass_Class_Class",
+                    column: x => x.Class,
+                    principalTable: "Class",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_TemplateClass_Template_Template",
+                    column: x => x.Template,
+                    principalTable: "Template",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "TemplateHierarchy",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Category = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                Icon = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                RootTemplate = table.Column<Guid>(type: "TEXT", nullable: false),
+                RootClass = table.Column<Guid>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_TemplateHierarchy", x => x.Id);
+                table.UniqueConstraint("AK_TemplateHierarchy_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_TemplateHierarchy_Template_RootTemplate",
+                    column: x => x.RootTemplate,
+                    principalTable: "Template",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_TemplateHierarchy_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Transition",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                BlueprintSource = table.Column<Guid>(type: "TEXT", nullable: true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                DashArray = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Waypoints = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Workflow = table.Column<Guid>(type: "TEXT", nullable: false),
+                SourceId = table.Column<Guid>(type: "TEXT", nullable: false),
+                TargetId = table.Column<Guid>(type: "TEXT", nullable: false),
+                GuardExpression = table.Column<string>(type: "TEXT", nullable: true),
+                ValidatorExpression = table.Column<string>(type: "TEXT", nullable: true),
+                PostFunctions = table.Column<string>(type: "TEXT", nullable: true),
+                ScreenForm = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Transition", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Transition_Form_ScreenForm",
+                    column: x => x.ScreenForm,
+                    principalTable: "Form",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_Transition_Status_SourceId",
+                    column: x => x.SourceId,
+                    principalTable: "Status",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Transition_Status_TargetId",
+                    column: x => x.TargetId,
+                    principalTable: "Status",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Transition_Workflow_Workflow",
+                    column: x => x.Workflow,
+                    principalTable: "Workflow",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "WorkflowStatus",
+            columns: table => new
+            {
+                Workflow = table.Column<Guid>(type: "TEXT", nullable: false),
+                Status = table.Column<Guid>(type: "TEXT", nullable: false),
+                X = table.Column<int>(type: "INTEGER", nullable: false),
+                Y = table.Column<int>(type: "INTEGER", nullable: false),
+                IsStart = table.Column<bool>(type: "INTEGER", nullable: false),
+                IsEnd = table.Column<bool>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_WorkflowStatus", x => new { x.Workflow, x.Status });
+                table.ForeignKey(
+                    name: "FK_WorkflowStatus_Status_Status",
+                    column: x => x.Status,
+                    principalTable: "Status",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_WorkflowStatus_Workflow_Workflow",
+                    column: x => x.Workflow,
+                    principalTable: "Workflow",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "SlaEscalationLevel",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Level = table.Column<int>(type: "INTEGER", nullable: false),
+                AfterValue = table.Column<int>(type: "INTEGER", nullable: false),
+                Unit = table.Column<int>(type: "INTEGER", nullable: false),
+                Notify = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Policy = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_SlaEscalationLevel", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_SlaEscalationLevel_SlaPolicy_Policy",
+                    column: x => x.Policy,
+                    principalTable: "SlaPolicy",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "SlaScopeRule",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                RuleType = table.Column<int>(type: "INTEGER", nullable: false),
+                Value = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Policy = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_SlaScopeRule", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_SlaScopeRule_SlaPolicy_Policy",
+                    column: x => x.Policy,
+                    principalTable: "SlaPolicy",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "SlaTarget",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Kind = table.Column<int>(type: "INTEGER", nullable: false),
+                TargetValue = table.Column<int>(type: "INTEGER", nullable: false),
+                Unit = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Policy = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_SlaTarget", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_SlaTarget_SlaPolicy_Policy",
+                    column: x => x.Policy,
+                    principalTable: "SlaPolicy",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "FormElement",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Tab = table.Column<Guid>(type: "TEXT", nullable: false),
+                Parent = table.Column<Guid>(type: "TEXT", nullable: true),
+                Position = table.Column<int>(type: "INTEGER", nullable: false),
+                Kind = table.Column<int>(type: "INTEGER", nullable: false),
+                Field = table.Column<Guid>(type: "TEXT", nullable: true),
+                Label = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Layout = table.Column<int>(type: "INTEGER", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_FormElement", x => x.Id);
+                table.UniqueConstraint("AK_FormElement_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_FormElement_Field_Field",
+                    column: x => x.Field,
+                    principalTable: "Field",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_FormElement_FormElement_Parent",
+                    column: x => x.Parent,
+                    principalTable: "FormElement",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_FormElement_FormTab_Tab",
+                    column: x => x.Tab,
+                    principalTable: "FormTab",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Approval",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Policy = table.Column<Guid>(type: "TEXT", nullable: false),
+                PolicyName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                Steps = table.Column<string>(type: "TEXT", nullable: false),
+                AllowSelfApproval = table.Column<bool>(type: "INTEGER", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                CurrentStep = table.Column<int>(type: "INTEGER", nullable: false),
+                RequestedBy = table.Column<Guid>(type: "TEXT", nullable: false),
+                Note = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                Requested = table.Column<DateTime>(type: "TEXT", nullable: false),
+                StepStarted = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Completed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Outcome = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                Version = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Approval", x => x.Id);
+                table.UniqueConstraint("AK_Approval_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Approval_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Attachment",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                FileName = table.Column<string>(type: "TEXT", nullable: false),
+                ContentType = table.Column<string>(type: "TEXT", nullable: true),
+                Version = table.Column<int>(type: "INTEGER", nullable: false),
+                Size = table.Column<long>(type: "INTEGER", nullable: false),
+                StoragePath = table.Column<string>(type: "TEXT", nullable: true),
+                Content = table.Column<byte[]>(type: "BLOB", nullable: true),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Uploader = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Attachment", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Attachment_Identity_Uploader",
+                    column: x => x.Uploader,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Attachment_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Comment",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Content = table.Column<string>(type: "TEXT", nullable: false),
+                State = table.Column<int>(type: "INTEGER", nullable: false),
+                Visibility = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                IsPinned = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Author = table.Column<Guid>(type: "TEXT", nullable: false),
+                ParentComment = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Comment", x => x.Id);
+                table.UniqueConstraint("AK_Comment_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_Comment_Comment_ParentComment",
+                    column: x => x.ParentComment,
+                    principalTable: "Comment",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Comment_Identity_Author",
+                    column: x => x.Author,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Comment_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectDraft",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Summary = table.Column<string>(type: "TEXT", nullable: true),
+                Description = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updater = table.Column<Guid>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectDraft", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectDraft_Identity_Updater",
+                    column: x => x.Updater,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_ObjectDraft_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectKeyAlias",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Key = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectKeyAlias", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectKeyAlias_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectPath",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Path = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
+                Depth = table.Column<int>(type: "INTEGER", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectPath", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectPath_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectPlanning",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                OriginalEstimate = table.Column<int>(type: "INTEGER", nullable: true),
+                RemainingEstimate = table.Column<int>(type: "INTEGER", nullable: true),
+                Milestone = table.Column<Guid>(type: "TEXT", nullable: true),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectPlanning", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectPlanning_Milestone_Milestone",
+                    column: x => x.Milestone,
+                    principalTable: "Milestone",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_ObjectPlanning_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectRelation",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                System = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Direction = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                Status = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                Source = table.Column<Guid>(type: "TEXT", nullable: false),
+                Target = table.Column<Guid>(type: "TEXT", nullable: true),
+                TargetUri = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                TargetTitle = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Comment = table.Column<string>(type: "TEXT", nullable: true),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                Metadata = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectRelation", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectRelation_Identity_CreatedBy",
+                    column: x => x.CreatedBy,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_ObjectRelation_Object_Source",
+                    column: x => x.Source,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_ObjectRelation_Object_Target",
+                    column: x => x.Target,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectShare",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectShare", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectShare_Identity_Identity",
+                    column: x => x.Identity,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_ObjectShare_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectTag",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectTag", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectTag_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectVisit",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Owner = table.Column<Guid>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                LastVisited = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Favorite = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                Liked = table.Column<bool>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectVisit", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectVisit_Identity_Owner",
+                    column: x => x.Owner,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_ObjectVisit_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ObjectWatcher",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ObjectWatcher", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ObjectWatcher_Identity_Identity",
+                    column: x => x.Identity,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_ObjectWatcher_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Value",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Field = table.Column<Guid>(type: "TEXT", nullable: false),
+                Data = table.Column<string>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Value", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Value_Field_Field",
+                    column: x => x.Field,
+                    principalTable: "Field",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_Value_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "Worklog",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false),
+                Started = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Minutes = table.Column<int>(type: "INTEGER", nullable: false),
+                Comment = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Worklog", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Worklog_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "TemplateHierarchyNode",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Hierarchy = table.Column<Guid>(type: "TEXT", nullable: false),
+                ParentNode = table.Column<Guid>(type: "TEXT", nullable: true),
+                Template = table.Column<Guid>(type: "TEXT", nullable: false),
+                Class = table.Column<Guid>(type: "TEXT", nullable: true),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                AsChild = table.Column<bool>(type: "INTEGER", nullable: false),
+                Assignee = table.Column<Guid>(type: "TEXT", nullable: true),
+                Links = table.Column<string>(type: "TEXT", nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_TemplateHierarchyNode", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_TemplateHierarchyNode_Identity_Assignee",
+                    column: x => x.Assignee,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.SetNull);
+                table.ForeignKey(
+                    name: "FK_TemplateHierarchyNode_TemplateHierarchy_Hierarchy",
+                    column: x => x.Hierarchy,
+                    principalTable: "TemplateHierarchy",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_TemplateHierarchyNode_Template_Template",
+                    column: x => x.Template,
+                    principalTable: "Template",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "ApprovalDecision",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Approval = table.Column<Guid>(type: "TEXT", nullable: false),
+                Step = table.Column<int>(type: "INTEGER", nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false),
+                Verdict = table.Column<int>(type: "INTEGER", nullable: false),
+                Reason = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                Decided = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_ApprovalDecision", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_ApprovalDecision_Approval_Approval",
+                    column: x => x.Approval,
+                    principalTable: "Approval",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "CommentLike",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Comment = table.Column<Guid>(type: "TEXT", nullable: false),
+                Author = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_CommentLike", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_CommentLike_Comment_Comment",
+                    column: x => x.Comment,
+                    principalTable: "Comment",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_CommentLike_Identity_Author",
+                    column: x => x.Author,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "CommentReaction",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Emoji = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Comment = table.Column<Guid>(type: "TEXT", nullable: false),
+                Author = table.Column<Guid>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_CommentReaction", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_CommentReaction_Comment_Comment",
+                    column: x => x.Comment,
+                    principalTable: "Comment",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "FK_CommentReaction_Identity_Author",
+                    column: x => x.Author,
+                    principalTable: "Identity",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AccessToken_Owner",
+            table: "AccessToken",
+            column: "Owner");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AccessToken_TokenId",
+            table: "AccessToken",
+            column: "TokenId",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Approval_Guid",
+            table: "Approval",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Approval_Object_State",
+            table: "Approval",
+            columns: new[] { "Object", "State" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Approval_State",
+            table: "Approval",
+            column: "State");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ApprovalDecision_Approval_Step_Identity",
+            table: "ApprovalDecision",
+            columns: new[] { "Approval", "Step", "Identity" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ApprovalPolicy_Class",
+            table: "ApprovalPolicy",
+            column: "Class");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ApprovalPolicy_Workspace_Name",
+            table: "ApprovalPolicy",
+            columns: new[] { "Workspace", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Attachment_Object_Created",
+            table: "Attachment",
+            columns: new[] { "Object", "Created" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Attachment_Object_FileName_Version",
+            table: "Attachment",
+            columns: new[] { "Object", "FileName", "Version" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Attachment_Uploader",
+            table: "Attachment",
+            column: "Uploader");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditDelta_Attribute",
+            table: "AuditDelta",
+            column: "Attribute");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditDelta_Event_Ordinal",
+            table: "AuditDelta",
+            columns: new[] { "Event", "Ordinal" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditEvent_Category_Timestamp",
+            table: "AuditEvent",
+            columns: new[] { "Category", "Timestamp" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditEvent_Correlation",
+            table: "AuditEvent",
+            column: "Correlation");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditEvent_Origin_Timestamp",
+            table: "AuditEvent",
+            columns: new[] { "Origin", "Timestamp" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditEvent_Sequence",
+            table: "AuditEvent",
+            column: "Sequence",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditEvent_TargetType_Target_Sequence",
+            table: "AuditEvent",
+            columns: new[] { "TargetType", "Target", "Sequence" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AuditEvent_Timestamp",
+            table: "AuditEvent",
+            column: "Timestamp");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AutomationJob_Deduplication",
+            table: "AutomationJob",
+            column: "Deduplication",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AutomationJob_Rule",
+            table: "AutomationJob",
+            column: "Rule");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AutomationJob_State_NextAttempt",
+            table: "AutomationJob",
+            columns: new[] { "State", "NextAttempt" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AutomationRule_Workspace_Trigger",
+            table: "AutomationRule",
+            columns: new[] { "Workspace", "Trigger" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Branding_Guid",
+            table: "Branding",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_BusinessHourSlot_Calendar_DayOfWeek",
+            table: "BusinessHourSlot",
+            columns: new[] { "Calendar", "DayOfWeek" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Calendar_Class_Name",
+            table: "Calendar",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Category_Name",
+            table: "Category",
+            column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Change_Commit_Ordinal",
+            table: "Change",
+            columns: new[] { "Commit", "Ordinal" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Class_Blueprint",
+            table: "Class",
+            column: "Blueprint");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Class_Inherited",
+            table: "Class",
+            column: "Inherited");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Class_Parent",
+            table: "Class",
+            column: "Parent");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Class_Workspace_Name",
+            table: "Class",
+            columns: new[] { "Workspace", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ClassAllowedChild_ClassId",
+            table: "ClassAllowedChild",
+            column: "ClassId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Comment_Author",
+            table: "Comment",
+            column: "Author");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Comment_Object_Created",
+            table: "Comment",
+            columns: new[] { "Object", "Created" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Comment_ParentComment",
+            table: "Comment",
+            column: "ParentComment");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CommentLike_Author",
+            table: "CommentLike",
+            column: "Author");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CommentLike_Comment_Author",
+            table: "CommentLike",
+            columns: new[] { "Comment", "Author" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CommentReaction_Author",
+            table: "CommentReaction",
+            column: "Author");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CommentReaction_Comment_Author_Emoji",
+            table: "CommentReaction",
+            columns: new[] { "Comment", "Author", "Emoji" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Commit_Object_Created",
+            table: "Commit",
+            columns: new[] { "Object", "Created" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Commit_Object_Number",
+            table: "Commit",
+            columns: new[] { "Object", "Number" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CustomQuickfilter_Guid",
+            table: "CustomQuickfilter",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CustomQuickfilter_Owner",
+            table: "CustomQuickfilter",
+            column: "Owner");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_CustomQuickfilter_ViewKey_ContextKey",
+            table: "CustomQuickfilter",
+            columns: new[] { "ViewKey", "ContextKey" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_DashboardColumn_Insight",
+            table: "DashboardColumn",
+            column: "Insight");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Field_Class_Name",
+            table: "Field",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_FieldCatalogBinding_Catalog",
+            table: "FieldCatalogBinding",
+            column: "Catalog");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_FieldCatalogBinding_Field",
+            table: "FieldCatalogBinding",
+            column: "Field",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Form_Class_Name",
+            table: "Form",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_FormElement_Field",
+            table: "FormElement",
+            column: "Field");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_FormElement_Parent",
+            table: "FormElement",
+            column: "Parent");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_FormElement_Tab_Position",
+            table: "FormElement",
+            columns: new[] { "Tab", "Position" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_FormTab_Form_Position",
+            table: "FormTab",
+            columns: new[] { "Form", "Position" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Group_Name",
+            table: "Group",
+            column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_GroupPolicy_GroupId",
+            table: "GroupPolicy",
+            column: "GroupId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Holiday_Calendar_Date",
+            table: "Holiday",
+            columns: new[] { "Calendar", "Date" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Identity_AuthenticationSource_ExternalSubject",
+            table: "Identity",
+            columns: new[] { "AuthenticationSource", "ExternalSubject" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Identity_Deputy",
+            table: "Identity",
+            column: "Deputy");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Identity_Tenant",
+            table: "Identity",
+            column: "Tenant");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Identity_UserName",
+            table: "Identity",
+            column: "UserName");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_IdentityCapacity_Identity",
+            table: "IdentityCapacity",
+            column: "Identity",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_IdentityGroupMembership_GroupId",
+            table: "IdentityGroupMembership",
+            column: "GroupId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_IdentitySession_Grant",
+            table: "IdentitySession",
+            column: "Grant",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_IdentitySession_Owner",
+            table: "IdentitySession",
+            column: "Owner");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Insight_Name",
+            table: "Insight",
+            column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_InsightCategory_InsightId",
+            table: "InsightCategory",
+            column: "InsightId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_InsightView_Guid",
+            table: "InsightView",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_InsightView_Insight_Name",
+            table: "InsightView",
+            columns: new[] { "Insight", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_KanbanBoard_Workspace_Kind_View",
+            table: "KanbanBoard",
+            columns: new[] { "Workspace", "Kind", "View" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_KanbanBoardColumn_Board",
+            table: "KanbanBoardColumn",
+            column: "Board");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_KanbanBoardSwimlane_Board",
+            table: "KanbanBoardSwimlane",
+            column: "Board");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_KindDashboard_Workspace_Kind_View",
+            table: "KindDashboard",
+            columns: new[] { "Workspace", "Kind", "View" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_KindDashboardColumn_Board",
+            table: "KindDashboardColumn",
+            column: "Board");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_KindDashboardWidget_Column",
+            table: "KindDashboardWidget",
+            column: "Column");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Maintenance_Guid",
+            table: "Maintenance",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Milestone_Guid",
+            table: "Milestone",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Milestone_Workspace_Name",
+            table: "Milestone",
+            columns: new[] { "Workspace", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_NavigatorLink_Name",
+            table: "NavigatorLink",
+            column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Assignee",
+            table: "Object",
+            column: "Assignee");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Class",
+            table: "Object",
+            column: "Class");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Creator",
+            table: "Object",
+            column: "Creator");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Key",
+            table: "Object",
+            column: "Key",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Parent",
+            table: "Object",
+            column: "Parent");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_SecurityLevel",
+            table: "Object",
+            column: "SecurityLevel");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Sprint",
+            table: "Object",
+            column: "Sprint");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Updater",
+            table: "Object",
+            column: "Updater");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Object_Workspace_Kind",
+            table: "Object",
+            columns: new[] { "Workspace", "Kind" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectCreation_Key",
+            table: "ObjectCreation",
+            column: "Key",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectDraft_Object",
+            table: "ObjectDraft",
+            column: "Object",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectDraft_Updater",
+            table: "ObjectDraft",
+            column: "Updater");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectKeyAlias_Key",
+            table: "ObjectKeyAlias",
+            column: "Key",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectKeyAlias_Object",
+            table: "ObjectKeyAlias",
+            column: "Object");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectOperation_Key",
+            table: "ObjectOperation",
+            column: "Key",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectOperation_Root_Kind",
+            table: "ObjectOperation",
+            columns: new[] { "Root", "Kind" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectOperation_State",
+            table: "ObjectOperation",
+            column: "State");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectOperationItem_Operation_Object",
+            table: "ObjectOperationItem",
+            columns: new[] { "Operation", "Object" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectPath_Object",
+            table: "ObjectPath",
+            column: "Object",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectPath_Workspace_Path",
+            table: "ObjectPath",
+            columns: new[] { "Workspace", "Path" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectPlanning_Milestone",
+            table: "ObjectPlanning",
+            column: "Milestone");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectPlanning_Object",
+            table: "ObjectPlanning",
+            column: "Object",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectRelation_CreatedBy",
+            table: "ObjectRelation",
+            column: "CreatedBy");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectRelation_Source",
+            table: "ObjectRelation",
+            column: "Source");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectRelation_Source_Target_Type",
+            table: "ObjectRelation",
+            columns: new[] { "Source", "Target", "Type" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectRelation_Target",
+            table: "ObjectRelation",
+            column: "Target");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectRelationType_Key",
+            table: "ObjectRelationType",
+            column: "Key",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectShare_Identity",
+            table: "ObjectShare",
+            column: "Identity");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectShare_Object_Identity",
+            table: "ObjectShare",
+            columns: new[] { "Object", "Identity" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectTag_Object_Name",
+            table: "ObjectTag",
+            columns: new[] { "Object", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectView_Workspace_Kind_Name",
+            table: "ObjectView",
+            columns: new[] { "Workspace", "Kind", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectVisit_Object",
+            table: "ObjectVisit",
+            column: "Object");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectVisit_Owner_Object",
+            table: "ObjectVisit",
+            columns: new[] { "Owner", "Object" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectWatcher_Identity",
+            table: "ObjectWatcher",
+            column: "Identity");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ObjectWatcher_Object_Identity",
+            table: "ObjectWatcher",
+            columns: new[] { "Object", "Identity" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PasswordReset_Identity",
+            table: "PasswordReset",
+            column: "Identity");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PasswordReset_TokenHash",
+            table: "PasswordReset",
+            column: "TokenHash",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PermissionAssignment_Group",
+            table: "PermissionAssignment",
+            column: "Group");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PermissionAssignment_Guid",
+            table: "PermissionAssignment",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PermissionAssignment_Scope_ScopeId",
+            table: "PermissionAssignment",
+            columns: new[] { "Scope", "ScopeId" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PermissionAssignment_Scope_ScopeId_Group_Policy",
+            table: "PermissionAssignment",
+            columns: new[] { "Scope", "ScopeId", "Group", "Policy" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Priority_Class_Name",
+            table: "Priority",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SavedSearch_Owner",
+            table: "SavedSearch",
+            column: "Owner");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SecurityLevel_Class_Name",
+            table: "SecurityLevel",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SlaEscalationLevel_Policy_Level",
+            table: "SlaEscalationLevel",
+            columns: new[] { "Policy", "Level" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SlaPolicy_Calendar",
+            table: "SlaPolicy",
+            column: "Calendar");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SlaPolicy_Class_Name",
+            table: "SlaPolicy",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SlaPolicy_Owner",
+            table: "SlaPolicy",
+            column: "Owner");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SlaScopeRule_Policy",
+            table: "SlaScopeRule",
+            column: "Policy");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_SlaTarget_Policy_Kind",
+            table: "SlaTarget",
+            columns: new[] { "Policy", "Kind" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Sprint_Workspace_Name",
+            table: "Sprint",
+            columns: new[] { "Workspace", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Status_Category_Name_Class",
+            table: "Status",
+            columns: new[] { "Category", "Name", "Class" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Status_Class_Name",
+            table: "Status",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Template_Class_Name",
+            table: "Template",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateClass_Class",
+            table: "TemplateClass",
+            column: "Class");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateClass_Template_Class",
+            table: "TemplateClass",
+            columns: new[] { "Template", "Class" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateHierarchy_RootTemplate",
+            table: "TemplateHierarchy",
+            column: "RootTemplate");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateHierarchy_Workspace_Name",
+            table: "TemplateHierarchy",
+            columns: new[] { "Workspace", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateHierarchyNode_Assignee",
+            table: "TemplateHierarchyNode",
+            column: "Assignee");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateHierarchyNode_Hierarchy",
+            table: "TemplateHierarchyNode",
+            column: "Hierarchy");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_TemplateHierarchyNode_Template",
+            table: "TemplateHierarchyNode",
+            column: "Template");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Tenant_Name",
+            table: "Tenant",
+            column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Transition_ScreenForm",
+            table: "Transition",
+            column: "ScreenForm");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Transition_SourceId",
+            table: "Transition",
+            column: "SourceId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Transition_TargetId",
+            table: "Transition",
+            column: "TargetId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Transition_Workflow_Name",
+            table: "Transition",
+            columns: new[] { "Workflow", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_UserNotification_Actor",
+            table: "UserNotification",
+            column: "Actor");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_UserNotification_Owner_Read",
+            table: "UserNotification",
+            columns: new[] { "Owner", "Read" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_UserSession_Owner_Scope_Key",
+            table: "UserSession",
+            columns: new[] { "Owner", "Scope", "Key" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Value_Field",
+            table: "Value",
+            column: "Field");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Value_Object_Field",
+            table: "Value",
+            columns: new[] { "Object", "Field" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ValueCatalog_Guid",
+            table: "ValueCatalog",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ValueCatalog_Workspace_Name",
+            table: "ValueCatalog",
+            columns: new[] { "Workspace", "Name" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_ValueCatalogVersion_Catalog_Number",
+            table: "ValueCatalogVersion",
+            columns: new[] { "Catalog", "Number" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Webhook_Workspace_Name",
+            table: "Webhook",
+            columns: new[] { "Workspace", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Widget_Column",
+            table: "Widget",
+            column: "Column");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Workflow_Class_Name",
+            table: "Workflow",
+            columns: new[] { "Class", "Name" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WorkflowStatus_Status",
+            table: "WorkflowStatus",
+            column: "Status");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Worklog_Guid",
+            table: "Worklog",
+            column: "Guid",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Worklog_Identity_Started",
+            table: "Worklog",
+            columns: new[] { "Identity", "Started" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Worklog_Object",
+            table: "Worklog",
+            column: "Object");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Workspace_Inherited",
+            table: "Workspace",
+            column: "Inherited");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Workspace_Key",
+            table: "Workspace",
+            column: "Key",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Workspace_Name",
+            table: "Workspace",
+            column: "Name",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WorkspaceBookmark_Owner_Workspace",
+            table: "WorkspaceBookmark",
+            columns: new[] { "Owner", "Workspace" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WorkspaceBookmark_Workspace",
+            table: "WorkspaceBookmark",
+            column: "Workspace");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WorkspaceCategory_WorkspaceId",
+            table: "WorkspaceCategory",
+            column: "WorkspaceId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WorkspacePlanning_Workspace",
+            table: "WorkspacePlanning",
+            column: "Workspace",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WorkspaceTenant_WorkspaceId",
+            table: "WorkspaceTenant",
+            column: "WorkspaceId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_WqlHistory_Owner_Subject",
+            table: "WqlHistory",
+            columns: new[] { "Owner", "Subject" });
+    }
+
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            name: "AccessToken");
+
+        migrationBuilder.DropTable(
+            name: "ApprovalDecision");
+
+        migrationBuilder.DropTable(
+            name: "ApprovalPolicy");
+
+        migrationBuilder.DropTable(
+            name: "Attachment");
+
+        migrationBuilder.DropTable(
+            name: "AuditDelta");
+
+        migrationBuilder.DropTable(
+            name: "AutomationJob");
+
+        migrationBuilder.DropTable(
+            name: "AutomationRule");
+
+        migrationBuilder.DropTable(
+            name: "Branding");
+
+        migrationBuilder.DropTable(
+            name: "BusinessHourSlot");
+
+        migrationBuilder.DropTable(
+            name: "Change");
+
+        migrationBuilder.DropTable(
+            name: "ClassAllowedChild");
+
+        migrationBuilder.DropTable(
+            name: "CommentLike");
+
+        migrationBuilder.DropTable(
+            name: "CommentReaction");
+
+        migrationBuilder.DropTable(
+            name: "CustomQuickfilter");
+
+        migrationBuilder.DropTable(
+            name: "FieldCatalogBinding");
+
+        migrationBuilder.DropTable(
+            name: "FormElement");
+
+        migrationBuilder.DropTable(
+            name: "GroupPolicy");
+
+        migrationBuilder.DropTable(
+            name: "Holiday");
+
+        migrationBuilder.DropTable(
+            name: "IdentityCapacity");
+
+        migrationBuilder.DropTable(
+            name: "IdentityGroupMembership");
+
+        migrationBuilder.DropTable(
+            name: "IdentitySession");
+
+        migrationBuilder.DropTable(
+            name: "InsightCategory");
+
+        migrationBuilder.DropTable(
+            name: "InsightView");
+
+        migrationBuilder.DropTable(
+            name: "KanbanBoardColumn");
+
+        migrationBuilder.DropTable(
+            name: "KanbanBoardSwimlane");
+
+        migrationBuilder.DropTable(
+            name: "KindDashboardWidget");
+
+        migrationBuilder.DropTable(
+            name: "Maintenance");
+
+        migrationBuilder.DropTable(
+            name: "NavigatorLink");
+
+        migrationBuilder.DropTable(
+            name: "ObjectCreation");
+
+        migrationBuilder.DropTable(
+            name: "ObjectDraft");
+
+        migrationBuilder.DropTable(
+            name: "ObjectKeyAlias");
+
+        migrationBuilder.DropTable(
+            name: "ObjectOperationItem");
+
+        migrationBuilder.DropTable(
+            name: "ObjectPath");
+
+        migrationBuilder.DropTable(
+            name: "ObjectPlanning");
+
+        migrationBuilder.DropTable(
+            name: "ObjectRelation");
+
+        migrationBuilder.DropTable(
+            name: "ObjectRelationType");
+
+        migrationBuilder.DropTable(
+            name: "ObjectShare");
+
+        migrationBuilder.DropTable(
+            name: "ObjectTag");
+
+        migrationBuilder.DropTable(
+            name: "ObjectView");
+
+        migrationBuilder.DropTable(
+            name: "ObjectVisit");
+
+        migrationBuilder.DropTable(
+            name: "ObjectWatcher");
+
+        migrationBuilder.DropTable(
+            name: "PasswordReset");
+
+        migrationBuilder.DropTable(
+            name: "PermissionAssignment");
+
+        migrationBuilder.DropTable(
+            name: "Priority");
+
+        migrationBuilder.DropTable(
+            name: "SavedSearch");
+
+        migrationBuilder.DropTable(
+            name: "SlaEscalationLevel");
+
+        migrationBuilder.DropTable(
+            name: "SlaScopeRule");
+
+        migrationBuilder.DropTable(
+            name: "SlaTarget");
+
+        migrationBuilder.DropTable(
+            name: "TemplateClass");
+
+        migrationBuilder.DropTable(
+            name: "TemplateHierarchyNode");
+
+        migrationBuilder.DropTable(
+            name: "Transition");
+
+        migrationBuilder.DropTable(
+            name: "UserNotification");
+
+        migrationBuilder.DropTable(
+            name: "UserSession");
+
+        migrationBuilder.DropTable(
+            name: "Value");
+
+        migrationBuilder.DropTable(
+            name: "ValueCatalogVersion");
+
+        migrationBuilder.DropTable(
+            name: "Webhook");
+
+        migrationBuilder.DropTable(
+            name: "Widget");
+
+        migrationBuilder.DropTable(
+            name: "WorkflowStatus");
+
+        migrationBuilder.DropTable(
+            name: "Worklog");
+
+        migrationBuilder.DropTable(
+            name: "WorkspaceBookmark");
+
+        migrationBuilder.DropTable(
+            name: "WorkspaceCategory");
+
+        migrationBuilder.DropTable(
+            name: "WorkspacePlanning");
+
+        migrationBuilder.DropTable(
+            name: "WorkspaceTenant");
+
+        migrationBuilder.DropTable(
+            name: "WqlHistory");
+
+        migrationBuilder.DropTable(
+            name: "Approval");
+
+        migrationBuilder.DropTable(
+            name: "AuditEvent");
+
+        migrationBuilder.DropTable(
+            name: "Commit");
+
+        migrationBuilder.DropTable(
+            name: "Comment");
+
+        migrationBuilder.DropTable(
+            name: "FormTab");
+
+        migrationBuilder.DropTable(
+            name: "KanbanBoard");
+
+        migrationBuilder.DropTable(
+            name: "KindDashboardColumn");
+
+        migrationBuilder.DropTable(
+            name: "ObjectOperation");
+
+        migrationBuilder.DropTable(
+            name: "Milestone");
+
+        migrationBuilder.DropTable(
+            name: "Group");
+
+        migrationBuilder.DropTable(
+            name: "SlaPolicy");
+
+        migrationBuilder.DropTable(
+            name: "TemplateHierarchy");
+
+        migrationBuilder.DropTable(
+            name: "Field");
+
+        migrationBuilder.DropTable(
+            name: "ValueCatalog");
+
+        migrationBuilder.DropTable(
+            name: "DashboardColumn");
+
+        migrationBuilder.DropTable(
+            name: "Status");
+
+        migrationBuilder.DropTable(
+            name: "Workflow");
+
+        migrationBuilder.DropTable(
+            name: "Category");
+
+        migrationBuilder.DropTable(
+            name: "Object");
+
+        migrationBuilder.DropTable(
+            name: "Form");
+
+        migrationBuilder.DropTable(
+            name: "KindDashboard");
+
+        migrationBuilder.DropTable(
+            name: "Calendar");
+
+        migrationBuilder.DropTable(
+            name: "Template");
+
+        migrationBuilder.DropTable(
+            name: "Insight");
+
+        migrationBuilder.DropTable(
+            name: "StatusCategory");
+
+        migrationBuilder.DropTable(
+            name: "Identity");
+
+        migrationBuilder.DropTable(
+            name: "SecurityLevel");
+
+        migrationBuilder.DropTable(
+            name: "Sprint");
+
+        migrationBuilder.DropTable(
+            name: "Tenant");
+
+        migrationBuilder.DropTable(
+            name: "Class");
+
+        migrationBuilder.DropTable(
+            name: "Workspace");
+    }
+}

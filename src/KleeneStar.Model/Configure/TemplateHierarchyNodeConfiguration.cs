@@ -1,6 +1,10 @@
 using KleeneStar.Model.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 namespace KleeneStar.Model.Configure
 {
@@ -66,13 +70,6 @@ namespace KleeneStar.Model.Configure
             builder.Property(x => x.AsChild)
                 .HasColumnName("AsChild");
 
-            builder.Property(x => x.RelationTypeKey)
-                .HasColumnName("RelationType")
-                .HasMaxLength(64);
-
-            builder.Property(x => x.RelationInverse)
-                .HasColumnName("RelationInverse");
-
             builder.Property(x => x.AssigneeId)
                 .HasColumnName("Assignee");
 
@@ -82,8 +79,23 @@ namespace KleeneStar.Model.Configure
                 .HasPrincipalKey(i => i.Id)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.Property(x => x.PredecessorId)
-                .HasColumnName("Predecessor");
+            // the links travel as one JSON array; the targets name nodes of the same hierarchy,
+            // which is written as a whole
+            builder.Property(x => x.Links)
+                .HasColumnName("Links")
+                .HasConversion
+                (
+                    v => JsonSerializer.Serialize(v ?? new List<TemplateHierarchyNodeLink>(), (JsonSerializerOptions)null),
+                    v => string.IsNullOrEmpty(v)
+                        ? new List<TemplateHierarchyNodeLink>()
+                        : JsonSerializer.Deserialize<List<TemplateHierarchyNodeLink>>(v, (JsonSerializerOptions)null) ?? new List<TemplateHierarchyNodeLink>(),
+                    new ValueComparer<List<TemplateHierarchyNodeLink>>
+                    (
+                        (a, b) => JsonSerializer.Serialize(a, (JsonSerializerOptions)null) == JsonSerializer.Serialize(b, (JsonSerializerOptions)null),
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null).GetHashCode(),
+                        v => JsonSerializer.Deserialize<List<TemplateHierarchyNodeLink>>(JsonSerializer.Serialize(v, (JsonSerializerOptions)null), (JsonSerializerOptions)null)
+                    )
+                );
 
             builder.HasIndex(x => x.HierarchyId);
             builder.HasIndex(x => x.TemplateId);

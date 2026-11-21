@@ -168,8 +168,8 @@ namespace KleeneStar.Model
         /// The tree is written as a whole: nodes whose id the list carries again are updated in
         /// place, the others are removed and new ones are added. The position follows the order
         /// of the given nodes. A parent naming no earlier node of the list is dropped (the node
-        /// moves below the root), as is a predecessor naming no sibling; the empty guid is written
-        /// as no reference.
+        /// moves below the root); a link keeps the targets that name the root or another node of
+        /// the list and is dropped without any; the empty guid is written as no reference.
         /// </remarks>
         /// <param name="hierarchyId">The hierarchy.</param>
         /// <param name="nodes">The nodes depth first.</param>
@@ -221,19 +221,46 @@ namespace KleeneStar.Model
                 row.ClassId = node.ClassId == Guid.Empty ? null : node.ClassId;
                 row.Order = i + 1;
                 row.AsChild = node.AsChild;
-                row.RelationTypeKey = string.IsNullOrWhiteSpace(node.RelationTypeKey) ? null : node.RelationTypeKey.Trim();
-                row.RelationInverse = row.RelationTypeKey is not null && node.RelationInverse;
                 row.AssigneeId = node.AssigneeId == Guid.Empty ? null : node.AssigneeId;
-                row.PredecessorId = node.PredecessorId is Guid predecessor
-                    && predecessor != node.Id
-                    && ids.Contains(predecessor)
-                    && parents.TryGetValue(predecessor, out var predecessorParent)
-                    && predecessorParent == parentId
-                        ? predecessor
-                        : null;
+                row.Links = NormalizeLinks(node, ids);
             }
 
             db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Returns the links of a node as they are stored: each with a relation type and at least
+        /// one target, a target being the root or another node of the list, each named once.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="ids">The ids of the nodes of the list.</param>
+        /// <returns>The links.</returns>
+        private static List<TemplateHierarchyNodeLink> NormalizeLinks(TemplateHierarchyNode node, HashSet<Guid> ids)
+        {
+            var links = new List<TemplateHierarchyNodeLink>();
+
+            foreach (var link in node.Links ?? [])
+            {
+                if (link is null || string.IsNullOrWhiteSpace(link.Type))
+                {
+                    continue;
+                }
+
+                var targets = (link.Targets ?? [])
+                    .Select(x => x?.Trim())
+                    .Where(x => string.Equals(x, TemplateHierarchyNodeLink.RootTarget, StringComparison.OrdinalIgnoreCase)
+                        || (Guid.TryParse(x, out var target) && target != node.Id && ids.Contains(target)))
+                    .Select(x => Guid.TryParse(x, out var target) ? target.ToString() : TemplateHierarchyNodeLink.RootTarget)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                if (targets.Count > 0)
+                {
+                    links.Add(new TemplateHierarchyNodeLink { Type = link.Type.Trim(), Inverse = link.Inverse, Targets = targets });
+                }
+            }
+
+            return links;
         }
     }
 }

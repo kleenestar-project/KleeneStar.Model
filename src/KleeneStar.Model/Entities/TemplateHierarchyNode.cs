@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using WebExpress.WebIndex.WebAttribute;
@@ -14,8 +15,8 @@ namespace KleeneStar.Model.Entities
     /// <c>null</c> the root of the hierarchy (its root template). What belongs to the place in
     /// the structure rather than to the referenced template is stored on the node: the class the
     /// object is created in, the position among the siblings, whether the object is a child of
-    /// its parent and the relation it is linked with, the account it is assigned to and the
-    /// sibling it waits for.
+    /// its parent, the account it is assigned to and the relations it is linked to the objects of
+    /// other places of the hierarchy with.
     /// </remarks>
     public class TemplateHierarchyNode : IEntity
     {
@@ -82,21 +83,6 @@ namespace KleeneStar.Model.Entities
         public bool AsChild { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the key of the relation type (<see cref="ObjectRelationType.Key"/>) the
-        /// object of the node is linked to the object of its parent node with, or <c>null</c>.
-        /// </summary>
-        /// <remarks>
-        /// A node is a child, a link or both. The relation runs from the parent object to the
-        /// created one, or the other way round where <see cref="RelationInverse"/> is set.
-        /// </remarks>
-        public string RelationTypeKey { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the link runs from the created object to the parent object.
-        /// </summary>
-        public bool RelationInverse { get; set; }
-
-        /// <summary>
         /// Gets or sets the identity the object of the node is assigned to, or <c>null</c>.
         /// </summary>
         public Guid? AssigneeId { get; set; }
@@ -108,10 +94,15 @@ namespace KleeneStar.Model.Entities
         public Identity Assignee { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the sibling node whose object has to be finished before the
-        /// object of this node can be, or <c>null</c>.
+        /// Gets or sets the links of the node: per entry a relation type and the places of the
+        /// hierarchy (other nodes or the root) whose objects the object of the node is joined to.
         /// </summary>
-        public Guid? PredecessorId { get; set; }
+        /// <remarks>
+        /// A node is a child, linked or both. A link of a blocking type replaces the former
+        /// "waits for": the node <em>is blocked by</em> the objects it has to wait for.
+        /// </remarks>
+        [IndexIgnore]
+        public List<TemplateHierarchyNodeLink> Links { get; set; } = [];
 
         /// <summary>
         /// Initializes a new instance of the class with a fresh id.
