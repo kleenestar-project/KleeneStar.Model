@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KleeneStar.Model.Sqlite.Migrations;
 
 /// <inheritdoc />
-public partial class _20261121193944_InitialCreate : Migration
+public partial class _20261125211437_InitialCreate : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -730,6 +730,36 @@ public partial class _20261121193944_InitialCreate : Migration
                     principalTable: "Tenant",
                     principalColumn: "Guid",
                     onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AppointmentCalendarSource",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Workspace = table.Column<Guid>(type: "TEXT", nullable: false),
+                Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                Kind = table.Column<string>(type: "TEXT", maxLength: 16, nullable: false),
+                SourceWorkspace = table.Column<Guid>(type: "TEXT", nullable: true),
+                Query = table.Column<string>(type: "TEXT", nullable: true),
+                Color = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
+                Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                CreatedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AppointmentCalendarSource", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_AppointmentCalendarSource_Workspace_Workspace",
+                    column: x => x.Workspace,
+                    principalTable: "Workspace",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
             });
 
         migrationBuilder.CreateTable(
@@ -2196,6 +2226,91 @@ public partial class _20261121193944_InitialCreate : Migration
             });
 
         migrationBuilder.CreateTable(
+            name: "Appointment",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Start = table.Column<DateTime>(type: "TEXT", nullable: false),
+                End = table.Column<DateTime>(type: "TEXT", nullable: false),
+                AllDay = table.Column<bool>(type: "INTEGER", nullable: false),
+                TimeZone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Location = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Recurrence = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Exceptions = table.Column<string>(type: "TEXT", nullable: true),
+                SeriesEnd = table.Column<DateTime>(type: "TEXT", nullable: true),
+                AutoClose = table.Column<bool>(type: "INTEGER", nullable: false),
+                Closed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Organizer = table.Column<Guid>(type: "TEXT", nullable: true),
+                ExternalId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Appointment", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Appointment_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AppointmentParticipant",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: true),
+                Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                Role = table.Column<int>(type: "INTEGER", nullable: false),
+                Response = table.Column<int>(type: "INTEGER", nullable: false),
+                Comment = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
+                Responded = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AppointmentParticipant", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_AppointmentParticipant_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "AppointmentResource",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Resource = table.Column<Guid>(type: "TEXT", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AppointmentResource", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_AppointmentResource_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
             name: "Approval",
             columns: table => new
             {
@@ -2756,6 +2871,48 @@ public partial class _20261121193944_InitialCreate : Migration
             table: "AccessToken",
             column: "TokenId",
             unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Appointment_ExternalId",
+            table: "Appointment",
+            column: "ExternalId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Appointment_Object",
+            table: "Appointment",
+            column: "Object",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Appointment_Start_SeriesEnd",
+            table: "Appointment",
+            columns: new[] { "Start", "SeriesEnd" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AppointmentCalendarSource_Workspace",
+            table: "AppointmentCalendarSource",
+            column: "Workspace");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AppointmentParticipant_Identity",
+            table: "AppointmentParticipant",
+            column: "Identity");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AppointmentParticipant_Object",
+            table: "AppointmentParticipant",
+            column: "Object");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AppointmentResource_Object_Resource",
+            table: "AppointmentResource",
+            columns: new[] { "Object", "Resource" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AppointmentResource_Resource",
+            table: "AppointmentResource",
+            column: "Resource");
 
         migrationBuilder.CreateIndex(
             name: "IX_Approval_Guid",
@@ -3669,6 +3826,18 @@ public partial class _20261121193944_InitialCreate : Migration
     {
         migrationBuilder.DropTable(
             name: "AccessToken");
+
+        migrationBuilder.DropTable(
+            name: "Appointment");
+
+        migrationBuilder.DropTable(
+            name: "AppointmentCalendarSource");
+
+        migrationBuilder.DropTable(
+            name: "AppointmentParticipant");
+
+        migrationBuilder.DropTable(
+            name: "AppointmentResource");
 
         migrationBuilder.DropTable(
             name: "ApprovalDecision");

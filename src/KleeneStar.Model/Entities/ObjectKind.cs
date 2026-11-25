@@ -38,6 +38,13 @@ namespace KleeneStar.Model.Entities
         public const string Asset = "asset";
 
         /// <summary>
+        /// The kind of appointments: meetings and dates shown in a calendar. The kind is
+        /// contributed by the calendar plugin; the key is here because the model keeps the
+        /// schedules (<see cref="KleeneStar.Model.Entities.Appointment"/>) and narrows on it.
+        /// </summary>
+        public const string Appointment = "appointment";
+
+        /// <summary>
         /// The kind assigned when none is specified. Issues are the default because every
         /// object predating the kind partition behaves like a work item.
         /// </summary>

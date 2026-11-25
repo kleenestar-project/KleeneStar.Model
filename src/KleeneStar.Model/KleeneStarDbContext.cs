@@ -459,6 +459,26 @@ namespace KleeneStar.Model
         public DbSet<FieldCatalogBinding> FieldCatalogBindings { get; set; }
 
         /// <summary>
+        /// Gets or sets the schedules of appointments (kept by the calendar plugin).
+        /// </summary>
+        public DbSet<Appointment> Appointments { get; set; }
+
+        /// <summary>
+        /// Gets or sets the participants of appointments.
+        /// </summary>
+        public DbSet<AppointmentParticipant> AppointmentParticipants { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource bookings of appointments.
+        /// </summary>
+        public DbSet<AppointmentResource> AppointmentResources { get; set; }
+
+        /// <summary>
+        /// Gets or sets the further layers of workspace calendars.
+        /// </summary>
+        public DbSet<AppointmentCalendarSource> AppointmentCalendarSources { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

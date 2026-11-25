@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations;
 
 [DbContext(typeof(KleeneStarDbContext))]
-[Migration("20261121193944_InitialCreate")]
-partial class _20261121193944_InitialCreate
+[Migration("20261125211437_InitialCreate")]
+partial class _20261125211437_InitialCreate
 {
     /// <inheritdoc />
     protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,6 +117,260 @@ partial class _20261121193944_InitialCreate
                     .IsUnique();
 
                 b.ToTable("AccessToken");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.Appointment", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<bool>("AllDay")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("AllDay");
+
+                b.Property<bool>("AutoClose")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("AutoClose");
+
+                b.Property<DateTime?>("Closed")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Closed");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<DateTime>("End")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("End");
+
+                b.Property<string>("Exceptions")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Exceptions");
+
+                b.Property<string>("ExternalId")
+                    .HasMaxLength(256)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("ExternalId");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<string>("Location")
+                    .HasMaxLength(256)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Location");
+
+                b.Property<Guid>("ObjectId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Object");
+
+                b.Property<Guid?>("OrganizerId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Organizer");
+
+                b.Property<string>("Recurrence")
+                    .HasMaxLength(512)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Recurrence");
+
+                b.Property<DateTime?>("SeriesEnd")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("SeriesEnd");
+
+                b.Property<DateTime>("Start")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Start");
+
+                b.Property<string>("TimeZone")
+                    .HasMaxLength(64)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("TimeZone");
+
+                b.Property<DateTime>("Updated")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Updated");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("ExternalId");
+
+                b.HasIndex("ObjectId")
+                    .IsUnique();
+
+                b.HasIndex("Start", "SeriesEnd");
+
+                b.ToTable("Appointment");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.AppointmentCalendarSource", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<string>("Color")
+                    .HasMaxLength(32)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Color");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<Guid?>("CreatedById")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("CreatedBy");
+
+                b.Property<bool>("Enabled")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Enabled");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<string>("Kind")
+                    .IsRequired()
+                    .HasMaxLength(16)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Kind");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Name");
+
+                b.Property<int>("Order")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Order");
+
+                b.Property<string>("Query")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Query");
+
+                b.Property<Guid?>("SourceWorkspaceId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("SourceWorkspace");
+
+                b.Property<DateTime>("Updated")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Updated");
+
+                b.Property<Guid>("WorkspaceId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Workspace");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("WorkspaceId");
+
+                b.ToTable("AppointmentCalendarSource");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.AppointmentParticipant", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<string>("Comment")
+                    .HasMaxLength(1024)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Comment");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Email");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<Guid?>("IdentityId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Identity");
+
+                b.Property<string>("Name")
+                    .HasMaxLength(256)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Name");
+
+                b.Property<Guid>("ObjectId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Object");
+
+                b.Property<DateTime?>("Responded")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Responded");
+
+                b.Property<int>("Response")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Response");
+
+                b.Property<int>("Role")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Role");
+
+                b.Property<DateTime>("Updated")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Updated");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("IdentityId");
+
+                b.HasIndex("ObjectId");
+
+                b.ToTable("AppointmentParticipant");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.AppointmentResource", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<Guid>("ObjectId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Object");
+
+                b.Property<Guid>("ResourceId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Resource");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("ResourceId");
+
+                b.HasIndex("ObjectId", "ResourceId")
+                    .IsUnique();
+
+                b.ToTable("AppointmentResource");
             });
 
         modelBuilder.Entity("KleeneStar.Model.Entities.Approval", b =>
@@ -5324,6 +5578,46 @@ partial class _20261121193944_InitialCreate
                     .IsRequired();
 
                 b.Navigation("Owner");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.Appointment", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.Object", null)
+                    .WithMany()
+                    .HasForeignKey("ObjectId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.AppointmentCalendarSource", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.Workspace", null)
+                    .WithMany()
+                    .HasForeignKey("WorkspaceId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.AppointmentParticipant", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.Object", null)
+                    .WithMany()
+                    .HasForeignKey("ObjectId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.AppointmentResource", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.Object", null)
+                    .WithMany()
+                    .HasForeignKey("ObjectId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
             });
 
         modelBuilder.Entity("KleeneStar.Model.Entities.Approval", b =>

@@ -16,3 +16,8 @@
 // the integration plugin keeps its webhooks in the model (ModelHub.Webhook)
 [assembly: InternalsVisibleTo("KleeneStar.Integration")]
 [assembly: InternalsVisibleTo("KleeneStar.Integration.Test")]
+
+// the calendar plugin keeps schedules, participants, bookings and calendar layers in the
+// model (ModelHub.Appointment)
+[assembly: InternalsVisibleTo("KleeneStar.Calendar")]
+[assembly: InternalsVisibleTo("KleeneStar.Calendar.Test")]
