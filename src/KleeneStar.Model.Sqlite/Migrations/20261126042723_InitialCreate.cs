@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KleeneStar.Model.Sqlite.Migrations;
 
 /// <inheritdoc />
-public partial class _20261125211437_InitialCreate : Migration
+public partial class _20261126042723_InitialCreate : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -2685,6 +2685,66 @@ public partial class _20261125211437_InitialCreate : Migration
             });
 
         migrationBuilder.CreateTable(
+            name: "Poll",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Type = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                MultipleChoice = table.Column<bool>(type: "INTEGER", nullable: false),
+                AllowMaybe = table.Column<bool>(type: "INTEGER", nullable: false),
+                Anonymous = table.Column<bool>(type: "INTEGER", nullable: false),
+                HideResults = table.Column<bool>(type: "INTEGER", nullable: false),
+                Deadline = table.Column<DateTime>(type: "TEXT", nullable: true),
+                Closed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                ClosedBy = table.Column<Guid>(type: "TEXT", nullable: true),
+                ChosenOption = table.Column<Guid>(type: "TEXT", nullable: true),
+                TimeZone = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Poll", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Poll_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "PollOption",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Order = table.Column<int>(type: "INTEGER", nullable: false),
+                Text = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
+                Start = table.Column<DateTime>(type: "TEXT", nullable: true),
+                End = table.Column<DateTime>(type: "TEXT", nullable: true),
+                AllDay = table.Column<bool>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_PollOption", x => x.Id);
+                table.UniqueConstraint("AK_PollOption_Guid", x => x.Guid);
+                table.ForeignKey(
+                    name: "FK_PollOption_Object_Object",
+                    column: x => x.Object,
+                    principalTable: "Object",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
             name: "Value",
             columns: table => new
             {
@@ -2859,6 +2919,31 @@ public partial class _20261125211437_InitialCreate : Migration
                     principalTable: "Identity",
                     principalColumn: "Guid",
                     onDelete: ReferentialAction.Restrict);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "PollVote",
+            columns: table => new
+            {
+                Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    .Annotation("Sqlite:Autoincrement", true),
+                Guid = table.Column<Guid>(type: "TEXT", maxLength: 36, nullable: false),
+                Object = table.Column<Guid>(type: "TEXT", nullable: false),
+                Option = table.Column<Guid>(type: "TEXT", nullable: false),
+                Identity = table.Column<Guid>(type: "TEXT", nullable: false),
+                Answer = table.Column<int>(type: "INTEGER", nullable: false),
+                Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                Updated = table.Column<DateTime>(type: "TEXT", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_PollVote", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_PollVote_PollOption_Option",
+                    column: x => x.Option,
+                    principalTable: "PollOption",
+                    principalColumn: "Guid",
+                    onDelete: ReferentialAction.Cascade);
             });
 
         migrationBuilder.CreateIndex(
@@ -3553,6 +3638,33 @@ public partial class _20261125211437_InitialCreate : Migration
             unique: true);
 
         migrationBuilder.CreateIndex(
+            name: "IX_Poll_Closed_Deadline",
+            table: "Poll",
+            columns: new[] { "Closed", "Deadline" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Poll_Object",
+            table: "Poll",
+            column: "Object",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PollOption_Object_Order",
+            table: "PollOption",
+            columns: new[] { "Object", "Order" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PollVote_Object_Identity",
+            table: "PollVote",
+            columns: new[] { "Object", "Identity" });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_PollVote_Option_Identity",
+            table: "PollVote",
+            columns: new[] { "Option", "Identity" },
+            unique: true);
+
+        migrationBuilder.CreateIndex(
             name: "IX_Priority_Class_Name",
             table: "Priority",
             columns: new[] { "Class", "Name" },
@@ -3966,6 +4078,12 @@ public partial class _20261125211437_InitialCreate : Migration
             name: "PermissionAssignment");
 
         migrationBuilder.DropTable(
+            name: "Poll");
+
+        migrationBuilder.DropTable(
+            name: "PollVote");
+
+        migrationBuilder.DropTable(
             name: "Priority");
 
         migrationBuilder.DropTable(
@@ -4059,6 +4177,9 @@ public partial class _20261125211437_InitialCreate : Migration
             name: "Group");
 
         migrationBuilder.DropTable(
+            name: "PollOption");
+
+        migrationBuilder.DropTable(
             name: "SlaPolicy");
 
         migrationBuilder.DropTable(
@@ -4083,13 +4204,13 @@ public partial class _20261125211437_InitialCreate : Migration
             name: "Category");
 
         migrationBuilder.DropTable(
-            name: "Object");
-
-        migrationBuilder.DropTable(
             name: "Form");
 
         migrationBuilder.DropTable(
             name: "KindDashboard");
+
+        migrationBuilder.DropTable(
+            name: "Object");
 
         migrationBuilder.DropTable(
             name: "Calendar");

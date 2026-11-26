@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KleeneStar.Model.Sqlite.Migrations;
 
 [DbContext(typeof(KleeneStarDbContext))]
-[Migration("20261125211437_InitialCreate")]
-partial class _20261125211437_InitialCreate
+[Migration("20261126042723_InitialCreate")]
+partial class _20261126042723_InitialCreate
 {
     /// <inheritdoc />
     protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3828,6 +3828,181 @@ partial class _20261125211437_InitialCreate
                 b.ToTable("PermissionAssignment");
             });
 
+        modelBuilder.Entity("KleeneStar.Model.Entities.Poll", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<bool>("AllowMaybe")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("AllowMaybe");
+
+                b.Property<bool>("Anonymous")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Anonymous");
+
+                b.Property<Guid?>("ChosenOptionId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("ChosenOption");
+
+                b.Property<DateTime?>("Closed")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Closed");
+
+                b.Property<Guid?>("ClosedById")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("ClosedBy");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<DateTime?>("Deadline")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Deadline");
+
+                b.Property<bool>("HideResults")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("HideResults");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<bool>("MultipleChoice")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("MultipleChoice");
+
+                b.Property<Guid>("ObjectId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Object");
+
+                b.Property<string>("TimeZone")
+                    .HasMaxLength(64)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("TimeZone");
+
+                b.Property<string>("Type")
+                    .IsRequired()
+                    .HasMaxLength(64)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Type");
+
+                b.Property<DateTime>("Updated")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Updated");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("ObjectId")
+                    .IsUnique();
+
+                b.HasIndex("Closed", "Deadline");
+
+                b.ToTable("Poll");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.PollOption", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<bool>("AllDay")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("AllDay");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<DateTime?>("End")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("End");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<Guid>("ObjectId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Object");
+
+                b.Property<int>("Order")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Order");
+
+                b.Property<DateTime?>("Start")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Start");
+
+                b.Property<string>("Text")
+                    .HasMaxLength(512)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Text");
+
+                b.Property<DateTime>("Updated")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Updated");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("ObjectId", "Order");
+
+                b.ToTable("PollOption");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.PollVote", b =>
+            {
+                b.Property<int>("RawId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Id");
+
+                b.Property<int>("Answer")
+                    .HasColumnType("INTEGER")
+                    .HasColumnName("Answer");
+
+                b.Property<DateTime>("Created")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Created");
+
+                b.Property<Guid>("Id")
+                    .HasMaxLength(36)
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Guid");
+
+                b.Property<Guid>("IdentityId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Identity");
+
+                b.Property<Guid>("ObjectId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Object");
+
+                b.Property<Guid>("OptionId")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Option");
+
+                b.Property<DateTime>("Updated")
+                    .HasColumnType("TEXT")
+                    .HasColumnName("Updated");
+
+                b.HasKey("RawId");
+
+                b.HasIndex("ObjectId", "IdentityId");
+
+                b.HasIndex("OptionId", "IdentityId")
+                    .IsUnique();
+
+                b.ToTable("PollVote");
+            });
+
         modelBuilder.Entity("KleeneStar.Model.Entities.Priority", b =>
             {
                 b.Property<int>("RawId")
@@ -6352,6 +6527,36 @@ partial class _20261125211437_InitialCreate
                     .IsRequired();
 
                 b.Navigation("Group");
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.Poll", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.Object", null)
+                    .WithMany()
+                    .HasForeignKey("ObjectId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.PollOption", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.Object", null)
+                    .WithMany()
+                    .HasForeignKey("ObjectId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
+
+        modelBuilder.Entity("KleeneStar.Model.Entities.PollVote", b =>
+            {
+                b.HasOne("KleeneStar.Model.Entities.PollOption", null)
+                    .WithMany()
+                    .HasForeignKey("OptionId")
+                    .HasPrincipalKey("Id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
             });
 
         modelBuilder.Entity("KleeneStar.Model.Entities.Priority", b =>

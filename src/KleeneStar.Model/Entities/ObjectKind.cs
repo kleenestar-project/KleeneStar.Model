@@ -45,6 +45,13 @@ namespace KleeneStar.Model.Entities
         public const string Appointment = "appointment";
 
         /// <summary>
+        /// The kind of polls: scheduling polls and decisions a workspace votes on. The kind is
+        /// contributed by the poll plugin; the key is here because the model keeps the options
+        /// and votes (<see cref="KleeneStar.Model.Entities.Poll"/>) and narrows on it.
+        /// </summary>
+        public const string Poll = "poll";
+
+        /// <summary>
         /// The kind assigned when none is specified. Issues are the default because every
         /// object predating the kind partition behaves like a work item.
         /// </summary>

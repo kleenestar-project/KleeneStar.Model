@@ -479,6 +479,21 @@ namespace KleeneStar.Model
         public DbSet<AppointmentCalendarSource> AppointmentCalendarSources { get; set; }
 
         /// <summary>
+        /// Gets or sets the settings of polls (kept by the poll plugin).
+        /// </summary>
+        public DbSet<Poll> Polls { get; set; }
+
+        /// <summary>
+        /// Gets or sets the options of polls.
+        /// </summary>
+        public DbSet<PollOption> PollOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the votes of polls.
+        /// </summary>
+        public DbSet<PollVote> PollVotes { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the class using the specified options.
         /// </summary>
         /// <param name="options">

@@ -21,3 +21,7 @@
 // model (ModelHub.Appointment)
 [assembly: InternalsVisibleTo("KleeneStar.Calendar")]
 [assembly: InternalsVisibleTo("KleeneStar.Calendar.Test")]
+
+// the poll plugin keeps the settings, options and votes of polls in the model (ModelHub.Poll)
+[assembly: InternalsVisibleTo("KleeneStar.Poll")]
+[assembly: InternalsVisibleTo("KleeneStar.Poll.Test")]
