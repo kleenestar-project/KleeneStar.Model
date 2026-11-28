@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model
 {
@@ -23,15 +24,16 @@ namespace KleeneStar.Model
         /// <param name="output">The stream the archive is written to.</param>
         /// <param name="progress">What is told of the progress (share, phase, detail), or <see langword="null"/>.</param>
         /// <param name="structureOnly">Whether objects and their dependent data are omitted.</param>
+        /// <param name="exportIcon">The optional resolver embedding local icon data.</param>
         /// <returns>What was written.</returns>
-        public static WorkspaceTransferReport ExportWorkspaces(IReadOnlyCollection<Guid> workspaceIds, Stream output, Action<double, string, string> progress = null, bool structureOnly = false)
+        public static WorkspaceTransferReport ExportWorkspaces(IReadOnlyCollection<Guid> workspaceIds, Stream output, Action<double, string, string> progress = null, bool structureOnly = false, Func<ImageIcon, ImageIcon> exportIcon = null)
         {
             ArgumentNullException.ThrowIfNull(workspaceIds);
             ArgumentNullException.ThrowIfNull(output);
 
             using var context = CreateDbContext();
 
-            return new WorkspaceExporter(context, TransferSchema(context.Model)) { Progress = progress, StructureOnly = structureOnly }.Export(workspaceIds, output);
+            return new WorkspaceExporter(context, TransferSchema(context.Model)) { Progress = progress, StructureOnly = structureOnly, ExportIcon = exportIcon }.Export(workspaceIds, output);
         }
 
         /// <summary>
@@ -41,14 +43,15 @@ namespace KleeneStar.Model
         /// <param name="input">The archive.</param>
         /// <param name="options">The choices of the import.</param>
         /// <param name="progress">What is told of the progress (share, phase, detail), or <see langword="null"/>.</param>
+        /// <param name="importIcon">The optional resolver storing imported icon data.</param>
         /// <returns>What was imported, left out and left empty.</returns>
-        public static WorkspaceTransferReport ImportWorkspaces(Stream input, WorkspaceImportOptions options = null, Action<double, string, string> progress = null)
+        public static WorkspaceTransferReport ImportWorkspaces(Stream input, WorkspaceImportOptions options = null, Action<double, string, string> progress = null, Func<ImageIcon, ImageIcon> importIcon = null)
         {
             ArgumentNullException.ThrowIfNull(input);
 
             using var context = CreateDbContext();
 
-            return new WorkspaceImporter(context, TransferSchema(context.Model)) { Progress = progress }.Import(input, options);
+            return new WorkspaceImporter(context, TransferSchema(context.Model)) { Progress = progress, ImportIcon = importIcon }.Import(input, options);
         }
 
         /// <summary>

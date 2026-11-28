@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Transfer
 {
@@ -54,6 +55,11 @@ namespace KleeneStar.Model.Transfer
         /// <c>import.write</c>). May be <see langword="null"/>.
         /// </summary>
         public Action<double, string, string> Progress { get; set; }
+
+        /// <summary>
+        /// Returns or sets the resolver for transferred icon data.
+        /// </summary>
+        public Func<ImageIcon, ImageIcon> ExportIcon { get; set; }
 
         /// <summary>
         /// Returns or sets whether objects and their dependent data are omitted.
@@ -160,7 +166,7 @@ namespace KleeneStar.Model.Transfer
                         }
                         else
                         {
-                            TransferValue.Write(writer, property, value);
+                            TransferValue.Write(writer, property, value is ImageIcon icon && ExportIcon is not null ? ExportIcon(icon) : value);
                         }
                     }
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
+using WebExpress.WebUI.WebIcon;
 
 namespace KleeneStar.Model.Transfer
 {
@@ -121,6 +122,11 @@ namespace KleeneStar.Model.Transfer
         public Action<double, string, string> Progress { get; set; }
 
         /// <summary>
+        /// Returns or sets the resolver for transferred icon data.
+        /// </summary>
+        public Func<ImageIcon, ImageIcon> ImportIcon { get; set; }
+
+        /// <summary>
         /// Imports an export file.
         /// </summary>
         /// <param name="input">The zip archive.</param>
@@ -166,6 +172,7 @@ namespace KleeneStar.Model.Transfer
                 {
                     try
                     {
+                        RestoreIcons();
                         Write();
                     }
                     catch (Exception ex) when (ex is DbUpdateException or InvalidOperationException or ArgumentException)
@@ -186,6 +193,28 @@ namespace KleeneStar.Model.Transfer
                 foreach (var document in _documents)
                 {
                     document.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Restores icons only for rows that will be written, after selection and validation.
+        /// </summary>
+        private void RestoreIcons()
+        {
+            if (ImportIcon is null)
+            {
+                return;
+            }
+
+            foreach (var row in _rows.Values.SelectMany(x => x).Where(x => x.Live && !x.Reused))
+            {
+                foreach (var property in row.Values.Keys.ToList())
+                {
+                    if (row.Values[property] is ImageIcon icon)
+                    {
+                        row.Values[property] = ImportIcon(icon);
+                    }
                 }
             }
         }
