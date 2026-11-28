@@ -22,15 +22,16 @@ namespace KleeneStar.Model
         /// <param name="workspaceIds">The workspaces.</param>
         /// <param name="output">The stream the archive is written to.</param>
         /// <param name="progress">What is told of the progress (share, phase, detail), or <see langword="null"/>.</param>
+        /// <param name="structureOnly">Whether objects and their dependent data are omitted.</param>
         /// <returns>What was written.</returns>
-        public static WorkspaceTransferReport ExportWorkspaces(IReadOnlyCollection<Guid> workspaceIds, Stream output, Action<double, string, string> progress = null)
+        public static WorkspaceTransferReport ExportWorkspaces(IReadOnlyCollection<Guid> workspaceIds, Stream output, Action<double, string, string> progress = null, bool structureOnly = false)
         {
             ArgumentNullException.ThrowIfNull(workspaceIds);
             ArgumentNullException.ThrowIfNull(output);
 
             using var context = CreateDbContext();
 
-            return new WorkspaceExporter(context, TransferSchema(context.Model)) { Progress = progress }.Export(workspaceIds, output);
+            return new WorkspaceExporter(context, TransferSchema(context.Model)) { Progress = progress, StructureOnly = structureOnly }.Export(workspaceIds, output);
         }
 
         /// <summary>

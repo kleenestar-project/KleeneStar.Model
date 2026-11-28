@@ -56,6 +56,11 @@ namespace KleeneStar.Model.Transfer
         public Action<double, string, string> Progress { get; set; }
 
         /// <summary>
+        /// Returns or sets whether objects and their dependent data are omitted.
+        /// </summary>
+        public bool StructureOnly { get; set; }
+
+        /// <summary>
         /// Writes the export.
         /// </summary>
         /// <param name="workspaceIds">The workspaces to export.</param>
@@ -109,6 +114,11 @@ namespace KleeneStar.Model.Transfer
         /// <summary>
         /// Reads the rows of a table that belong to the export and writes them.
         /// </summary>
+        /// <param name="archive">The archive receiving the table.</param>
+        /// <param name="table">The table to export.</param>
+        /// <param name="workspaceIds">The selected workspace identifiers.</param>
+        /// <param name="report">The report receiving workspace metadata.</param>
+        /// <returns>The table report, or null for unused external tables.</returns>
         private WorkspaceTransferTableReport ExportTable(ZipArchive archive, TransferTableSchema table, IReadOnlyCollection<Guid> workspaceIds, WorkspaceTransferReport report)
         {
             var rows = Load(table, workspaceIds);
@@ -140,7 +150,11 @@ namespace KleeneStar.Model.Transfer
 
                         writer.WritePropertyName(property.Name);
 
-                        if (translations.TryGetValue(property, out var translation))
+                        if (StructureOnly && table.ForeignKeys.Any(x => x.Property == property && x.Target.Name == "Object"))
+                        {
+                            writer.WriteNullValue();
+                        }
+                        else if (translations.TryGetValue(property, out var translation))
                         {
                             TransferValue.WriteScalar(writer, value is not null && translation.TryGetValue(value, out var id) ? id : null);
                         }
@@ -207,6 +221,11 @@ namespace KleeneStar.Model.Transfer
         /// the field, but it is not the workspace's).</param>
         private List<object> Load(TransferTableSchema table, IReadOnlyCollection<Guid> workspaceIds, bool ownedOnly = false)
         {
+            if (StructureOnly && table.Name == "Object")
+            {
+                return [];
+            }
+
             var conditions = new List<(IProperty, IEnumerable<object>)>();
 
             if (table.Role == WorkspaceTransferRole.Root)

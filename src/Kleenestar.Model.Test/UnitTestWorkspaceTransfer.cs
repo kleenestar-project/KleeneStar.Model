@@ -204,6 +204,67 @@ namespace KleeneStar.Model.Test
         }
 
         /// <summary>
+        /// A structure export preserves configuration, omits object data and clears the home
+        /// reference without changing the source database.
+        /// </summary>
+        [Fact]
+        public void Export_StructureOnlyCarriesConfigurationWithoutObjects()
+        {
+            // arrange
+            Use("structure-source");
+            Seed();
+
+            using (var source = ModelHub.CreateDbContext())
+            {
+                source.Workspaces.Single(x => x.Id == _workspaceId).HomeId = _parentId;
+                source.Templates.Add(new Template { Id = Guid.NewGuid(), ClassId = _classId, Name = "Preset", Presets = "{}" });
+                source.PermissionAssignments.Add(new PermissionAssignment(Guid.NewGuid())
+                {
+                    Scope = "object", ScopeId = _parentId.ToString(), GroupId = _groupId, Policy = "edit", Created = DateTime.UtcNow
+                });
+                source.SaveChanges();
+            }
+
+            // act
+            using var stream = new MemoryStream();
+            var exported = ModelHub.ExportWorkspaces([_workspaceId], stream, structureOnly: true);
+            var file = stream.ToArray();
+
+            // validation
+            Assert.True(exported.Succeeded);
+            Assert.Single(Read(file, "tables/Class.json").EnumerateArray());
+            Assert.Single(Read(file, "tables/Template.json").EnumerateArray());
+            Assert.Single(Read(file, "tables/PermissionAssignment.json").EnumerateArray());
+            Assert.Equal(JsonValueKind.Null, Assert.Single(Read(file, "tables/Workspace.json").EnumerateArray()).GetProperty("HomeId").ValueKind);
+
+            foreach (var table in new[] { "Object", "Value", "Comment", "CommentLike", "ObjectRelation", "Attachment", "Commit", "Poll", "Appointment" })
+            {
+                Assert.Empty(Read(file, $"tables/{table}.json").EnumerateArray());
+            }
+
+            using (var source = ModelHub.CreateDbContext())
+            {
+                Assert.Equal(_parentId, source.Workspaces.Single(x => x.Id == _workspaceId).HomeId);
+                Assert.Equal(3, source.Objects.Count());
+            }
+
+            Use("structure-target");
+            var imported = Import(file);
+            Assert.True(imported.Succeeded, imported.Error);
+
+            using var target = ModelHub.CreateDbContext();
+            Assert.Single(target.Workspaces);
+            Assert.Null(target.Workspaces.Single().HomeId);
+            Assert.Single(target.Classes);
+            Assert.Single(target.Fields);
+            Assert.Single(target.Templates);
+            Assert.Single(target.Statuses);
+            Assert.Empty(target.Objects);
+            Assert.Empty(target.Values);
+            Assert.Empty(target.Comments);
+        }
+
+        /// <summary>
         /// A reference to an account the target installation does not know is cleared where it
         /// may be empty and leaves out the row that cannot exist without it.
         /// </summary>
